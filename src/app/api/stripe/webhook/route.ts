@@ -9,8 +9,11 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) {
-    // TODO(phase-0): wire STRIPE_WEBHOOK_SECRET in production. We still 200 to
-    // avoid Stripe disabling the endpoint during local development.
+    // Dev convenience: keep endpoint registered with Stripe even when the secret
+    // isn't wired up locally. Production must always have STRIPE_WEBHOOK_SECRET set.
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json({ error: "webhook_secret_missing" }, { status: 500 });
+    }
     return NextResponse.json({ ok: true, note: "webhook_secret_missing" }, { status: 200 });
   }
 

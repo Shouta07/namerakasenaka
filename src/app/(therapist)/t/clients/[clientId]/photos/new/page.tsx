@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { use } from "react";
+import { CameraCapture } from "@/components/progress/camera-capture";
 import type { PhotoType } from "@/types/domain";
 
 export default function NewPhotoPage({
@@ -16,15 +16,22 @@ export default function NewPhotoPage({
   const { clientId } = use(params);
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [photoType, setPhotoType] = useState<PhotoType>("before");
   const [caption, setCaption] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  function setSelectedFile(f: File | null) {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setFile(f);
+    setPreviewUrl(f ? URL.createObjectURL(f) : null);
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!file) {
-      setError("ファイルを選択してください");
+      setError("写真を撮影またはファイル選択してください");
       return;
     }
     setSubmitting(true);
@@ -52,27 +59,34 @@ export default function NewPhotoPage({
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">進捗写真を撮影</h1>
       <Card>
-        <CardContent>
-          {/* TODO(phase-0): replace this with a real getUserMedia camera UI with
-              distance/angle guide overlay (§4.2.1). For now we accept any file from
-              the device camera or library. */}
-          <div className="mb-4 grid place-items-center rounded-lg border-2 border-dashed border-brand-200 bg-brand-50 p-6 text-center text-xs text-brand-700">
-            撮影ガイド（実装予定）: 距離マーク・角度ガイドラインをここに表示
+        <CardContent className="space-y-5">
+          {previewUrl ? (
+            <div className="space-y-3">
+              <div className="aspect-[3/4] overflow-hidden rounded-lg border border-stone-200 bg-stone-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={previewUrl} alt="preview" className="h-full w-full object-cover" />
+              </div>
+              <Button type="button" variant="secondary" onClick={() => setSelectedFile(null)}>
+                撮り直す
+              </Button>
+            </div>
+          ) : (
+            <CameraCapture onCapture={setSelectedFile} disabled={submitting} />
+          )}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="fallback">カメラが使えない場合（ファイルから選択）</Label>
+            <input
+              id="fallback"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm"
+            />
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="file">写真</Label>
-              <input
-                id="file"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                className="block w-full text-sm"
-                required
-              />
-            </div>
             <div className="space-y-1.5">
               <Label>写真種別</Label>
               <div className="flex gap-2">
@@ -103,7 +117,7 @@ export default function NewPhotoPage({
               />
             </div>
             {error ? <p className="text-sm text-red-600">{error}</p> : null}
-            <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+            <Button type="submit" size="lg" className="w-full" disabled={submitting || !file}>
               アップロード
             </Button>
           </form>

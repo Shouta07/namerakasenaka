@@ -41,16 +41,46 @@ export async function POST(req: Request) {
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Kick off AI draft asynchronously by inserting a placeholder feedback row.
-  // The Edge Function (`generate-meal-feedback`) is expected to pick this up and
-  // populate ai_draft. We use the admin client to bypass RLS for this system write.
-  // TODO(phase-0): trigger the Edge Function via a Postgres NOTIFY or HTTP call
-  // once Supabase project & secrets are wired up.
   const admin = getAdminSupabase();
-  await admin.from("meal_feedbacks").insert({
-    meal_log_id: (inserted as { id: string }).id,
-    status: "ai_drafting",
-  });
+  const { data: feedback, error: fbError } = await admin
+    .from("meal_feedbacks")
+    .insert({
+      meal_log_id: (inserted as { id: string }).id,
+      status: "ai_drafting",
+    })
+    .select("id")
+    .single();
+  if (fbError || !feedback) {
+    return NextResponse.json({ error: fbError?.message ?? "feedback_insert_failed" }, { status: 500 });
+  }
 
-  return NextResponse.json({ id: (inserted as { id: string }).id });
+  const feedbackId = (feedback as { id: string }).id;
+  void invokeMealFeedbackFunction(feedbackId);
+
+  return NextResponse.json({ id: (inserted as { id: string }).id, feedbackId });
+}
+
+async function invokeMealFeedbackFunction(feedbackId: string) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) {
+    console.warn("[meal-logs] skipping edge function: SUPABASE env not configured");
+    return;
+  }
+  try {
+    const res = await fetch(`${url}/functions/v1/generate-meal-feedback`, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${serviceKey}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ feedbackId }),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      console.error(`[meal-logs] edge function ${res.status}: ${text}`);
+    }
+  } catch (err) {
+    console.error("[meal-logs] edge function invocation failed", err);
+  }
 }

@@ -850,8 +850,8 @@ function TreatmentsTab({
                   {viewerRole === "salon_admin" ||
                   (viewerRole === "therapist" && r.source === "stored") ? (
                     <p className="mt-2 text-[11px] text-stone-400">
-                      {/* TODO: real RLS gate. In demo mode only the affordance is shown. */}
-                      編集権限あり (デモ)
+                      {/* TODO: real RLS gate. */}
+                      編集権限あり
                     </p>
                   ) : null}
                   <SalonNoteComposer

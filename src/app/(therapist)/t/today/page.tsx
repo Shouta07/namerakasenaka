@@ -98,14 +98,13 @@ function DemoTherapistToday() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-xs font-medium uppercase tracking-widest text-brand-700">
-          セラピストビュー
-        </p>
-        <h1 className="mt-1 text-2xl font-bold text-stone-900">
-          {THERAPIST_NAME} さん、本日もよろしくお願いします
-        </h1>
-        <p className="mt-1 text-sm text-stone-600">2026 年 5 月 18 日（月）</p>
+      <header className="flex items-end justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-stone-900">本日の予約</h1>
+          <p className="mt-0.5 text-xs text-stone-500">
+            2026年5月18日（月）・ 担当 {THERAPIST_NAME}
+          </p>
+        </div>
       </header>
 
       <section className="grid grid-cols-2 gap-3">

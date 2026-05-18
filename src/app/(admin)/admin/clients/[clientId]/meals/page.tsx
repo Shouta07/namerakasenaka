@@ -45,7 +45,7 @@ export default async function AdminClientMealsPage({
           </CardHeader>
           <CardContent>
             <p className="text-sm text-stone-500">
-              サンプル表示では顧客ごとの食事ログ詳細は表示しません。本番接続後に実データが表示されます。
+              現在登録されているコメントはありません。
             </p>
           </CardContent>
         </Card>

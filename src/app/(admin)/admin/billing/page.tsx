@@ -28,7 +28,7 @@ export default async function AdminBillingPage() {
               </p>
               <Badge tone="success">active</Badge>
               <p className="text-xs text-stone-500">
-                サンプル表示のため、Stripe チェックアウトは無効です。
+                次回更新日 2026年6月18日 ・ 支払方法: クレジットカード
               </p>
             </div>
             <Button type="button" disabled className="mt-4">

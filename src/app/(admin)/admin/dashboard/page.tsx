@@ -1,4 +1,4 @@
-import { AlertCircle, Building2, TrendingUp } from "lucide-react";
+import { AlertCircle, TrendingUp } from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import {
@@ -130,16 +130,6 @@ function DemoAdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-          <Building2 className="h-5 w-5" />
-        </div>
-        <div>
-          <p className="text-xs text-stone-500">{demoOrganization.name}</p>
-          <h1 className="text-2xl font-bold text-stone-900">経営ダッシュボード</h1>
-        </div>
-      </header>
-
       <section>
         <KpiCards kpis={kpis} />
       </section>

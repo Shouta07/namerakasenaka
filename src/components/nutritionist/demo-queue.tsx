@@ -179,7 +179,7 @@ export function DemoNutritionistQueue() {
       ) : null}
 
       <section>
-        <h2 className="text-base font-semibold text-stone-900">承認済みサンプル</h2>
+        <h2 className="text-base font-semibold text-stone-900">直近の承認済み</h2>
         <Card className="mt-3 border-emerald-200 bg-emerald-50/30">
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
@@ -216,7 +216,7 @@ export function DemoNutritionistQueue() {
             </div>
 
             <div className="text-[11px] text-stone-400">
-              参考: {demoMealLogs.length} 件のサンプルログがあります。
+              直近の食事ログ {demoMealLogs.length} 件。
             </div>
           </CardContent>
         </Card>

@@ -1,186 +1,269 @@
 import Link from "next/link";
+import { ArrowRight, AlertCircle, Camera, Search } from "lucide-react";
+import { RoleTopBar } from "@/components/ui/role-top-bar";
+import { KpiStrip, type KpiStripItem } from "@/components/admin/kpi-strip";
+import { Badge } from "@/components/ui/badge";
+import { DemoBanner } from "@/components/demo-banner";
 import {
-  CalendarDays,
-  Camera,
-  ChevronRight,
-  LineChart,
-  Salad,
-  Stethoscope,
-} from "lucide-react";
-import type { ComponentType } from "react";
-import { isDemoMode } from "@/lib/demo";
-import { demoOrganization } from "@/lib/demo/fixtures";
+  demoAppointments,
+  demoClientRoster,
+  demoKpiSnapshot,
+  demoOrganization,
+  demoQaThreads,
+  demoTherapistPerformance,
+  formatJpy,
+} from "@/lib/demo/fixtures";
 
-type RoleCard = {
-  href: string;
-  title: string;
-  subtitle: string;
-  bullets: string[];
-  icon: ComponentType<{ className?: string }>;
-  gradient: string;
-};
+const today = new Date();
 
-const cards: RoleCard[] = [
+const weekday = ["日", "月", "火", "水", "木", "金", "土"][today.getDay()];
+const formattedDate = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日(${weekday})`;
+
+const todaysAppointments = demoAppointments.slice(0, 5);
+const recentClients = demoClientRoster.slice(0, 5);
+const unreadThreads = demoQaThreads.filter((t) => t.unreadCount > 0);
+
+const kpis: KpiStripItem[] = [
+  { label: "本日来店", value: demoKpiSnapshot.todayAppointments },
+  { label: "今月新規", value: demoKpiSnapshot.monthlyNewClients },
+  { label: "今月完遂率", value: `${demoKpiSnapshot.monthlyCompletionRate}%`, tone: "brand" },
   {
-    href: "/c/progress",
-    title: "顧客の体験",
-    subtitle: "進捗タイムライン / 比較ビュー / 食事フィードバック",
-    bullets: [
-      "4 週分の Before/After 写真をタイムラインで確認",
-      "1 タップで Week 1 と Week 4 を並べて比較",
-      "AI + 管理栄養士 + サロンの 3 層フィードバック",
-    ],
-    icon: Camera,
-    gradient: "from-brand-100 via-brand-50 to-amber-50",
-  },
-  {
-    href: "/t/today",
-    title: "セラピストの作業",
-    subtitle: "担当顧客 / 90 秒カルテ / 動画記録",
-    bullets: [
-      "本日の予約を即時に俯瞰",
-      "施術後 90 秒で記録が完了するフォーム",
-      "動画記録で属人化を脱却する施術カルテ",
-    ],
-    icon: Stethoscope,
-    gradient: "from-emerald-50 via-stone-50 to-amber-50",
-  },
-  {
-    href: "/admin/dashboard",
-    title: "経営者の視点",
-    subtitle: "KPI ダッシュボード / 顧客一覧 / スタッフ実績",
-    bullets: [
-      "本日来店・新規・完遂率・Q&A 残のリアルタイム可視化",
-      "セラピストごとのパフォーマンス比較",
-      "未対応 Q&A の優先アラート",
-    ],
-    icon: LineChart,
-    gradient: "from-stone-100 via-brand-50 to-amber-50",
-  },
-  {
-    href: "/n/queue",
-    title: "栄養士の監修",
-    subtitle: "AI 下書きレビュー / 監修ログ",
-    bullets: [
-      "AI 下書きをレビュー画面で承認・編集",
-      "薬機法・健康増進法に配慮した文言ガイド",
-      "免許番号 + 承認時刻の監査ログ",
-    ],
-    icon: Salad,
-    gradient: "from-amber-50 via-emerald-50 to-stone-100",
-  },
-  {
-    href: "/c/calendar",
-    title: "カレンダー",
-    subtitle: "月次グリッド / 次回推奨枠 / ワンタップ予約",
-    bullets: [
-      "顧客・セラピスト・経営者の 3 視点で同じカレンダーを共有",
-      "コース理解型推奨枠を月グリッド上にハイライト",
-      "ワンタップで次の 3 スロット候補を提示し即確定",
-    ],
-    icon: CalendarDays,
-    gradient: "from-brand-50 via-stone-50 to-emerald-50",
+    label: "未対応Q&A",
+    value: demoKpiSnapshot.pendingQa,
+    tone: demoKpiSnapshot.pendingQa > 0 ? "warning" : "neutral",
   },
 ];
 
+function appointmentTime(iso: string): string {
+  const d = new Date(iso);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
 export default function HomePage() {
-  const demo = isDemoMode();
   return (
-    <main
-      className="mx-auto max-w-5xl px-4 sm:px-6"
-      style={{
-        paddingTop: "max(var(--safe-top), 24px)",
-        paddingBottom: "max(var(--safe-bottom), 24px)",
-      }}
-    >
-      <section className="pt-4 text-center sm:pt-8">
-        <p className="text-[11px] font-medium uppercase tracking-widest text-brand-700">
-          Senacare
-        </p>
-        <h1 className="mt-3 text-[26px] font-bold leading-tight text-stone-900 sm:text-4xl">
-          来店と来店の「間」を、
-          <br className="sm:hidden" />
-          サロンの強みに。
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-stone-600 sm:text-base">
-          {demo ? (
-            <>
-              {demoOrganization.name}{" "}
-              を題材にしたサンプルデータで、4 つの視点から機能をそのままお試しいただけます。
-            </>
-          ) : (
-            <>
-              高単価背中ケア専門サロンのための、進捗写真・施術カルテ・予約・食事フィードバックを一元化する顧客管理プラットフォームです。
-            </>
-          )}
-        </p>
-      </section>
+    <div className="min-h-dvh bg-stone-50">
+      <RoleTopBar role="経営者" persona="salon" eyebrow={demoOrganization.name} />
+      <DemoBanner />
 
-      <section className="mt-8 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-5">
-        {cards.map((card, idx) => {
-          const Icon = card.icon;
-          return (
-            <Link
-              key={card.href}
-              href={card.href}
-              className="group flex items-stretch overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md sm:flex-col"
-            >
-              {/* Mobile: thumbnail tile on the left. Desktop: hero band on top. */}
-              <div
-                className={`relative flex w-24 flex-none items-center justify-center bg-gradient-to-br sm:h-32 sm:w-auto ${card.gradient}`}
+      <main
+        className="mx-auto max-w-6xl px-4 sm:px-6"
+        style={{ paddingBottom: "max(var(--safe-bottom), 24px)" }}
+      >
+        <section className="flex items-baseline justify-between gap-3 pt-5">
+          <div>
+            <p className="text-[11px] text-stone-500">{formattedDate}</p>
+            <h2 className="mt-0.5 text-base font-semibold text-stone-900">
+              本日 {todaysAppointments.length} 件の予約があります
+            </h2>
+          </div>
+          <p className="text-[11px] text-stone-500">
+            売上見込 <span className="font-semibold text-stone-900">{formatJpy(demoKpiSnapshot.monthlyRevenueJpy)}</span>
+          </p>
+        </section>
+
+        <section className="mt-4">
+          <KpiStrip items={kpis} />
+        </section>
+
+        <section className="mt-6 grid gap-4 lg:grid-cols-3">
+          <div className="lg:col-span-2 rounded-lg border border-stone-200 bg-white">
+            <header className="flex items-center justify-between border-b border-stone-200 px-4 py-2.5">
+              <h3 className="text-sm font-semibold text-stone-900">本日の予約</h3>
+              <Link
+                href="/admin/calendar"
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-brand-700 hover:underline"
               >
-                <Icon className="h-8 w-8 text-brand-700 sm:h-12 sm:w-12" />
-                <span className="absolute left-2 top-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/80 text-[10px] font-semibold text-brand-700 sm:left-4 sm:top-4 sm:h-6 sm:w-6 sm:text-xs">
-                  {idx + 1}
-                </span>
-              </div>
-              <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <h2 className="truncate text-base font-semibold text-stone-900 sm:text-lg">
-                      {card.title}
-                    </h2>
-                    <p className="mt-0.5 line-clamp-1 text-[11px] text-stone-500 sm:text-xs">
-                      {card.subtitle}
-                    </p>
-                  </div>
-                  <ChevronRight className="h-5 w-5 flex-none text-stone-400 group-hover:text-brand-700 sm:hidden" />
-                </div>
-                <ul className="mt-3 hidden flex-1 space-y-2 text-sm text-stone-700 sm:block">
-                  {card.bullets.map((b) => (
-                    <li key={b} className="flex gap-2">
-                      <span className="mt-1 inline-block h-1.5 w-1.5 flex-none rounded-full bg-brand-500" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-                <span className="mt-3 hidden items-center gap-1 text-sm font-semibold text-brand-700 group-hover:gap-2 sm:inline-flex">
-                  開く
-                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </div>
-            </Link>
-          );
-        })}
-      </section>
+                全件
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </header>
+            <ul className="divide-y divide-stone-100">
+              {todaysAppointments.map((a) => (
+                <li key={a.id}>
+                  <Link
+                    href={`/admin/clients/${a.clientId}`}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-stone-50"
+                  >
+                    <span className="w-12 flex-none text-sm font-semibold tabular-nums text-stone-900">
+                      {appointmentTime(a.scheduledAt)}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium text-stone-900">
+                        {a.clientName}
+                      </span>
+                      <span className="block truncate text-[11px] text-stone-500">
+                        {a.menuName} · {a.therapistName}
+                      </span>
+                    </span>
+                    <Badge tone={a.status === "completed" ? "neutral" : "brand"}>
+                      {a.status === "completed"
+                        ? "完了"
+                        : a.status === "confirmed"
+                          ? "確定"
+                          : a.status === "cancelled"
+                            ? "キャンセル"
+                            : "予定"}
+                    </Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-      <footer className="mt-10 flex flex-col items-center gap-2 border-t border-stone-200 pt-6 text-center">
-        {demo ? (
-          <p className="text-xs text-stone-500">
-            表示されている全てのデータはサンプルです。本番接続後は、サロンごとの実データに自動的に切り替わります。
-          </p>
-        ) : (
-          <p className="text-xs text-stone-500">
-            ご利用にはサロン管理者からの招待リンクが必要です。
-          </p>
-        )}
-        <Link
-          href="/login"
-          className="text-[11px] text-stone-400 hover:text-stone-600"
-        >
-          ログイン
-        </Link>
-      </footer>
-    </main>
+          <div className="rounded-lg border border-stone-200 bg-white">
+            <header className="flex items-center gap-2 border-b border-stone-200 px-4 py-2.5">
+              <AlertCircle className="h-3.5 w-3.5 text-amber-600" />
+              <h3 className="text-sm font-semibold text-stone-900">要対応</h3>
+            </header>
+            <ul className="divide-y divide-stone-100">
+              {unreadThreads.length === 0 ? (
+                <li className="px-4 py-6 text-center text-[11px] text-stone-400">
+                  未対応はありません
+                </li>
+              ) : (
+                unreadThreads.map((t) => (
+                  <li key={t.id}>
+                    <Link
+                      href="/admin/clients"
+                      className="flex items-center gap-2 px-4 py-3 hover:bg-stone-50"
+                    >
+                      <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1 text-[10px] font-semibold text-amber-700">
+                        {t.unreadCount}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs font-medium text-stone-900">
+                          {t.clientName}
+                        </span>
+                        <span className="block truncate text-[11px] text-stone-500">
+                          {t.lastMessage}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-stone-200 bg-white">
+          <header className="flex items-center justify-between gap-3 border-b border-stone-200 px-4 py-2.5">
+            <h3 className="text-sm font-semibold text-stone-900">顧客</h3>
+            <div className="flex items-center gap-2">
+              <div className="relative hidden sm:block">
+                <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" />
+                <input
+                  type="search"
+                  placeholder="顧客を検索"
+                  className="h-8 w-44 rounded-md border border-stone-200 bg-white pl-7 pr-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+              <Link
+                href="/admin/invites/new"
+                className="inline-flex h-8 items-center gap-1 rounded-md bg-brand-500 px-2.5 text-[11px] font-medium text-white hover:bg-brand-700"
+              >
+                顧客を追加
+              </Link>
+            </div>
+          </header>
+          <ul className="divide-y divide-stone-100">
+            {recentClients.map((c) => {
+              const progress = Math.round((c.sessionsCompleted / c.sessionsTotal) * 100);
+              return (
+                <li key={c.id}>
+                  <Link
+                    href={`/admin/clients/${c.id}`}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-stone-50"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={c.avatarUrl}
+                      alt={c.displayName}
+                      className="h-9 w-9 flex-none rounded-full object-cover"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium text-stone-900">
+                        {c.displayName}
+                      </span>
+                      <span className="block truncate text-[11px] text-stone-500">
+                        {c.courseName} · {c.sessionsCompleted}/{c.sessionsTotal} 回
+                      </span>
+                    </span>
+                    <span className="hidden w-32 flex-none sm:block">
+                      <span className="block h-1.5 overflow-hidden rounded-full bg-stone-100">
+                        <span
+                          className="block h-full bg-brand-500"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </span>
+                      <span className="mt-1 block text-right text-[10px] text-stone-400">
+                        {progress}%
+                      </span>
+                    </span>
+                    <ArrowRight className="h-4 w-4 flex-none text-stone-300" />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-stone-200 bg-white">
+          <header className="flex items-center justify-between border-b border-stone-200 px-4 py-2.5">
+            <h3 className="text-sm font-semibold text-stone-900">セラピスト実績（今月）</h3>
+            <Link
+              href="/admin/staff"
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-brand-700 hover:underline"
+            >
+              詳細
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+          </header>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-xs">
+              <thead className="bg-stone-50 text-[10px] uppercase tracking-wider text-stone-500">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium">セラピスト</th>
+                  <th className="px-4 py-2 text-right font-medium">担当数</th>
+                  <th className="px-4 py-2 text-right font-medium">今月完遂</th>
+                  <th className="px-4 py-2 text-right font-medium">満足度</th>
+                  <th className="px-4 py-2 text-right font-medium">返信時間</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100">
+                {demoTherapistPerformance.map((t) => (
+                  <tr key={t.name}>
+                    <td className="px-4 py-2.5 font-medium text-stone-900">{t.name}</td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">{t.activeClients}</td>
+                    <td className="px-4 py-2.5 text-right tabular-nums text-brand-700">
+                      {t.monthlyCompletions}
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {t.averageRating.toFixed(1)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {t.responseHours}h
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="mt-6 flex items-center justify-between rounded-lg border border-dashed border-stone-300 bg-stone-50 px-4 py-3 text-[11px]">
+          <span className="inline-flex items-center gap-1.5 text-stone-600">
+            <Camera className="h-3.5 w-3.5 text-stone-500" />
+            施術日には顧客詳細から進捗写真をアップロードできます
+          </span>
+          <Link
+            href="/admin/clients"
+            className="font-medium text-brand-700 hover:underline"
+          >
+            顧客一覧へ
+          </Link>
+        </section>
+      </main>
+    </div>
   );
 }

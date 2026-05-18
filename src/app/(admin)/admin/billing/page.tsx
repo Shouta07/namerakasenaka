@@ -1,4 +1,6 @@
 import { getServerSupabase } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
+import { demoOrganization } from "@/lib/demo/fixtures";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +13,32 @@ type SubscriptionRow = {
 };
 
 export default async function AdminBillingPage() {
+  if (isDemoMode()) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">請求・サブスクリプション</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>現在のプラン</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p className="text-sm">
+                プラン: <span className="font-medium">{demoOrganization.planName}</span>
+              </p>
+              <Badge tone="success">active</Badge>
+              <p className="text-xs text-stone-500">
+                サンプル表示のため、Stripe チェックアウトは無効です。
+              </p>
+            </div>
+            <Button type="button" disabled className="mt-4">
+              Stripeでチェックアウト
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const supabase = await getServerSupabase();
   const { data } = await supabase
     .from("subscriptions")

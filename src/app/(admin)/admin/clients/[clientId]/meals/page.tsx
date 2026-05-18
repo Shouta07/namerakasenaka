@@ -1,4 +1,5 @@
 import { getServerSupabase } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MealLogWithCommentsList,
@@ -29,6 +30,28 @@ export default async function AdminClientMealsPage({
   params: Promise<{ clientId: string }>;
 }) {
   const { clientId } = await params;
+  if (isDemoMode()) {
+    return (
+      <div className="space-y-6">
+        <header>
+          <h1 className="text-2xl font-semibold">食事ログ</h1>
+          <p className="mt-1 text-sm text-stone-600">
+            顧客ID: <span className="font-mono">{clientId.slice(0, 8)}</span>
+          </p>
+        </header>
+        <Card>
+          <CardHeader>
+            <CardTitle>サロンからのコメント</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-stone-500">
+              サンプル表示では顧客ごとの食事ログ詳細は表示しません。本番接続後に実データが表示されます。
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const supabase = await getServerSupabase();
 
   const { data: meals } = await supabase

@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { isDemoMode } from "@/lib/demo";
 
 const PUBLIC_PATHS = [
   "/",
   "/login",
   "/invite",
-  "/demo",
   "/api/stripe/webhook",
 ];
 
@@ -15,6 +15,12 @@ function isPublic(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
+  // Demo mode: Supabase env unset. Every route is browseable with fixture data,
+  // no auth redirects, no session cookie reads.
+  if (isDemoMode()) {
+    return NextResponse.next({ request });
+  }
+
   const { response, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
 

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getServerSupabase } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
+import { demoClientRoster } from "@/lib/demo/fixtures";
 import { Card, CardContent } from "@/components/ui/card";
 
 type ClientRow = {
@@ -11,6 +13,41 @@ type ClientRow = {
 };
 
 export default async function AdminClientsPage() {
+  if (isDemoMode()) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">顧客一覧</h1>
+        <Card>
+          <CardContent>
+            <table className="min-w-full text-sm">
+              <thead className="text-left text-xs text-stone-500">
+                <tr>
+                  <th className="py-2">顧客名</th>
+                  <th className="py-2">肌タイプ</th>
+                  <th className="py-2">コース</th>
+                  <th className="py-2">担当</th>
+                  <th className="py-2">進捗</th>
+                </tr>
+              </thead>
+              <tbody>
+                {demoClientRoster.map((c) => (
+                  <tr key={c.id} className="border-t border-stone-100">
+                    <td className="py-2 font-medium">{c.displayName}</td>
+                    <td className="py-2">{c.skinType}</td>
+                    <td className="py-2">{c.courseName}</td>
+                    <td className="py-2">{c.primaryTherapistName}</td>
+                    <td className="py-2">
+                      {c.sessionsCompleted}/{c.sessionsTotal} 回
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const supabase = await getServerSupabase();
   const { data } = await supabase
     .from("clients")

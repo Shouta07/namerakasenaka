@@ -1,10 +1,19 @@
 import { Suspense } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+      <Link
+        href="/"
+        className="mb-4 inline-flex items-center gap-1 self-start text-xs text-stone-500 hover:text-stone-700"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        トップに戻る
+      </Link>
       <Card>
         <CardHeader>
           <CardTitle>ログイン</CardTitle>

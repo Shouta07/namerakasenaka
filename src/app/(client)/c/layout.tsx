@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { MobileNav, RoleNav, type NavItem } from "@/components/ui/nav";
+import { DemoBanner } from "@/components/demo-banner";
 
 const items: NavItem[] = [
   { href: "/c/progress", label: "進捗" },
@@ -17,6 +18,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <RoleNav title="Client" items={items} />
       <main className="flex-1 px-4 py-6 md:px-8">{children}</main>
       <MobileNav items={items} />
+      <DemoBanner />
     </div>
   );
 }

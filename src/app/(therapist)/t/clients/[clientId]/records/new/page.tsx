@@ -1,4 +1,5 @@
 import { getServerSupabase } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
 import { Card, CardContent } from "@/components/ui/card";
 import { RecordForm } from "@/components/treatment/record-form";
 
@@ -17,6 +18,23 @@ export default async function NewTreatmentRecordPage({
 }) {
   const { clientId } = await params;
   const sp = await searchParams;
+  if (isDemoMode()) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">施術記録（目標90秒）</h1>
+        <Card>
+          <CardContent>
+            <p className="text-sm text-stone-600">
+              サンプル表示では施術記録の保存は行いません。本番接続後に 90 秒で記録が完了します。
+            </p>
+            <p className="mt-2 text-[11px] text-stone-400">
+              顧客ID: {clientId.slice(0, 8)} ・ 予約: {sp.appointment ?? "—"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const supabase = await getServerSupabase();
 
   // Defaults from latest record — supports the 90-second input target (§4.6).

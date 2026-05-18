@@ -1,4 +1,5 @@
 import { getServerSupabase } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
 import { ThreadView, type ThreadMessage } from "@/components/qa/thread-view";
 import { MessageComposer } from "@/components/qa/message-composer";
 
@@ -17,6 +18,16 @@ export default async function TherapistQaThreadPage({
   params: Promise<{ conversationId: string }>;
 }) {
   const { conversationId } = await params;
+  if (isDemoMode()) {
+    return (
+      <div className="flex h-[calc(100vh-6rem)] flex-col">
+        <h1 className="text-xl font-semibold">会話</h1>
+        <p className="mt-2 text-xs text-stone-500">
+          サンプル表示ではメッセージの送受信は行いません。
+        </p>
+      </div>
+    );
+  }
   const supabase = await getServerSupabase();
   const {
     data: { user },

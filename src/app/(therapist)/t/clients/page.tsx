@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { getServerSupabase } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
+import { demoClient, demoClientRoster } from "@/lib/demo/fixtures";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 type ClientRow = {
@@ -10,6 +13,42 @@ type ClientRow = {
 };
 
 export default async function TherapistClientsPage() {
+  if (isDemoMode()) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">担当顧客</h1>
+        <div className="space-y-2">
+          {demoClientRoster.map((c) => (
+            <Link
+              key={c.id}
+              href={c.id === demoClient.id ? `/t/clients/${c.id}` : "/t/clients"}
+              className="block"
+            >
+              <Card>
+                <CardContent className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={c.avatarUrl}
+                    alt={c.displayName}
+                    className="h-10 w-10 flex-none rounded-full bg-stone-100 object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-stone-900">{c.displayName}</p>
+                    <p className="mt-0.5 text-xs text-stone-500">
+                      {c.courseName} ・ {c.sessionsCompleted}/{c.sessionsTotal} 回
+                    </p>
+                  </div>
+                  {c.id === demoClient.id ? (
+                    <Badge tone="brand">詳細を見る</Badge>
+                  ) : null}
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
+    );
+  }
   const supabase = await getServerSupabase();
   const { data } = await supabase
     .from("clients")

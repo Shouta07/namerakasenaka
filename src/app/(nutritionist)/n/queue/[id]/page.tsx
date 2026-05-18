@@ -1,4 +1,5 @@
 import { getServerSupabase } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FeedbackReviewForm } from "./review-form";
 
@@ -16,6 +17,25 @@ export default async function FeedbackReviewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  if (isDemoMode()) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">監修レビュー</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>サンプル表示</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-stone-600">
+              監修レビューの個別画面は本番接続後にご利用いただけます。サンプルの一覧は{" "}
+              <span className="font-mono text-xs">/n/queue</span> から確認できます。
+            </p>
+            <p className="mt-2 text-[11px] text-stone-400">対象ID: {id.slice(0, 8)}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const supabase = await getServerSupabase();
 
   const { data: fb } = await supabase

@@ -13,6 +13,22 @@ type MealLogRow = {
   logged_at: string;
 };
 
+type SalonCommentRow = {
+  id: string;
+  meal_log_id: string;
+  body: string;
+  author_role: "therapist" | "salon_admin";
+  created_at: string;
+};
+
+type NutritionistFeedbackRow = {
+  id: string;
+  meal_log_id: string;
+  final_text: string | null;
+  status: string;
+  sent_at: string | null;
+};
+
 export default async function ClientMealsPage() {
   const supabase = await getServerSupabase();
   const {
@@ -55,6 +71,25 @@ export default async function ClientMealsPage() {
     .limit(30);
 
   const rows = (data ?? []) as unknown as MealLogRow[];
+  const ids = rows.map((r) => r.id);
+
+  let comments: SalonCommentRow[] = [];
+  let feedbacks: NutritionistFeedbackRow[] = [];
+  if (ids.length > 0) {
+    const [{ data: cs }, { data: fs }] = await Promise.all([
+      supabase
+        .from("meal_log_comments")
+        .select("id, meal_log_id, body, author_role, created_at")
+        .in("meal_log_id", ids)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("meal_feedbacks")
+        .select("id, meal_log_id, final_text, status, sent_at")
+        .in("meal_log_id", ids),
+    ]);
+    comments = (cs ?? []) as unknown as SalonCommentRow[];
+    feedbacks = (fs ?? []) as unknown as NutritionistFeedbackRow[];
+  }
 
   return (
     <div className="space-y-6">
@@ -68,19 +103,75 @@ export default async function ClientMealsPage() {
         {rows.length === 0 ? (
           <p className="text-sm text-stone-500">まだ記録はありません。</p>
         ) : (
-          rows.map((m) => (
-            <Card key={m.id}>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <Badge tone="brand">{MEAL_TYPE_LABEL[m.meal_type]}</Badge>
-                  <span className="text-xs text-stone-500">
-                    {new Date(m.logged_at).toLocaleString("ja-JP")}
-                  </span>
-                </div>
-                {m.memo ? <p className="mt-2 text-sm text-stone-700">{m.memo}</p> : null}
-              </CardContent>
-            </Card>
-          ))
+          rows.map((m) => {
+            const myComments = comments.filter((c) => c.meal_log_id === m.id);
+            const myFeedbacks = feedbacks.filter(
+              (f) => f.meal_log_id === m.id && f.status === "sent" && f.final_text,
+            );
+            return (
+              <Card key={m.id}>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <Badge tone="brand">{MEAL_TYPE_LABEL[m.meal_type]}</Badge>
+                    <span className="text-xs text-stone-500">
+                      {new Date(m.logged_at).toLocaleString("ja-JP")}
+                    </span>
+                  </div>
+                  {m.memo ? (
+                    <p className="mt-2 text-sm text-stone-700">{m.memo}</p>
+                  ) : null}
+
+                  {myFeedbacks.length > 0 ? (
+                    <div className="mt-3 space-y-2 border-t border-stone-100 pt-3">
+                      {myFeedbacks.map((f) => (
+                        <div
+                          key={f.id}
+                          className="rounded-md bg-brand-50 px-3 py-2 text-xs"
+                        >
+                          <p className="font-medium text-brand-800">
+                            管理栄養士からのフィードバック
+                            {f.sent_at ? (
+                              <span className="ml-2 text-stone-500">
+                                {new Date(f.sent_at).toLocaleString("ja-JP")}
+                              </span>
+                            ) : null}
+                          </p>
+                          <p className="mt-1 whitespace-pre-wrap text-stone-700">
+                            {f.final_text}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {myComments.length > 0 ? (
+                    <div className="mt-3 space-y-2 border-t border-stone-100 pt-3">
+                      {myComments.map((c) => (
+                        <div
+                          key={c.id}
+                          className="rounded-md bg-stone-50 px-3 py-2 text-xs"
+                        >
+                          <p className="font-medium text-stone-700">
+                            サロンからのコメント（
+                            {c.author_role === "therapist"
+                              ? "セラピスト"
+                              : "サロン管理者"}
+                            ）
+                            <span className="ml-2 text-stone-400">
+                              {new Date(c.created_at).toLocaleString("ja-JP")}
+                            </span>
+                          </p>
+                          <p className="mt-1 whitespace-pre-wrap text-stone-600">
+                            {c.body}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            );
+          })
         )}
       </div>
     </div>

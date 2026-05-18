@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -33,6 +34,7 @@ export default async function AdminClientsPage() {
                   <th className="py-2">肌タイプ</th>
                   <th className="py-2">悩み</th>
                   <th className="py-2">担当</th>
+                  <th className="py-2"></th>
                 </tr>
               </thead>
               <tbody>
@@ -43,6 +45,14 @@ export default async function AdminClientsPage() {
                     <td className="py-2">{c.concerns ?? "—"}</td>
                     <td className="py-2">
                       {c.primary_therapist_id ? c.primary_therapist_id.slice(0, 8) : "—"}
+                    </td>
+                    <td className="py-2">
+                      <Link
+                        href={`/admin/clients/${c.id}/meals`}
+                        className="text-sm text-brand-700 underline"
+                      >
+                        食事ログを見る
+                      </Link>
                     </td>
                   </tr>
                 ))}

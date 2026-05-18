@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { MobileNav, RoleNav, type NavItem } from "@/components/ui/nav";
 
 const items: NavItem[] = [

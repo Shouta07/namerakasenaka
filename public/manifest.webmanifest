@@ -1,0 +1,25 @@
+{
+  "name": "Senacare",
+  "short_name": "Senacare",
+  "description": "高単価背中ケア専門サロン向け顧客管理プラットフォーム",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf9",
+  "theme_color": "#7c5e3b",
+  "lang": "ja",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

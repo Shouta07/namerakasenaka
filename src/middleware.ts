@@ -5,6 +5,7 @@ const PUBLIC_PATHS = [
   "/",
   "/login",
   "/invite",
+  "/demo",
   "/api/stripe/webhook",
 ];
 

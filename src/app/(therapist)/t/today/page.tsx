@@ -1,6 +1,7 @@
 import { getServerSupabase } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { TreatmentDayCameraLauncher } from "@/components/progress/treatment-day-camera-launcher";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/types/domain";
 
 type AppointmentRow = {
@@ -39,19 +40,27 @@ export default async function TherapistTodayPage() {
         <div className="space-y-2">
           {rows.map((a) => (
             <Card key={a.id}>
-              <CardContent className="flex items-center justify-between">
-                <div>
-                  <p className="text-lg font-medium">
-                    {new Date(a.scheduled_at).toLocaleTimeString("ja-JP", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                  <p className="text-xs text-stone-500">所要 {a.duration_min}分</p>
+              <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center justify-between sm:flex-1">
+                  <div>
+                    <p className="text-lg font-medium">
+                      {new Date(a.scheduled_at).toLocaleTimeString("ja-JP", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <p className="text-xs text-stone-500">所要 {a.duration_min}分</p>
+                  </div>
+                  <Badge tone={a.status === "confirmed" ? "success" : "neutral"}>
+                    {APPOINTMENT_STATUS_LABEL[a.status]}
+                  </Badge>
                 </div>
-                <Badge tone={a.status === "confirmed" ? "success" : "neutral"}>
-                  {APPOINTMENT_STATUS_LABEL[a.status]}
-                </Badge>
+                <div className="sm:flex-none">
+                  <TreatmentDayCameraLauncher
+                    clientId={a.client_id}
+                    appointmentId={a.id}
+                  />
+                </div>
               </CardContent>
             </Card>
           ))}

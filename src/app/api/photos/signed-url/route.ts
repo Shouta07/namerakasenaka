@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { logAudit } from "@/lib/audit/log";
+import { createSignedUrlForStoragePath } from "@/lib/storage/signed-url";
 
-const BUCKET = "progress-photos";
 const EXPIRES = 60 * 15; // 15 minutes — §4.2 acceptance criterion.
 
 export async function GET(req: Request) {
@@ -26,11 +26,13 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const { data: signed, error: sErr } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl((photo as { storage_path: string }).storage_path, EXPIRES);
-  if (sErr || !signed) {
-    return NextResponse.json({ error: sErr?.message ?? "sign_failed" }, { status: 500 });
+  const storagePath = (photo as { storage_path: string }).storage_path;
+  let signed;
+  try {
+    signed = await createSignedUrlForStoragePath(storagePath, EXPIRES);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "sign_failed";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 
   await logAudit({
@@ -38,7 +40,8 @@ export async function GET(req: Request) {
     action: "signed_url_issued",
     targetType: "progress_photos",
     targetId: photoId,
+    metadata: { provider: signed.provider },
   });
 
-  return NextResponse.json({ url: signed.signedUrl, expiresIn: EXPIRES });
+  return NextResponse.json({ url: signed.url, expiresIn: signed.expiresIn });
 }

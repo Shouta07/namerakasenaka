@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarCheck, ClipboardList, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { TreatmentDayCameraLauncher } from "@/components/progress/treatment-day-camera-launcher";
 import {
   demoAppointments,
   demoClient,
@@ -72,31 +73,42 @@ export default function DemoTherapistPage() {
           {todayAppointments.map((appt) => (
             <li
               key={appt.id}
-              className="flex items-center justify-between rounded-xl border border-stone-200 bg-white p-3"
+              className="rounded-xl border border-stone-200 bg-white p-3"
             >
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-stone-900">
-                  {new Date(appt.scheduledAt).toLocaleTimeString("ja-JP", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}{" "}
-                  ・ {appt.clientName} 様
-                </p>
-                <p className="mt-0.5 text-xs text-stone-500">
-                  {appt.menuName} ・ {appt.therapistName}
-                </p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-stone-900">
+                    {new Date(appt.scheduledAt).toLocaleTimeString("ja-JP", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    ・ {appt.clientName} 様
+                  </p>
+                  <p className="mt-0.5 text-xs text-stone-500">
+                    {appt.menuName} ・ {appt.therapistName}
+                  </p>
+                </div>
+                <Badge
+                  tone={
+                    appt.status === "completed"
+                      ? "success"
+                      : appt.status === "confirmed"
+                        ? "brand"
+                        : "neutral"
+                  }
+                >
+                  {APPOINTMENT_STATUS_LABEL[appt.status]}
+                </Badge>
               </div>
-              <Badge
-                tone={
-                  appt.status === "completed"
-                    ? "success"
-                    : appt.status === "confirmed"
-                      ? "brand"
-                      : "neutral"
-                }
-              >
-                {APPOINTMENT_STATUS_LABEL[appt.status]}
-              </Badge>
+              {appt.status !== "completed" ? (
+                <div className="mt-3">
+                  <TreatmentDayCameraLauncher
+                    clientId={appt.clientId}
+                    appointmentId={appt.id}
+                    demo
+                  />
+                </div>
+              ) : null}
             </li>
           ))}
         </ul>

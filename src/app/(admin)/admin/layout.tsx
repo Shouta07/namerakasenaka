@@ -4,6 +4,7 @@ import { MobileNav, RoleNav, type NavItem } from "@/components/ui/nav";
 
 const items: NavItem[] = [
   { href: "/admin/dashboard", label: "ダッシュボード" },
+  { href: "/admin/calendar", label: "カレンダー" },
   { href: "/admin/clients", label: "顧客" },
   { href: "/admin/staff", label: "スタッフ" },
   { href: "/admin/invites/new", label: "招待" },

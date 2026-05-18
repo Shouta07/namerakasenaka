@@ -521,3 +521,91 @@ Monorepo は Turborepo を推奨。シングルパッケージでも可（最初
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026/05/14 | Vitality Design LLC | 初版 |
+| 0.2 ドラフト | 2026/05/18 | Senacare Eng | §16 ストレージ追補（Google Drive 二重書き設計）追加 |
+
+---
+
+## 16. ストレージ追補（v0.2 ドラフト）
+
+### 16.1 背景
+
+進捗写真（§4.2）は当初 Supabase Storage の単一バケットに保存する設計だった。
+しかし、運営サロンから「自分たちの Google ドライブ上にも自動的にバックアップされてほしい」
+という強い要望が出ている。
+
+- **コンプライアンス側**: §8.3 のデータ越境移転の論点と一次保管庫の法的位置づけは、引き続き Supabase（東京リージョン）を一次にすべき。
+- **サロン運営の利便性側**: スタッフが Drive の見慣れた UI からも閲覧できる方が、現場の業務継続性が高い。
+- 折衷案として「Supabase を一次、Google Drive を二次」の **dual-write** を採用する。
+
+### 16.2 環境変数と運用モード
+
+`PHOTO_STORAGE_MODE` で動作モードを切り替える：
+
+| 値 | 動作 | 想定ユースケース |
+|---|---|---|
+| `supabase_only`（既定） | 一次のみ Supabase。Drive は呼ばれない。 | 既存サロン、Drive 連携前。 |
+| `gdrive_only` | 一次のみ Google Drive。Supabase Storage には書かない。 | **法務レビュー必須**（§8.3）。 |
+| `dual` | 一次=Supabase、バックアップ=Google Drive。バックアップ失敗時はリクエストは成功扱いとし、`audit_logs.metadata.backup_status` に失敗を記録する。 | 標準推奨。 |
+
+Drive 用 OAuth 認証情報は以下：
+
+```
+GOOGLE_DRIVE_CLIENT_ID=
+GOOGLE_DRIVE_CLIENT_SECRET=
+GOOGLE_DRIVE_REFRESH_TOKEN=
+GOOGLE_DRIVE_ROOT_FOLDER_ID=   # 任意。"Senacare/" をぶら下げるルート。
+```
+
+`PHOTO_STORAGE_MODE` が `supabase_only` の場合は Drive 関連コードは一切呼ばれず、
+Drive 用 env が未設定でもビルドおよびランタイム動作に影響しない。
+
+### 16.3 OAuth セットアップ（高レベル手順）
+
+1. Google Cloud Console で新規プロジェクトを作成し、Drive API v3 を有効化。
+2. **OAuth 2.0 クライアント ID**（種別: ウェブ アプリケーション）を作成。
+3. 一度ブラウザで `https://accounts.google.com/o/oauth2/v2/auth?...&scope=https://www.googleapis.com/auth/drive.file&access_type=offline&prompt=consent` を踏み、認可コードを取得。
+4. 認可コードを `https://oauth2.googleapis.com/token` に POST してリフレッシュトークンを発行。
+5. SaaS 側の env に `GOOGLE_DRIVE_CLIENT_ID` / `GOOGLE_DRIVE_CLIENT_SECRET` / `GOOGLE_DRIVE_REFRESH_TOKEN` を投入。
+
+実装では `googleapis` パッケージは使用せず、Drive REST API v3 への直接 `fetch` で完結している（依存軽量化のため）。
+
+### 16.4 フォルダ構造
+
+```
+<GOOGLE_DRIVE_ROOT_FOLDER_ID or my-drive>/
+  Senacare/
+    <organization_name>/
+      <client_display_name>/
+        <YYYY-MM>/
+          <photo_id>.<ext>
+```
+
+各層は「lookup-or-create」: 既存があればその id を再利用、なければ作成。
+
+### 16.5 未解決事項：SaaS 単一アカウント vs サロン別 OAuth
+
+| 案 | メリット | デメリット |
+|---|---|---|
+| **SaaS 単一サービスアカウント**（Phase 0 ブートストラップ） | 実装が単純。env を 1 セット入れるだけ。 | サロン側からは「自社の Drive」感が薄い。SaaS アカウントを止めると全サロンが影響を受ける。 |
+| **サロン別 OAuth**（Phase 1 推奨） | サロンが自社の Drive を持ち込み。退会時は OAuth 解除で完結。 | サロン管理者の OAuth 同意フローと、リフレッシュトークンの per-org 暗号化保管が追加で必要。 |
+
+**推奨**: Phase 1 でサロン別 OAuth に移行する。SaaS 単一は現在のスケルトン段階のためのデフォルト。
+
+### 16.6 法務レビュー（§8.3 連携）
+
+`gdrive_only` モードでは、Supabase（東京）を一次から外し、Google Drive（US リージョン中心）を一次保管庫とすることになる。
+これは個人情報の越境移転に該当する可能性が高いため、**有効化前に法務レビューを必須**とする。
+
+`dual` モードでは、一次は Supabase（東京）に維持され、Drive はバックアップ位置づけだが、
+それでも越境移転の同意取得文言を利用規約に明記する必要がある（§8.3 参照）。
+
+### 16.7 マイグレーション
+
+`supabase/migrations/0006_photo_backups_and_storage.sql` で `progress_photos` に
+以下のカラムを追加：
+
+- `backup_storage_path text` — `dual` 時の二次プロバイダパス。
+- `gdrive_file_id text` — 高速ルックアップ用に Drive ファイル id を切り出して保持。
+
+既存の RLS ポリシーは行レベルで効いており、これらの追加カラムにも自動適用される。
+監査トリガは `progress_photos` への INSERT / UPDATE を既にカバーしている。

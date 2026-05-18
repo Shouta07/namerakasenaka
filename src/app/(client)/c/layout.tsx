@@ -5,6 +5,7 @@ import { MobileNav, RoleNav, type NavItem } from "@/components/ui/nav";
 const items: NavItem[] = [
   { href: "/c/progress", label: "進捗" },
   { href: "/c/appointments", label: "予約" },
+  { href: "/c/calendar", label: "カレンダー" },
   { href: "/c/qa", label: "Q&A" },
   { href: "/c/self-log", label: "セルフログ" },
   { href: "/c/meals", label: "食事" },

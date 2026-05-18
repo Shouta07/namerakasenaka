@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  CalendarDays,
   Camera,
   LineChart,
   Salad,
@@ -66,6 +67,18 @@ const tours: TourCard[] = [
     ],
     icon: Salad,
     gradient: "from-amber-50 via-emerald-50 to-stone-100",
+  },
+  {
+    href: "/demo/client/calendar",
+    title: "カレンダー",
+    subtitle: "月次グリッド / 次回推奨枠 / ワンタップ予約",
+    bullets: [
+      "顧客・セラピスト・経営者の 3 視点で同じカレンダーを共有",
+      "コース理解型推奨枠を月グリッド上にハイライト",
+      "ワンタップで次の 3 スロット候補を提示し即確定",
+    ],
+    icon: CalendarDays,
+    gradient: "from-brand-50 via-stone-50 to-emerald-50",
   },
 ];
 

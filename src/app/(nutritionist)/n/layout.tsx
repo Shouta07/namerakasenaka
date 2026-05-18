@@ -1,11 +1,10 @@
 export const dynamic = "force-dynamic";
 
-import { ListChecks } from "lucide-react";
 import { MobileBottomNav, RoleNav, type NavItem } from "@/components/ui/nav";
 import { DemoBanner } from "@/components/demo-banner";
 
 const items: NavItem[] = [
-  { href: "/n/queue", label: "監修キュー", icon: ListChecks },
+  { href: "/n/queue", label: "監修キュー", icon: "list-checks" },
 ];
 
 export default function NutritionistLayout({ children }: { children: React.ReactNode }) {

@@ -1,33 +1,26 @@
 export const dynamic = "force-dynamic";
 
-import {
-  CalendarDays,
-  Camera,
-  MessageCircle,
-  Salad,
-  Sparkles,
-} from "lucide-react";
 import { MobileBottomNav, RoleNav, type NavItem } from "@/components/ui/nav";
 import { DemoBanner } from "@/components/demo-banner";
 
 // 5 items max for the bottom nav on iPhone.
 const items: NavItem[] = [
-  { href: "/c/progress", label: "進捗", icon: Camera },
-  { href: "/c/meals", label: "食事", icon: Salad },
-  { href: "/c/calendar", label: "予約", icon: CalendarDays },
-  { href: "/c/qa", label: "Q&A", icon: MessageCircle },
-  { href: "/c/self-log", label: "セルフ", icon: Sparkles },
+  { href: "/c/progress", label: "進捗", icon: "camera" },
+  { href: "/c/meals", label: "食事", icon: "salad" },
+  { href: "/c/calendar", label: "予約", icon: "calendar-days" },
+  { href: "/c/qa", label: "Q&A", icon: "message-circle" },
+  { href: "/c/self-log", label: "セルフ", icon: "sparkles" },
 ];
 
 // Sidebar (md+) keeps a richer item set — appointments listing stays
 // reachable without crowding the mobile bar.
 const sidebarItems: NavItem[] = [
-  { href: "/c/progress", label: "進捗", icon: Camera },
-  { href: "/c/meals", label: "食事", icon: Salad },
-  { href: "/c/calendar", label: "カレンダー", icon: CalendarDays },
-  { href: "/c/appointments", label: "予約一覧", icon: CalendarDays },
-  { href: "/c/qa", label: "Q&A", icon: MessageCircle },
-  { href: "/c/self-log", label: "セルフログ", icon: Sparkles },
+  { href: "/c/progress", label: "進捗", icon: "camera" },
+  { href: "/c/meals", label: "食事", icon: "salad" },
+  { href: "/c/calendar", label: "カレンダー", icon: "calendar-days" },
+  { href: "/c/appointments", label: "予約一覧", icon: "calendar-days" },
+  { href: "/c/qa", label: "Q&A", icon: "message-circle" },
+  { href: "/c/self-log", label: "セルフログ", icon: "sparkles" },
 ];
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {

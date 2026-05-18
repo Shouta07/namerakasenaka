@@ -2,15 +2,57 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  Activity,
+  Calendar,
+  CalendarDays,
+  Camera,
+  ClipboardList,
+  CreditCard,
+  LayoutDashboard,
+  ListChecks,
+  Mail,
+  MessageCircle,
+  Salad,
+  Sparkles,
+  Stethoscope,
+  UserRoundCog,
+  Users,
+} from "lucide-react";
 import type { ComponentType } from "react";
 import { cn } from "@/lib/utils/cn";
+
+const iconMap = {
+  activity: Activity,
+  calendar: Calendar,
+  "calendar-days": CalendarDays,
+  camera: Camera,
+  "clipboard-list": ClipboardList,
+  "credit-card": CreditCard,
+  "layout-dashboard": LayoutDashboard,
+  "list-checks": ListChecks,
+  mail: Mail,
+  "message-circle": MessageCircle,
+  salad: Salad,
+  sparkles: Sparkles,
+  stethoscope: Stethoscope,
+  "user-round-cog": UserRoundCog,
+  users: Users,
+} as const;
+
+export type IconName = keyof typeof iconMap;
 
 export type NavItem = {
   href: string;
   label: string;
-  /** lucide-react icon component for the mobile bottom nav. Required for `MobileBottomNav`. */
-  icon?: ComponentType<{ className?: string; strokeWidth?: number }>;
+  /** Icon key from the supported icon map. Resolved client-side. */
+  icon?: IconName;
 };
+
+function resolveIcon(name?: IconName): ComponentType<{ className?: string; strokeWidth?: number }> | null {
+  if (!name) return null;
+  return iconMap[name] ?? null;
+}
 
 function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -26,7 +68,7 @@ export function RoleNav({ items, title }: { items: NavItem[]; title: string }) {
       <nav className="mt-4 space-y-1">
         {items.map((item) => {
           const active = isActive(pathname, item.href);
-          const Icon = item.icon;
+          const Icon = resolveIcon(item.icon);
           return (
             <Link
               key={item.href}
@@ -66,7 +108,7 @@ export function MobileBottomNav({ items }: { items: NavItem[] }) {
       <ul className="mx-auto flex max-w-md items-stretch">
         {items.slice(0, 5).map((item) => {
           const active = isActive(pathname, item.href);
-          const Icon = item.icon;
+          const Icon = resolveIcon(item.icon);
           return (
             <li key={item.href} className="flex-1">
               <Link
@@ -79,10 +121,7 @@ export function MobileBottomNav({ items }: { items: NavItem[] }) {
               >
                 {Icon ? (
                   <Icon
-                    className={cn(
-                      "h-6 w-6 transition-transform",
-                      active && "scale-105",
-                    )}
+                    className={cn("h-6 w-6 transition-transform", active && "scale-105")}
                     strokeWidth={active ? 2.4 : 1.8}
                   />
                 ) : null}

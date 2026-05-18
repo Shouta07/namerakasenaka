@@ -1,28 +1,21 @@
 export const dynamic = "force-dynamic";
 
-import {
-  CalendarDays,
-  ClipboardList,
-  MessageCircle,
-  Stethoscope,
-  Users,
-} from "lucide-react";
 import { MobileBottomNav, RoleNav, type NavItem } from "@/components/ui/nav";
 import { DemoBanner } from "@/components/demo-banner";
 
 const items: NavItem[] = [
-  { href: "/t/today", label: "本日", icon: Stethoscope },
-  { href: "/t/clients", label: "担当", icon: Users },
-  { href: "/t/calendar", label: "予定", icon: CalendarDays },
-  { href: "/t/qa", label: "Q&A", icon: MessageCircle },
+  { href: "/t/today", label: "本日", icon: "stethoscope" },
+  { href: "/t/clients", label: "担当", icon: "users" },
+  { href: "/t/calendar", label: "予定", icon: "calendar-days" },
+  { href: "/t/qa", label: "Q&A", icon: "message-circle" },
 ];
 
 const sidebarItems: NavItem[] = [
-  { href: "/t/today", label: "本日", icon: Stethoscope },
-  { href: "/t/clients", label: "担当顧客", icon: Users },
-  { href: "/t/calendar", label: "カレンダー", icon: CalendarDays },
-  { href: "/t/qa", label: "Q&A", icon: MessageCircle },
-  { href: "/t/clients", label: "カルテ", icon: ClipboardList },
+  { href: "/t/today", label: "本日", icon: "stethoscope" },
+  { href: "/t/clients", label: "担当顧客", icon: "users" },
+  { href: "/t/calendar", label: "カレンダー", icon: "calendar-days" },
+  { href: "/t/qa", label: "Q&A", icon: "message-circle" },
+  { href: "/t/clients", label: "カルテ", icon: "clipboard-list" },
 ];
 
 export default function TherapistLayout({ children }: { children: React.ReactNode }) {

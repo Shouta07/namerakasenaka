@@ -1,21 +1,14 @@
 export const dynamic = "force-dynamic";
 
-import {
-  CreditCard,
-  LayoutDashboard,
-  Mail,
-  Users,
-  UserRoundCog,
-} from "lucide-react";
 import { MobileBottomNav, RoleNav, type NavItem } from "@/components/ui/nav";
 import { DemoBanner } from "@/components/demo-banner";
 
 const items: NavItem[] = [
-  { href: "/admin/dashboard", label: "概況", icon: LayoutDashboard },
-  { href: "/admin/clients", label: "顧客", icon: Users },
-  { href: "/admin/staff", label: "スタッフ", icon: UserRoundCog },
-  { href: "/admin/invites/new", label: "招待", icon: Mail },
-  { href: "/admin/billing", label: "課金", icon: CreditCard },
+  { href: "/admin/dashboard", label: "概況", icon: "layout-dashboard" },
+  { href: "/admin/clients", label: "顧客", icon: "users" },
+  { href: "/admin/staff", label: "スタッフ", icon: "user-round-cog" },
+  { href: "/admin/invites/new", label: "招待", icon: "mail" },
+  { href: "/admin/billing", label: "課金", icon: "credit-card" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { StickyActionBar } from "@/components/ui/sticky-action-bar";
 import { Textarea } from "@/components/ui/textarea";
 import { getBrowserSupabase } from "@/lib/supabase/client";
+import { isDemoMode } from "@/lib/demo";
+import { demoClient } from "@/lib/demo/fixtures";
+import { addStoredSelfLog, useStoredSelfLogs } from "@/lib/demo/store";
 
 type Score = 1 | 2 | 3 | 4 | 5;
 const scores: Score[] = [1, 2, 3, 4, 5];
@@ -20,12 +24,37 @@ export default function SelfLogPage() {
   const [memo, setMemo] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const demo = isDemoMode();
+  const stored = useStoredSelfLogs(demoClient.id);
+
+  const history = useMemo(() => {
+    return stored
+      .slice()
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .slice(0, 20);
+  }, [stored]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
+      if (demo) {
+        addStoredSelfLog({
+          clientId: demoClient.id,
+          loggedOn: new Date().toISOString().slice(0, 10),
+          itchScore: itch,
+          rednessScore: redness,
+          newBreakout,
+          memo: memo || null,
+        });
+        toast.success("セルフログを記録しました");
+        setMemo("");
+        setNewBreakout(false);
+        setItch(3);
+        setRedness(3);
+        return;
+      }
       const supabase = getBrowserSupabase();
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) {
@@ -52,6 +81,7 @@ export default function SelfLogPage() {
         setError(insertError.message);
         return;
       }
+      toast.success("セルフログを記録しました");
       router.refresh();
     } finally {
       setSaving(false);
@@ -98,6 +128,47 @@ export default function SelfLogPage() {
           </Button>
         </StickyActionBar>
       </form>
+
+      {demo ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>これまでの記録（{history.length}件）</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {history.length === 0 ? (
+              <p className="text-sm text-stone-500">
+                まだ記録がありません。今日のコンディションを入力して保存してみてください。
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {history.map((h) => (
+                  <li
+                    key={h.id}
+                    className="rounded-lg border border-stone-200 bg-white p-3 text-xs"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-stone-900">
+                        {new Date(h.createdAt).toLocaleString("ja-JP")}
+                      </p>
+                      <span className="text-stone-500">
+                        痒み {h.itchScore}/5 ・ 赤み {h.rednessScore}/5
+                      </span>
+                    </div>
+                    {h.newBreakout ? (
+                      <p className="mt-1 text-amber-700">新規の吹き出物あり</p>
+                    ) : null}
+                    {h.memo ? (
+                      <p className="mt-1 whitespace-pre-wrap text-stone-700">
+                        {h.memo}
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

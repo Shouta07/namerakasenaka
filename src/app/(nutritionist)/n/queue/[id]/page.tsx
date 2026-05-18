@@ -1,5 +1,6 @@
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
+import { demoMealLogs, demoPendingDrafts } from "@/lib/demo/fixtures";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FeedbackReviewForm } from "./review-form";
 
@@ -18,19 +19,37 @@ export default async function FeedbackReviewPage({
 }) {
   const { id } = await params;
   if (isDemoMode()) {
+    // Try to find this id either in fixtures (drafts or meal-logs) or treat as
+    // a stored localStorage feedback (handled client-side in the form).
+    const fromDraft = demoPendingDrafts.find((d) => d.id === id);
+    const fromMeal = demoMealLogs.find((m) => m.id === id);
+    const mealMemo = fromDraft?.memo ?? fromMeal?.memo ?? "（メモはありません）";
+    const mealType = fromDraft?.mealType ?? fromMeal?.mealType ?? "lunch";
+    const loggedAt = fromDraft?.loggedAt ?? fromMeal?.loggedAt ?? new Date().toISOString();
+    const aiDraft =
+      fromDraft?.aiDraft ??
+      fromMeal?.feedback.aiDraft ??
+      "AI が下書きを準備中です。少々お待ちください。";
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-semibold">監修レビュー</h1>
         <Card>
           <CardHeader>
-            <CardTitle>サンプル表示</CardTitle>
+            <CardTitle>食事ログ</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-stone-600">
-              監修レビューの個別画面は本番接続後にご利用いただけます。サンプルの一覧は{" "}
-              <span className="font-mono text-xs">/n/queue</span> から確認できます。
+            <p className="text-sm whitespace-pre-wrap">{mealMemo}</p>
+            <p className="mt-1 text-xs text-stone-500">
+              {mealType} ・ {new Date(loggedAt).toLocaleString("ja-JP")}
             </p>
-            <p className="mt-2 text-[11px] text-stone-400">対象ID: {id.slice(0, 8)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>AI 一次案 → 監修</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FeedbackReviewForm id={id} defaultText={aiDraft} demo />
           </CardContent>
         </Card>
       </div>

@@ -6,6 +6,11 @@ import { Camera } from "lucide-react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/progress/camera-capture";
+import {
+  addStoredProgressPhoto,
+  fileToResizedDataUrl,
+  markAppointmentCaptured,
+} from "@/lib/demo/store";
 import { cn } from "@/lib/utils/cn";
 import type { PhotoType } from "@/types/domain";
 
@@ -17,22 +22,22 @@ export type TreatmentDayCameraModalProps = {
     clientId: string;
     appointmentId: string;
   };
+  /** When in demo mode, identifies which appointment / client to attach to. */
+  demoMeta?: {
+    clientId: string;
+    appointmentId: string;
+  };
   /** Initial photo type — defaults to 'before'. */
   initialPhotoType?: PhotoType;
   /** Always show the Google Drive banner unconditionally — used by demo. */
   forceShowDriveBanner?: boolean;
 };
 
-/**
- * Bottom-sheet on mobile, centered card on desktop. Orchestrates the photo
- * capture + upload flow for the treatment day camera.
- * Demo path: shows a sonner toast and dismisses on "アップロード".
- * Real path: POSTs to /api/photos/upload with the appointmentId field.
- */
 export function TreatmentDayCameraModal({
   open,
   onClose,
   realUpload,
+  demoMeta,
   initialPhotoType = "before",
   forceShowDriveBanner = false,
 }: TreatmentDayCameraModalProps) {
@@ -47,10 +52,30 @@ export function TreatmentDayCameraModal({
     }
 
     if (!realUpload) {
-      // Demo mode.
-      toast.success("保存しました（デモ）");
-      setCaptured(null);
-      onClose();
+      // Demo mode — persist to local store.
+      setUploading(true);
+      try {
+        const dataUrl = await fileToResizedDataUrl(captured, 1024, 0.82);
+        if (demoMeta) {
+          addStoredProgressPhoto({
+            clientId: demoMeta.clientId,
+            photoType,
+            caption: `${photoType === "before" ? "施術前" : "施術後"}（${new Date().toLocaleDateString("ja-JP")}）`,
+            signedUrl: dataUrl,
+            takenAt: new Date().toISOString(),
+            appointmentId: demoMeta.appointmentId,
+          });
+          markAppointmentCaptured(demoMeta.appointmentId);
+        }
+        toast.success("撮影を保存しました");
+        setCaptured(null);
+        onClose();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "save_failed";
+        toast.error(`保存に失敗しました（${msg}）`);
+      } finally {
+        setUploading(false);
+      }
       return;
     }
 
@@ -115,6 +140,22 @@ export function TreatmentDayCameraModal({
         <CameraCapture onCapture={setCaptured} disabled={uploading} />
       </div>
 
+      <div className="mt-3">
+        <label className="block text-xs text-stone-600">
+          ファイルから選択（カメラが使えない場合）
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="mt-1 block w-full text-xs"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) setCaptured(f);
+            }}
+          />
+        </label>
+      </div>
+
       {captured ? (
         <p className="mt-2 text-xs text-stone-600">
           撮影済み: {captured.name} ({Math.round(captured.size / 1024)} KB)
@@ -143,7 +184,7 @@ export function TreatmentDayCameraModal({
           disabled={!captured || uploading}
           className="flex-1"
         >
-          {uploading ? "保存中…" : "アップロード"}
+          {uploading ? "保存中…" : "保存"}
         </Button>
       </div>
     </BottomSheet>

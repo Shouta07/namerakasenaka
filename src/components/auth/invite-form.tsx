@@ -1,10 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isDemoMode } from "@/lib/demo";
+import {
+  findStoredInviteByToken,
+  markStoredInviteAccepted,
+  type StoredInvite,
+} from "@/lib/demo/store";
+import { ROLE_HOME_PATH } from "@/types/domain";
 
 export function InviteAcceptForm({ token }: { token: string }) {
   const router = useRouter();
@@ -12,12 +20,27 @@ export function InviteAcceptForm({ token }: { token: string }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [invite, setInvite] = useState<StoredInvite | null>(null);
+  const demo = isDemoMode();
+
+  useEffect(() => {
+    if (demo) {
+      setInvite(findStoredInviteByToken(token));
+    }
+  }, [demo, token]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
+      if (demo) {
+        markStoredInviteAccepted(token);
+        const dest = invite ? ROLE_HOME_PATH[invite.role] ?? "/" : "/";
+        toast.success("受諾しました（サンプル）");
+        setTimeout(() => router.push(dest), 500);
+        return;
+      }
       const res = await fetch("/api/auth/invite/accept", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -36,6 +59,16 @@ export function InviteAcceptForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      {demo && invite ? (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          サンプル招待: {invite.email}（{invite.role === "client" ? "顧客" : "セラピスト"}）
+        </p>
+      ) : null}
+      {demo && !invite ? (
+        <p className="rounded-lg bg-stone-50 px-3 py-2 text-xs text-stone-600">
+          サンプル招待リンクです。下のフォームを送信すると受諾され、ロールに応じた画面に移動します。
+        </p>
+      ) : null}
       <div className="space-y-1.5">
         <Label htmlFor="name" className="text-base">氏名</Label>
         <Input
@@ -49,7 +82,9 @@ export function InviteAcceptForm({ token }: { token: string }) {
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="password" className="text-base">パスワード（8文字以上、英数字混在）</Label>
+        <Label htmlFor="password" className="text-base">
+          パスワード（8文字以上、英数字混在）
+        </Label>
         <Input
           id="password"
           type="password"

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
-import { demoAppointments, demoClient } from "@/lib/demo/fixtures";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DemoAppointmentsList } from "@/components/appointments/demo-appointments-list";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/types/domain";
 
 type AppointmentRow = {
@@ -17,38 +17,7 @@ type AppointmentRow = {
 
 export default async function ClientAppointmentsPage() {
   if (isDemoMode()) {
-    const myAppointments = demoAppointments
-      .filter((a) => a.clientId === demoClient.id)
-      .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
-    return (
-      <div className="space-y-6">
-        <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">予約</h1>
-          <Link href="/c/calendar">
-            <Button>カレンダーから予約</Button>
-          </Link>
-        </header>
-        <div className="space-y-3">
-          {myAppointments.map((a) => (
-            <Card key={a.id}>
-              <CardContent className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">
-                    {new Date(a.scheduledAt).toLocaleString("ja-JP")}
-                  </p>
-                  <p className="text-xs text-stone-500">
-                    所要 {a.durationMinutes}分 ・ {a.menuName}
-                  </p>
-                </div>
-                <Badge tone={a.status === "confirmed" ? "success" : "neutral"}>
-                  {APPOINTMENT_STATUS_LABEL[a.status]}
-                </Badge>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+    return <DemoAppointmentsList />;
   }
   const supabase = await getServerSupabase();
   const { data } = await supabase

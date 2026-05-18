@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { StickyActionBar } from "@/components/ui/sticky-action-bar";
 import { Textarea } from "@/components/ui/textarea";
 import { getBrowserSupabase } from "@/lib/supabase/client";
+import { isDemoMode } from "@/lib/demo";
+import { addStoredTreatmentRecord } from "@/lib/demo/store";
 
 export type RecordFormDefaults = {
   treatmentType?: string;
@@ -34,12 +36,33 @@ export function RecordForm({
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const demo = isDemoMode();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
     try {
+      if (demo) {
+        if (!treatmentType.trim()) {
+          setError("施術内容を入力してください");
+          return;
+        }
+        addStoredTreatmentRecord({
+          clientId,
+          therapistName: "佐藤 美咲",
+          treatmentType,
+          productsUsed: productsUsed || null,
+          skinFindings: skinFindings || null,
+          nextPlan: nextPlan || null,
+          cautions: cautions || null,
+          performedAt: new Date().toISOString(),
+          durationMinutes: 90,
+        });
+        toast.success("施術記録を保存しました");
+        router.push(`/t/clients/${clientId}`);
+        return;
+      }
       const supabase = getBrowserSupabase();
       const { data: u } = await supabase.auth.getUser();
       const { data: therapist } = await supabase
@@ -142,23 +165,25 @@ export function RecordForm({
           onChange={(e) => setCautions(e.target.value)}
         />
       </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="video" className="text-base">
-          動画（任意、MP4/MOV/WebM・最大300MB）
-        </Label>
-        <input
-          id="video"
-          type="file"
-          accept="video/mp4,video/quicktime,video/webm,video/*"
-          onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-base"
-        />
-        {videoFile ? (
-          <p className="text-xs text-stone-500">
-            {videoFile.name}（{Math.round(videoFile.size / 1024 / 1024)}MB）
-          </p>
-        ) : null}
-      </div>
+      {!demo ? (
+        <div className="space-y-1.5">
+          <Label htmlFor="video" className="text-base">
+            動画（任意、MP4/MOV/WebM・最大300MB）
+          </Label>
+          <input
+            id="video"
+            type="file"
+            accept="video/mp4,video/quicktime,video/webm,video/*"
+            onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+            className="block w-full text-base"
+          />
+          {videoFile ? (
+            <p className="text-xs text-stone-500">
+              {videoFile.name}（{Math.round(videoFile.size / 1024 / 1024)}MB）
+            </p>
+          ) : null}
+        </div>
+      ) : null}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <StickyActionBar>
         <Button type="submit" size="lg" className="w-full" disabled={submitting}>

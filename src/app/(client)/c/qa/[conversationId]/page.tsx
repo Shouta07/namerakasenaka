@@ -3,6 +3,7 @@ import { isDemoMode } from "@/lib/demo";
 import { MobileAppBar } from "@/components/ui/app-bar";
 import { ThreadView, type ThreadMessage } from "@/components/qa/thread-view";
 import { MessageComposer } from "@/components/qa/message-composer";
+import { InteractiveQaThread } from "@/components/qa/interactive-thread";
 
 type MessageRow = {
   id: string;
@@ -13,6 +14,45 @@ type MessageRow = {
   is_auto_reply: boolean;
 };
 
+function demoSeed(conversationId: string): ThreadMessage[] {
+  // Build a small seed conversation that varies by id.
+  const baseDate = "2026-05-17T";
+  if (conversationId === "qa-1") {
+    return [
+      {
+        id: `${conversationId}-1`,
+        body: "おすすめのボディソープは継続購入できますか？",
+        createdAt: `${baseDate}09:00:00+09:00`,
+        isMine: true,
+      },
+      {
+        id: `${conversationId}-2`,
+        body: "もちろんです。次回ご来店時にお渡しできるよう準備しておきますね。",
+        createdAt: `${baseDate}10:15:00+09:00`,
+        isMine: false,
+      },
+    ];
+  }
+  if (conversationId === "qa-2") {
+    return [
+      {
+        id: `${conversationId}-1`,
+        body: "次回の予約変更をお願いしたいです。",
+        createdAt: `${baseDate}21:30:00+09:00`,
+        isMine: true,
+      },
+    ];
+  }
+  return [
+    {
+      id: `${conversationId}-seed-1`,
+      body: "ご来店ありがとうございました。ホームケアでご不明点があればいつでもご相談ください。",
+      createdAt: `${baseDate}18:00:00+09:00`,
+      isMine: false,
+    },
+  ];
+}
+
 export default async function ClientQaThreadPage({
   params,
 }: {
@@ -20,13 +60,12 @@ export default async function ClientQaThreadPage({
 }) {
   const { conversationId } = await params;
   if (isDemoMode()) {
+    const seed = demoSeed(conversationId);
     return (
       <div className="flex flex-col">
         <MobileAppBar title="会話" eyebrow="Q&A" backHref="/c/qa" />
         <h1 className="hidden text-xl font-semibold md:block">会話</h1>
-        <p className="mt-2 text-xs text-stone-500">
-          サンプル表示ではメッセージの送受信は行いません。
-        </p>
+        <InteractiveQaThread conversationId={conversationId} seed={seed} viewerLabel="あなた" />
       </div>
     );
   }
@@ -57,7 +96,6 @@ export default async function ClientQaThreadPage({
       <div className="flex-1 overflow-y-auto pb-2 pr-1 md:mt-4">
         <ThreadView messages={messages} />
       </div>
-      {/* Sticky composer pinned above bottom nav + safe area. */}
       <div
         className="sticky -mx-4 mt-3 border-t border-stone-200 bg-white/95 px-4 pt-2 backdrop-blur md:static md:mx-0 md:border-0 md:bg-transparent md:px-0"
         style={{

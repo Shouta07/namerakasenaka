@@ -6,9 +6,9 @@ import {
   demoAppointments,
   demoClient,
   demoMealLogs,
-  demoProgressPhotos,
 } from "@/lib/demo/fixtures";
 import { PhotoTimeline, type TimelinePhoto } from "@/components/progress/photo-timeline";
+import { DemoProgressTimeline } from "@/components/progress/demo-progress-timeline";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -133,15 +133,6 @@ export default async function ClientProgressPage() {
 }
 
 function DemoClientProgress() {
-  const photos: TimelinePhoto[] = demoProgressPhotos.map((p) => ({
-    id: p.id,
-    takenAt: p.takenAt,
-    photoType: p.photoType,
-    signedUrl: p.signedUrl,
-    caption: p.caption,
-    selfRating: p.selfRating,
-  }));
-
   const nextAppointment = demoAppointments
     .filter((a) => a.clientId === demoClient.id && a.status === "confirmed")
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))
@@ -224,7 +215,7 @@ function DemoClientProgress() {
             </Button>
           </Link>
         </div>
-        <PhotoTimeline photos={photos} />
+        <DemoProgressTimeline />
       </section>
 
       <section>

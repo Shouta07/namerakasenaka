@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { addStoredAppointment } from "@/lib/demo/store";
 
 export type SlotCandidate = {
   /** ISO datetime */
@@ -18,7 +20,17 @@ export type SlotPickerProps = {
   candidates: SlotCandidate[];
   /** When provided, the picker POSTs to /api/appointments on confirm. */
   realPost?: { therapistId?: string; clientId?: string; durationMin?: number };
-  /** Demo mode — calls onConfirm visually and toasts. */
+  /** Demo metadata — client / therapist labels written to the local store. */
+  demoMeta?: {
+    clientId: string;
+    clientName: string;
+    therapistId: string;
+    therapistName: string;
+    durationMin?: number;
+    menuName?: string;
+    /** Where to redirect after the booking. */
+    redirectTo?: string;
+  };
   onConfirm?: (slot: SlotCandidate) => void;
   /** Label for the heading. */
   heading?: string;
@@ -27,9 +39,11 @@ export type SlotPickerProps = {
 export function SlotPicker({
   candidates,
   realPost,
+  demoMeta,
   onConfirm,
   heading = "次の3スロット候補",
 }: SlotPickerProps) {
+  const router = useRouter();
   const [selected, setSelected] = useState<string | null>(
     candidates.find((c) => c.recommended)?.scheduledAt ?? candidates[0]?.scheduledAt ?? null,
   );
@@ -66,8 +80,33 @@ export function SlotPicker({
       return;
     }
 
-    // Demo path.
-    toast.success("予約候補を確定しました（デモ）");
+    // Demo persistence path.
+    if (demoMeta) {
+      try {
+        addStoredAppointment({
+          clientId: demoMeta.clientId,
+          therapistId: demoMeta.therapistId,
+          scheduledAt: slot.scheduledAt,
+          durationMin: demoMeta.durationMin ?? 90,
+          status: "confirmed",
+          menuName: demoMeta.menuName ?? "背中トリートメント 90 分",
+          clientName: demoMeta.clientName,
+          therapistName: demoMeta.therapistName,
+        });
+        toast.success("ご予約を確定しました");
+        onConfirm?.(slot);
+        if (demoMeta.redirectTo) {
+          setTimeout(() => router.push(demoMeta.redirectTo!), 400);
+        }
+        return;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "store_error";
+        toast.error(`予約の保存に失敗しました（${msg}）`);
+        return;
+      }
+    }
+
+    toast.success("予約候補を確定しました");
     onConfirm?.(slot);
   };
 

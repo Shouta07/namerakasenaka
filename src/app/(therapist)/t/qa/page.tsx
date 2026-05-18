@@ -18,20 +18,22 @@ export default async function TherapistQaListPage() {
         <h1 className="text-2xl font-semibold">Q&A</h1>
         <div className="space-y-2">
           {demoQaThreads.map((q) => (
-            <Card key={q.id}>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <p className="font-medium">{q.clientName} 様</p>
-                  {q.unreadCount > 0 ? (
-                    <Badge tone="warning">未読 {q.unreadCount}</Badge>
-                  ) : null}
-                </div>
-                <p className="mt-1 text-xs text-stone-700">{q.lastMessage}</p>
-                <p className="mt-1 text-[11px] text-stone-500">
-                  {new Date(q.lastMessageAt).toLocaleString("ja-JP")}
-                </p>
-              </CardContent>
-            </Card>
+            <Link key={q.id} href={`/t/qa/${q.id}`} className="block">
+              <Card>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium">{q.clientName} 様</p>
+                    {q.unreadCount > 0 ? (
+                      <Badge tone="warning">未読 {q.unreadCount}</Badge>
+                    ) : null}
+                  </div>
+                  <p className="mt-1 text-xs text-stone-700">{q.lastMessage}</p>
+                  <p className="mt-1 text-[11px] text-stone-500">
+                    {new Date(q.lastMessageAt).toLocaleString("ja-JP")}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>

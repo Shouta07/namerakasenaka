@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isDemoMode } from "@/lib/demo";
+import { addStoredInvite, newId } from "@/lib/demo/store";
 import type { InviteTargetRole } from "@/types/domain";
 
 export default function NewInvitePage() {
@@ -13,6 +16,7 @@ export default function NewInvitePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [link, setLink] = useState<string | null>(null);
+  const demo = isDemoMode();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,6 +24,16 @@ export default function NewInvitePage() {
     setError(null);
     setLink(null);
     try {
+      if (demo) {
+        const token = newId();
+        addStoredInvite({ token, email, role, acceptedAt: null });
+        const origin =
+          typeof window !== "undefined" ? window.location.origin : "";
+        const url = `${origin}/invite/${token}`;
+        setLink(url);
+        toast.success("招待リンクを発行しました");
+        return;
+      }
       const res = await fetch("/api/auth/invite", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -31,8 +45,19 @@ export default function NewInvitePage() {
         return;
       }
       setLink(j.url);
+      toast.success("招待リンクを発行しました");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function copyToClipboard() {
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success("リンクをコピーしました");
+    } catch {
+      toast.error("コピーに失敗しました");
     }
   }
 
@@ -82,9 +107,19 @@ export default function NewInvitePage() {
             </Button>
           </form>
           {link ? (
-            <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm">
+            <div className="mt-4 space-y-2 rounded-lg bg-emerald-50 p-3 text-sm">
               <p className="font-medium text-emerald-800">招待リンクを発行しました</p>
-              <p className="mt-1 break-all text-xs text-emerald-900">{link}</p>
+              <p className="break-all text-xs text-emerald-900">{link}</p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={copyToClipboard}
+                >
+                  リンクをコピー
+                </Button>
+              </div>
             </div>
           ) : null}
         </CardContent>

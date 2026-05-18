@@ -2,10 +2,10 @@ import Link from "next/link";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isMealLogEnabledForClient } from "@/lib/billing/feature-flags";
 import { isDemoMode } from "@/lib/demo";
-import { demoMealLogs } from "@/lib/demo/fixtures";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DemoMealList } from "@/components/meals/demo-meal-list";
 import { MEAL_TYPE_LABEL, type MealType } from "@/types/domain";
 
 type MealLogRow = {
@@ -33,7 +33,7 @@ type NutritionistFeedbackRow = {
 
 export default async function ClientMealsPage() {
   if (isDemoMode()) {
-    return <DemoMeals />;
+    return <DemoMealList />;
   }
   const supabase = await getServerSupabase();
   const {
@@ -183,70 +183,3 @@ export default async function ClientMealsPage() {
   );
 }
 
-function DemoMeals() {
-  return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">食事ログとフィードバック</h1>
-        <p className="mt-1 text-sm text-stone-600">
-          AI 下書き → 管理栄養士の監修・承認 → サロン担当者のコメント、の 3
-          層構成でお届けします。
-        </p>
-      </header>
-
-      <section className="space-y-5">
-        {demoMealLogs.map((log) => (
-          <Card key={log.id}>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-stone-500">
-                  {new Date(log.loggedAt).toLocaleString("ja-JP", {
-                    month: "long",
-                    day: "numeric",
-                    weekday: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-                <Badge tone="brand">{MEAL_TYPE_LABEL[log.mealType]}</Badge>
-              </div>
-
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={log.photoUrl}
-                alt="お食事の写真"
-                className="aspect-[7/5] w-full rounded-xl bg-stone-100 object-cover"
-              />
-
-              <div className="rounded-lg bg-stone-50 p-3 text-xs text-stone-700">
-                <p className="font-semibold text-stone-900">あなたのメモ</p>
-                <p className="mt-1">{log.memo}</p>
-              </div>
-
-              <div className="rounded-lg bg-emerald-50/70 p-3 text-xs text-emerald-900">
-                <p className="font-semibold">管理栄養士からのフィードバック</p>
-                <p className="mt-0.5 text-[11px] text-emerald-700">
-                  {log.feedback.nutritionistName}・
-                  {log.feedback.nutritionistLicenseNumber}
-                </p>
-                <p className="mt-2 whitespace-pre-line">
-                  {log.feedback.approvedText}
-                </p>
-              </div>
-
-              {log.feedback.salonComment ? (
-                <div className="rounded-lg bg-brand-50/70 p-3 text-xs text-brand-900">
-                  <p className="font-semibold">サロンからのコメント</p>
-                  <p className="mt-0.5 text-[11px] text-brand-700">
-                    {log.feedback.salonComment.therapistName}（担当）
-                  </p>
-                  <p className="mt-2">{log.feedback.salonComment.body}</p>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-    </div>
-  );
-}

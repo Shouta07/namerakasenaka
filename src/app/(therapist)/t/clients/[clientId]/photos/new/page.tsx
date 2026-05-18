@@ -2,10 +2,16 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { CameraCapture } from "@/components/progress/camera-capture";
+import { isDemoMode } from "@/lib/demo";
+import {
+  addStoredProgressPhoto,
+  fileToResizedDataUrl,
+} from "@/lib/demo/store";
 import type { PhotoType } from "@/types/domain";
 
 export default function NewPhotoPage({
@@ -21,6 +27,7 @@ export default function NewPhotoPage({
   const [caption, setCaption] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const demo = isDemoMode();
 
   function setSelectedFile(f: File | null) {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -37,6 +44,19 @@ export default function NewPhotoPage({
     setSubmitting(true);
     setError(null);
     try {
+      if (demo) {
+        const dataUrl = await fileToResizedDataUrl(file, 1024, 0.82);
+        addStoredProgressPhoto({
+          clientId,
+          photoType,
+          caption: caption || null,
+          signedUrl: dataUrl,
+          takenAt: new Date().toISOString(),
+        });
+        toast.success("写真をアップロードしました");
+        router.push(`/t/clients/${clientId}`);
+        return;
+      }
       const form = new FormData();
       form.append("clientId", clientId);
       form.append("photoType", photoType);
@@ -48,6 +68,7 @@ export default function NewPhotoPage({
         setError(j.error ?? "アップロードに失敗しました");
         return;
       }
+      toast.success("写真をアップロードしました");
       router.push(`/t/clients/${clientId}`);
       router.refresh();
     } finally {

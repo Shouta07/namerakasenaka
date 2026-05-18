@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { StickyActionBar } from "@/components/ui/sticky-action-bar";
 import { Textarea } from "@/components/ui/textarea";
 
 export function FeedbackReviewForm({
@@ -44,13 +45,17 @@ export function FeedbackReviewForm({
 
   return (
     <div className="space-y-3">
-      <Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-[200px]" />
+      <Textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        className="min-h-[240px]"
+      />
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <div className="flex gap-2">
-        <Button onClick={approve} disabled={submitting}>
-          承認して送信
+      <StickyActionBar>
+        <Button onClick={approve} disabled={submitting} size="lg" className="w-full">
+          {submitting ? "送信中…" : "承認して送信"}
         </Button>
-      </div>
+      </StickyActionBar>
     </div>
   );
 }

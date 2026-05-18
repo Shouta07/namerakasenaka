@@ -8,7 +8,13 @@ export default async function InviteAcceptPage({
 }) {
   const { token } = await params;
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+    <main
+      className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6"
+      style={{
+        paddingTop: "max(var(--safe-top), 24px)",
+        paddingBottom: "max(var(--safe-bottom), 24px)",
+      }}
+    >
       <Card>
         <CardHeader>
           <CardTitle>招待を受諾する</CardTitle>

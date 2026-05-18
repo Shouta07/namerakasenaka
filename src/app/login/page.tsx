@@ -6,7 +6,13 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+    <main
+      className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6"
+      style={{
+        paddingTop: "max(var(--safe-top), 24px)",
+        paddingBottom: "max(var(--safe-bottom), 24px)",
+      }}
+    >
       <Link
         href="/"
         className="mb-4 inline-flex items-center gap-1 self-start text-xs text-stone-500 hover:text-stone-700"

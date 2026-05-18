@@ -95,7 +95,7 @@ export default function NewPhotoPage({
                     key={t}
                     type="button"
                     onClick={() => setPhotoType(t)}
-                    className={`flex-1 rounded-lg border px-3 py-2 text-sm ${
+                    className={`min-h-11 flex-1 rounded-lg border px-3 py-2 text-sm ${
                       photoType === t
                         ? "border-brand-500 bg-brand-50 text-brand-700"
                         : "border-stone-200 bg-white text-stone-700"
@@ -113,7 +113,7 @@ export default function NewPhotoPage({
                 type="text"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                className="h-10 w-full rounded-lg border border-stone-200 px-3 text-sm"
+                className="h-11 w-full rounded-lg border border-stone-200 px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             {error ? <p className="text-sm text-red-600">{error}</p> : null}

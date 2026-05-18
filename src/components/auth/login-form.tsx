@@ -58,18 +58,22 @@ export function LoginForm() {
   return (
     <form onSubmit={onPasswordLogin} className="space-y-4">
       <div className="space-y-1.5">
-        <Label htmlFor="email">メールアドレス</Label>
+        <Label htmlFor="email" className="text-base">メールアドレス</Label>
         <Input
           id="email"
           type="email"
+          inputMode="email"
           autoComplete="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="password">パスワード</Label>
+        <Label htmlFor="password" className="text-base">パスワード</Label>
         <Input
           id="password"
           type="password"

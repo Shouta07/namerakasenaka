@@ -1,23 +1,31 @@
 export const dynamic = "force-dynamic";
 
-import { MobileNav, RoleNav, type NavItem } from "@/components/ui/nav";
+import {
+  CreditCard,
+  LayoutDashboard,
+  Mail,
+  Users,
+  UserRoundCog,
+} from "lucide-react";
+import { MobileBottomNav, RoleNav, type NavItem } from "@/components/ui/nav";
 import { DemoBanner } from "@/components/demo-banner";
 
 const items: NavItem[] = [
-  { href: "/admin/dashboard", label: "ダッシュボード" },
-  { href: "/admin/calendar", label: "カレンダー" },
-  { href: "/admin/clients", label: "顧客" },
-  { href: "/admin/staff", label: "スタッフ" },
-  { href: "/admin/invites/new", label: "招待" },
-  { href: "/admin/billing", label: "請求" },
+  { href: "/admin/dashboard", label: "概況", icon: LayoutDashboard },
+  { href: "/admin/clients", label: "顧客", icon: Users },
+  { href: "/admin/staff", label: "スタッフ", icon: UserRoundCog },
+  { href: "/admin/invites/new", label: "招待", icon: Mail },
+  { href: "/admin/billing", label: "課金", icon: CreditCard },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="flex min-h-dvh flex-col md:flex-row">
       <RoleNav title="SalonAdmin" items={items} />
-      <main className="flex-1 px-4 py-6 md:px-8">{children}</main>
-      <MobileNav items={items} />
+      <main className="flex-1 px-4 pt-6 pb-[calc(72px+max(var(--safe-bottom),12px))] md:px-8 md:pb-8">
+        {children}
+      </main>
+      <MobileBottomNav items={items} />
       <DemoBanner />
     </div>
   );

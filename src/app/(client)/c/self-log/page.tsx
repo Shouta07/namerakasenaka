@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { StickyActionBar } from "@/components/ui/sticky-action-bar";
 import { Textarea } from "@/components/ui/textarea";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 
@@ -60,34 +61,43 @@ export default function SelfLogPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">セルフログ</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>今日のコンディション</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-5">
-            <ScoreRow label="痒み" value={itch} onChange={setItch} />
-            <ScoreRow label="赤み" value={redness} onChange={setRedness} />
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={newBreakout}
-                onChange={(e) => setNewBreakout(e.target.checked)}
-                className="h-4 w-4"
-              />
-              新規の吹き出物あり
-            </label>
-            <div className="space-y-1.5">
-              <Label htmlFor="memo">メモ（任意）</Label>
-              <Textarea id="memo" value={memo} onChange={(e) => setMemo(e.target.value)} />
+      <form onSubmit={onSubmit} className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>今日のコンディション</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <ScoreRow label="痒み" value={itch} onChange={setItch} />
+              <ScoreRow label="赤み" value={redness} onChange={setRedness} />
+              <label className="flex min-h-11 items-center gap-3 text-base">
+                <input
+                  type="checkbox"
+                  checked={newBreakout}
+                  onChange={(e) => setNewBreakout(e.target.checked)}
+                  className="h-5 w-5"
+                />
+                新規の吹き出物あり
+              </label>
+              <div className="space-y-1.5">
+                <Label htmlFor="memo" className="text-base">メモ（任意）</Label>
+                <Textarea
+                  id="memo"
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  placeholder="例: 昨日のメニューと睡眠時間など"
+                />
+              </div>
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
             </div>
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
-            <Button type="submit" size="lg" className="w-full" disabled={saving}>
-              記録する
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        <StickyActionBar>
+          <Button type="submit" size="lg" className="w-full" disabled={saving}>
+            {saving ? "保存中…" : "記録する"}
+          </Button>
+        </StickyActionBar>
+      </form>
     </div>
   );
 }
@@ -103,16 +113,18 @@ function ScoreRow({
 }) {
   return (
     <div>
-      <Label className="mb-2 block">
-        {label} ({value}/5)
+      <Label className="mb-2 block text-base">
+        {label} <span className="text-sm font-normal text-stone-500">({value}/5)</span>
       </Label>
-      <div className="flex gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {scores.map((s) => (
           <button
             key={s}
             type="button"
             onClick={() => onChange(s)}
-            className={`h-10 w-10 rounded-full border text-sm ${
+            aria-pressed={value === s}
+            aria-label={`${label} ${s}`}
+            className={`flex h-12 items-center justify-center rounded-xl border text-base font-semibold transition-colors ${
               value === s
                 ? "border-brand-500 bg-brand-500 text-white"
                 : "border-stone-200 bg-white text-stone-700"

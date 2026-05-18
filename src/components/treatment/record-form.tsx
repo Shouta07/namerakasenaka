@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StickyActionBar } from "@/components/ui/sticky-action-bar";
 import { Textarea } from "@/components/ui/textarea";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 
@@ -99,17 +100,18 @@ export function RecordForm({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-1.5">
-        <Label htmlFor="treatmentType">施術内容（必須）</Label>
+        <Label htmlFor="treatmentType" className="text-base">施術内容（必須）</Label>
         <Input
           id="treatmentType"
           required
+          autoCapitalize="none"
           value={treatmentType}
           onChange={(e) => setTreatmentType(e.target.value)}
           placeholder="例: 背中ケアコース 2回目"
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="productsUsed">使用製品</Label>
+        <Label htmlFor="productsUsed" className="text-base">使用製品</Label>
         <Input
           id="productsUsed"
           value={productsUsed}
@@ -117,7 +119,7 @@ export function RecordForm({
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="skinFindings">肌コンディション所見</Label>
+        <Label htmlFor="skinFindings" className="text-base">肌コンディション所見</Label>
         <Textarea
           id="skinFindings"
           value={skinFindings}
@@ -125,7 +127,7 @@ export function RecordForm({
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="nextPlan">次回プラン</Label>
+        <Label htmlFor="nextPlan" className="text-base">次回プラン</Label>
         <Input
           id="nextPlan"
           value={nextPlan}
@@ -133,7 +135,7 @@ export function RecordForm({
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="cautions">注意事項</Label>
+        <Label htmlFor="cautions" className="text-base">注意事項</Label>
         <Textarea
           id="cautions"
           value={cautions}
@@ -141,13 +143,15 @@ export function RecordForm({
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="video">動画（任意、MP4/MOV/WebM・最大300MB）</Label>
+        <Label htmlFor="video" className="text-base">
+          動画（任意、MP4/MOV/WebM・最大300MB）
+        </Label>
         <input
           id="video"
           type="file"
           accept="video/mp4,video/quicktime,video/webm,video/*"
           onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm"
+          className="block w-full text-base"
         />
         {videoFile ? (
           <p className="text-xs text-stone-500">
@@ -156,9 +160,11 @@ export function RecordForm({
         ) : null}
       </div>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-        記録を保存
-      </Button>
+      <StickyActionBar>
+        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+          {submitting ? "保存中…" : "記録を保存"}
+        </Button>
+      </StickyActionBar>
     </form>
   );
 }

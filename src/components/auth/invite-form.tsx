@@ -37,19 +37,23 @@ export function InviteAcceptForm({ token }: { token: string }) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-1.5">
-        <Label htmlFor="name">氏名</Label>
+        <Label htmlFor="name" className="text-base">氏名</Label>
         <Input
           id="name"
+          type="text"
+          autoComplete="name"
+          autoCapitalize="words"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="password">パスワード（8文字以上、英数字混在）</Label>
+        <Label htmlFor="password" className="text-base">パスワード（8文字以上、英数字混在）</Label>
         <Input
           id="password"
           type="password"
+          autoComplete="new-password"
           minLength={8}
           required
           pattern="(?=.*[A-Za-z])(?=.*\d).{8,}"

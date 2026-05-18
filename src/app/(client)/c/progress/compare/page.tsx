@@ -2,6 +2,7 @@ import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import { demoProgressPhotos } from "@/lib/demo/fixtures";
 import { PhotoCompare } from "@/components/progress/photo-compare";
+import { MobileAppBar } from "@/components/ui/app-bar";
 import { Badge } from "@/components/ui/badge";
 import type { TimelinePhoto } from "@/components/progress/photo-timeline";
 import { PHOTO_TYPE_LABEL } from "@/types/domain";
@@ -44,7 +45,8 @@ export default async function ProgressComparePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">比較ビュー</h1>
+      <MobileAppBar title="比較ビュー" eyebrow="比較中" backHref="/c/progress" />
+      <h1 className="hidden text-2xl font-semibold md:block">比較ビュー</h1>
       <PhotoCompare photos={photos} />
     </div>
   );
@@ -56,14 +58,18 @@ function DemoCompare() {
 
   return (
     <div className="space-y-6">
-      <header>
+      <MobileAppBar title="Before / After 比較" eyebrow="比較中" backHref="/c/progress" />
+      <header className="hidden md:block">
         <h1 className="text-2xl font-semibold">Before / After 比較</h1>
         <p className="mt-1 text-sm text-stone-600">
           Week 1（初回）と Week {Math.ceil(demoProgressPhotos.length)} を並べて確認できます。
         </p>
       </header>
+      <p className="text-sm text-stone-600 md:hidden">
+        Week 1（初回）と Week {Math.ceil(demoProgressPhotos.length)} を縦に並べて確認できます。
+      </p>
 
-      <section className="grid gap-4 sm:grid-cols-2">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <ComparePane label="初回" photo={first} />
         <ComparePane label="最新" photo={last} highlight />
       </section>

@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import { demoClientRoster } from "@/lib/demo/fixtures";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 type ClientRow = {
   id: string;
@@ -15,36 +16,36 @@ type ClientRow = {
 export default async function AdminClientsPage() {
   if (isDemoMode()) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <h1 className="text-2xl font-semibold">顧客一覧</h1>
-        <Card>
-          <CardContent>
-            <table className="min-w-full text-sm">
-              <thead className="text-left text-xs text-stone-500">
-                <tr>
-                  <th className="py-2">顧客名</th>
-                  <th className="py-2">肌タイプ</th>
-                  <th className="py-2">コース</th>
-                  <th className="py-2">担当</th>
-                  <th className="py-2">進捗</th>
-                </tr>
-              </thead>
-              <tbody>
-                {demoClientRoster.map((c) => (
-                  <tr key={c.id} className="border-t border-stone-100">
-                    <td className="py-2 font-medium">{c.displayName}</td>
-                    <td className="py-2">{c.skinType}</td>
-                    <td className="py-2">{c.courseName}</td>
-                    <td className="py-2">{c.primaryTherapistName}</td>
-                    <td className="py-2">
-                      {c.sessionsCompleted}/{c.sessionsTotal} 回
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
+        <ul className="space-y-2">
+          {demoClientRoster.map((c) => (
+            <li
+              key={c.id}
+              className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-3"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={c.avatarUrl}
+                alt={c.displayName}
+                className="h-11 w-11 flex-none rounded-full bg-stone-100 object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-stone-900">
+                  {c.displayName}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-stone-500">
+                  {c.courseName} ・ {c.primaryTherapistName} ・ {c.skinType}
+                </p>
+                <p className="mt-1 text-[11px] text-stone-500">
+                  {c.sessionsCompleted}/{c.sessionsTotal} 回
+                </p>
+              </div>
+              <Badge tone="neutral">{c.sessionsCompleted}/{c.sessionsTotal}</Badge>
+              <ChevronRight className="h-4 w-4 text-stone-400" />
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
@@ -57,47 +58,36 @@ export default async function AdminClientsPage() {
   const rows = (data ?? []) as unknown as ClientRow[];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <h1 className="text-2xl font-semibold">顧客一覧</h1>
-      <Card>
-        <CardContent>
-          {rows.length === 0 ? (
-            <p className="text-sm text-stone-500">顧客がいません。</p>
-          ) : (
-            <table className="min-w-full text-sm">
-              <thead className="text-left text-xs text-stone-500">
-                <tr>
-                  <th className="py-2">ID</th>
-                  <th className="py-2">肌タイプ</th>
-                  <th className="py-2">悩み</th>
-                  <th className="py-2">担当</th>
-                  <th className="py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((c) => (
-                  <tr key={c.id} className="border-t border-stone-100">
-                    <td className="py-2 font-mono text-xs">{c.id.slice(0, 8)}</td>
-                    <td className="py-2">{c.skin_type ?? "—"}</td>
-                    <td className="py-2">{c.concerns ?? "—"}</td>
-                    <td className="py-2">
-                      {c.primary_therapist_id ? c.primary_therapist_id.slice(0, 8) : "—"}
-                    </td>
-                    <td className="py-2">
-                      <Link
-                        href={`/admin/clients/${c.id}/meals`}
-                        className="text-sm text-brand-700 underline"
-                      >
-                        食事ログを見る
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </CardContent>
-      </Card>
+      {rows.length === 0 ? (
+        <p className="text-sm text-stone-500">顧客がいません。</p>
+      ) : (
+        <ul className="space-y-2">
+          {rows.map((c) => (
+            <li
+              key={c.id}
+              className="rounded-xl border border-stone-200 bg-white p-3"
+            >
+              <Link
+                href={`/admin/clients/${c.id}/meals`}
+                className="flex items-center gap-3"
+              >
+                <div className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-stone-100 font-mono text-[10px] text-stone-500">
+                  {c.id.slice(0, 4)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-xs text-stone-500">{c.id.slice(0, 8)}</p>
+                  <p className="mt-0.5 truncate text-sm text-stone-700">
+                    {c.skin_type ?? "—"} ・ {c.concerns ?? "—"}
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-stone-400" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

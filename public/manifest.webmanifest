@@ -4,10 +4,13 @@
   "description": "高単価背中ケア専門サロン向け顧客管理プラットフォーム",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#fafaf9",
   "theme_color": "#7c5e3b",
   "lang": "ja",
   "scope": "/",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -20,6 +23,26 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "本日のスケジュール",
+      "short_name": "本日",
+      "description": "セラピストの本日の予約一覧を開きます",
+      "url": "/t/today"
+    },
+    {
+      "name": "撮影",
+      "short_name": "撮影",
+      "description": "本日の予約一覧から施術写真を撮影します",
+      "url": "/t/today?capture=1"
+    },
+    {
+      "name": "進捗を見る",
+      "short_name": "進捗",
+      "description": "進捗タイムラインを開きます",
+      "url": "/c/progress"
     }
   ]
 }

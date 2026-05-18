@@ -47,6 +47,11 @@ export default function NewInvitePage() {
               <Input
                 id="email"
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -60,7 +65,7 @@ export default function NewInvitePage() {
                     key={r}
                     type="button"
                     onClick={() => setRole(r)}
-                    className={`flex-1 rounded-lg border px-3 py-2 text-sm ${
+                    className={`min-h-11 flex-1 rounded-lg border px-3 py-2 text-sm ${
                       role === r
                         ? "border-brand-500 bg-brand-50 text-brand-700"
                         : "border-stone-200 bg-white text-stone-700"

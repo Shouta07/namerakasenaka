@@ -2,10 +2,10 @@ import Link from "next/link";
 import {
   CalendarDays,
   Camera,
+  ChevronRight,
   LineChart,
   Salad,
   Stethoscope,
-  ArrowRight,
 } from "lucide-react";
 import type { ComponentType } from "react";
 import { isDemoMode } from "@/lib/demo";
@@ -86,13 +86,21 @@ const cards: RoleCard[] = [
 export default function HomePage() {
   const demo = isDemoMode();
   return (
-    <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <section className="text-center">
-        <p className="text-xs font-medium uppercase tracking-widest text-brand-700">
+    <main
+      className="mx-auto max-w-5xl px-4 sm:px-6"
+      style={{
+        paddingTop: "max(var(--safe-top), 24px)",
+        paddingBottom: "max(var(--safe-bottom), 24px)",
+      }}
+    >
+      <section className="pt-4 text-center sm:pt-8">
+        <p className="text-[11px] font-medium uppercase tracking-widest text-brand-700">
           Senacare
         </p>
-        <h1 className="mt-3 text-3xl font-bold leading-tight text-stone-900 sm:text-4xl">
-          来店と来店の「間」を、サロンの強みに。
+        <h1 className="mt-3 text-[26px] font-bold leading-tight text-stone-900 sm:text-4xl">
+          来店と来店の「間」を、
+          <br className="sm:hidden" />
+          サロンの強みに。
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-sm text-stone-600 sm:text-base">
           {demo ? (
@@ -108,29 +116,37 @@ export default function HomePage() {
         </p>
       </section>
 
-      <section className="mt-12 grid gap-5 sm:grid-cols-2">
+      <section className="mt-8 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-5">
         {cards.map((card, idx) => {
           const Icon = card.icon;
           return (
             <Link
               key={card.href}
               href={card.href}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+              className="group flex items-stretch overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md sm:flex-col"
             >
+              {/* Mobile: thumbnail tile on the left. Desktop: hero band on top. */}
               <div
-                className={`relative flex h-32 items-center justify-center bg-gradient-to-br ${card.gradient}`}
+                className={`relative flex w-24 flex-none items-center justify-center bg-gradient-to-br sm:h-32 sm:w-auto ${card.gradient}`}
               >
-                <Icon className="h-12 w-12 text-brand-700" />
-                <span className="absolute left-4 top-4 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/80 text-xs font-semibold text-brand-700">
+                <Icon className="h-8 w-8 text-brand-700 sm:h-12 sm:w-12" />
+                <span className="absolute left-2 top-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/80 text-[10px] font-semibold text-brand-700 sm:left-4 sm:top-4 sm:h-6 sm:w-6 sm:text-xs">
                   {idx + 1}
                 </span>
               </div>
-              <div className="flex flex-1 flex-col p-5">
-                <h2 className="text-lg font-semibold text-stone-900">
-                  {card.title}
-                </h2>
-                <p className="mt-1 text-xs text-stone-500">{card.subtitle}</p>
-                <ul className="mt-4 flex-1 space-y-2 text-sm text-stone-700">
+              <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="truncate text-base font-semibold text-stone-900 sm:text-lg">
+                      {card.title}
+                    </h2>
+                    <p className="mt-0.5 line-clamp-1 text-[11px] text-stone-500 sm:text-xs">
+                      {card.subtitle}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 flex-none text-stone-400 group-hover:text-brand-700 sm:hidden" />
+                </div>
+                <ul className="mt-3 hidden flex-1 space-y-2 text-sm text-stone-700 sm:block">
                   {card.bullets.map((b) => (
                     <li key={b} className="flex gap-2">
                       <span className="mt-1 inline-block h-1.5 w-1.5 flex-none rounded-full bg-brand-500" />
@@ -138,9 +154,9 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand-700 group-hover:gap-2">
+                <span className="mt-3 hidden items-center gap-1 text-sm font-semibold text-brand-700 group-hover:gap-2 sm:inline-flex">
                   開く
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </div>
             </Link>
@@ -148,7 +164,7 @@ export default function HomePage() {
         })}
       </section>
 
-      <footer className="mt-12 flex flex-col items-center gap-2 border-t border-stone-200 pt-6 text-center">
+      <footer className="mt-10 flex flex-col items-center gap-2 border-t border-stone-200 pt-6 text-center">
         {demo ? (
           <p className="text-xs text-stone-500">
             表示されている全てのデータはサンプルです。本番接続後は、サロンごとの実データに自動的に切り替わります。

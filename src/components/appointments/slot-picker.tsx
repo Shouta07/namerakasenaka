@@ -47,7 +47,7 @@ export function SlotPicker({
               type="button"
               onClick={() => setPicked(s.iso)}
               className={cn(
-                "rounded-lg border px-3 py-2 text-sm",
+                "min-h-11 rounded-lg border px-3 py-2 text-sm",
                 active
                   ? "border-brand-500 bg-brand-50 text-brand-700"
                   : "border-stone-200 bg-white text-stone-700 hover:border-brand-200",

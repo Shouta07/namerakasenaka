@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Camera } from "lucide-react";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/progress/camera-capture";
 import { cn } from "@/lib/utils/cn";
@@ -23,7 +24,8 @@ export type TreatmentDayCameraModalProps = {
 };
 
 /**
- * Modal that wraps CameraCapture and orchestrates upload + before/after toggle.
+ * Bottom-sheet on mobile, centered card on desktop. Orchestrates the photo
+ * capture + upload flow for the treatment day camera.
  * Demo path: shows a sonner toast and dismisses on "アップロード".
  * Real path: POSTs to /api/photos/upload with the appointmentId field.
  */
@@ -37,8 +39,6 @@ export function TreatmentDayCameraModal({
   const [photoType, setPhotoType] = useState<PhotoType>(initialPhotoType);
   const [captured, setCaptured] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-
-  if (!open) return null;
 
   const handleUpload = async () => {
     if (!captured) {
@@ -81,88 +81,71 @@ export function TreatmentDayCameraModal({
   };
 
   // Banner visibility: forced (demo) or env-flagged dual-write enabled.
-  // In a browser client component we read from a public env var instead of the server one.
   const showDriveBanner =
     forceShowDriveBanner ||
     process.env.NEXT_PUBLIC_PHOTO_STORAGE_MODE === "dual" ||
     process.env.NEXT_PUBLIC_PHOTO_STORAGE_MODE === "gdrive_only";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4">
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="flex w-full max-w-md flex-col rounded-t-2xl bg-white p-5 shadow-xl sm:rounded-2xl"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Camera className="h-5 w-5 text-brand-700" />
-            <h2 className="text-base font-semibold text-stone-900">施術写真の撮影</h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-sm text-stone-500 hover:text-stone-700"
-            aria-label="閉じる"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="mt-3 flex gap-2">
-          {(["before", "after"] as PhotoType[]).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setPhotoType(t)}
-              className={cn(
-                "flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-                photoType === t
-                  ? "border-brand-500 bg-brand-50 text-brand-700"
-                  : "border-stone-200 bg-white text-stone-700 hover:border-brand-300",
-              )}
-            >
-              {t === "before" ? "施術前" : "施術後"}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-4">
-          <CameraCapture onCapture={setCaptured} disabled={uploading} />
-        </div>
-
-        {captured ? (
-          <p className="mt-2 text-xs text-stone-600">
-            撮影済み: {captured.name} ({Math.round(captured.size / 1024)} KB)
-          </p>
-        ) : null}
-
-        {showDriveBanner ? (
-          <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
-            Google ドライブにも自動保存されます。
-          </p>
-        ) : null}
-
-        <div className="mt-4 flex gap-2">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={uploading}
-            className="flex-1"
-          >
-            キャンセル
-          </Button>
-          <Button
-            type="button"
-            onClick={handleUpload}
-            disabled={!captured || uploading}
-            className="flex-1"
-          >
-            {uploading ? "保存中…" : "アップロード"}
-          </Button>
-        </div>
+    <BottomSheet open={open} onClose={onClose}>
+      <div className="flex items-center gap-2 pb-2">
+        <Camera className="h-5 w-5 text-brand-700" />
+        <h2 className="text-base font-semibold text-stone-900">施術写真の撮影</h2>
       </div>
-    </div>
+
+      <div className="flex gap-2">
+        {(["before", "after"] as PhotoType[]).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setPhotoType(t)}
+            className={cn(
+              "min-h-11 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+              photoType === t
+                ? "border-brand-500 bg-brand-50 text-brand-700"
+                : "border-stone-200 bg-white text-stone-700 hover:border-brand-300",
+            )}
+          >
+            {t === "before" ? "施術前" : "施術後"}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <CameraCapture onCapture={setCaptured} disabled={uploading} />
+      </div>
+
+      {captured ? (
+        <p className="mt-2 text-xs text-stone-600">
+          撮影済み: {captured.name} ({Math.round(captured.size / 1024)} KB)
+        </p>
+      ) : null}
+
+      {showDriveBanner ? (
+        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          Google ドライブにも自動保存されます。
+        </p>
+      ) : null}
+
+      <div className="mt-4 flex gap-2 pb-2">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onClose}
+          disabled={uploading}
+          className="flex-1"
+        >
+          キャンセル
+        </Button>
+        <Button
+          type="button"
+          onClick={handleUpload}
+          disabled={!captured || uploading}
+          className="flex-1"
+        >
+          {uploading ? "保存中…" : "アップロード"}
+        </Button>
+      </div>
+    </BottomSheet>
   );
 }

@@ -9,6 +9,18 @@
     system-ui, sans-serif;
 }
 
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+html {
+  /* 16px base prevents iOS Safari from zooming on input focus. */
+  font-size: 16px;
+}
+
 html,
 body {
   background: #fafaf7;
@@ -18,4 +30,60 @@ body {
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  /* Prevent rubber-band stretching on iOS Safari. */
+  overscroll-behavior-y: contain;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+:where(button, [role="button"], a):active {
+  opacity: 0.8;
+}
+
+/* Disabled buttons should not appear depressed. */
+:where(button, [role="button"]):disabled:active {
+  opacity: 1;
+}
+
+/* Full dynamic viewport height — avoids the iOS Safari keyboard/100vh trap. */
+.h-dvh {
+  height: 100dvh;
+}
+
+.min-h-dvh {
+  min-height: 100dvh;
+}
+
+/* Safe-area utility classes. */
+.pt-safe {
+  padding-top: max(var(--safe-top), 12px);
+}
+
+.pb-safe {
+  padding-bottom: max(var(--safe-bottom), 12px);
+}
+
+.mt-safe {
+  margin-top: var(--safe-top);
+}
+
+.mb-safe {
+  margin-bottom: var(--safe-bottom);
+}
+
+/* Hide scrollbars on horizontal carousels. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

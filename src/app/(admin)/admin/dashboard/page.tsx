@@ -245,11 +245,13 @@ function DemoAdminDashboard() {
         <h2 className="text-base font-semibold text-stone-900">
           セラピスト パフォーマンス
         </h2>
-        <div className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-white">
-          <table className="w-full text-sm">
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-stone-200 bg-white">
+          <table className="w-full min-w-[560px] text-sm">
             <thead className="bg-stone-50 text-xs text-stone-500">
               <tr>
-                <th className="px-4 py-2 text-left font-medium">セラピスト</th>
+                <th className="sticky left-0 z-10 bg-stone-50 px-4 py-2 text-left font-medium">
+                  セラピスト
+                </th>
                 <th className="px-4 py-2 text-right font-medium">担当顧客</th>
                 <th className="px-4 py-2 text-right font-medium">今月完遂</th>
                 <th className="px-4 py-2 text-right font-medium">平均評価</th>
@@ -259,7 +261,7 @@ function DemoAdminDashboard() {
             <tbody>
               {demoTherapistPerformance.map((t) => (
                 <tr key={t.name} className="border-t border-stone-100">
-                  <td className="px-4 py-3">
+                  <td className="sticky left-0 z-10 bg-white px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-stone-900">{t.name}</span>
                       <div className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-stone-100 sm:block">

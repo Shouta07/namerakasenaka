@@ -13,8 +13,10 @@ export function KpiCards({ kpis }: { kpis: Kpi[] }) {
         <Card key={k.label}>
           <CardContent>
             <p className="text-xs text-stone-500">{k.label}</p>
-            <p className="mt-1 text-2xl font-semibold">{k.value}</p>
-            {k.hint ? <p className="mt-1 text-[10px] text-stone-400">{k.hint}</p> : null}
+            <p className="mt-1 text-[26px] font-semibold leading-tight tracking-tight">
+              {k.value}
+            </p>
+            {k.hint ? <p className="mt-1 text-[11px] text-stone-400">{k.hint}</p> : null}
           </CardContent>
         </Card>
       ))}

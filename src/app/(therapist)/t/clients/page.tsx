@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
-import { demoClient, demoClientRoster } from "@/lib/demo/fixtures";
+import { demoClientRoster } from "@/lib/demo/fixtures";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -19,11 +19,7 @@ export default async function TherapistClientsPage() {
         <h1 className="text-2xl font-semibold">担当顧客</h1>
         <div className="space-y-2">
           {demoClientRoster.map((c) => (
-            <Link
-              key={c.id}
-              href={c.id === demoClient.id ? `/t/clients/${c.id}` : "/t/clients"}
-              className="block"
-            >
+            <Link key={c.id} href={`/t/clients/${c.id}`} className="block">
               <Card>
                 <CardContent className="flex items-center gap-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -38,9 +34,7 @@ export default async function TherapistClientsPage() {
                       {c.courseName} ・ {c.sessionsCompleted}/{c.sessionsTotal} 回
                     </p>
                   </div>
-                  {c.id === demoClient.id ? (
-                    <Badge tone="brand">詳細を見る</Badge>
-                  ) : null}
+                  <Badge tone="brand">詳細を見る</Badge>
                 </CardContent>
               </Card>
             </Link>

@@ -20,29 +20,33 @@ export default async function AdminClientsPage() {
         <h1 className="text-2xl font-semibold">顧客一覧</h1>
         <ul className="space-y-2">
           {demoClientRoster.map((c) => (
-            <li
-              key={c.id}
-              className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-3"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={c.avatarUrl}
-                alt={c.displayName}
-                className="h-11 w-11 flex-none rounded-full bg-stone-100 object-cover"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-stone-900">
-                  {c.displayName}
-                </p>
-                <p className="mt-0.5 truncate text-xs text-stone-500">
-                  {c.courseName} ・ {c.primaryTherapistName} ・ {c.skinType}
-                </p>
-                <p className="mt-1 text-[11px] text-stone-500">
-                  {c.sessionsCompleted}/{c.sessionsTotal} 回
-                </p>
-              </div>
-              <Badge tone="neutral">{c.sessionsCompleted}/{c.sessionsTotal}</Badge>
-              <ChevronRight className="h-4 w-4 text-stone-400" />
+            <li key={c.id}>
+              <Link
+                href={`/admin/clients/${c.id}`}
+                className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-3 active:bg-stone-50"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={c.avatarUrl}
+                  alt={c.displayName}
+                  className="h-11 w-11 flex-none rounded-full bg-stone-100 object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-stone-900">
+                    {c.displayName}
+                  </p>
+                  <p className="mt-0.5 truncate text-xs text-stone-500">
+                    {c.courseName} ・ {c.primaryTherapistName} ・ {c.skinType}
+                  </p>
+                  <p className="mt-1 text-[11px] text-stone-500">
+                    {c.sessionsCompleted}/{c.sessionsTotal} 回
+                  </p>
+                </div>
+                <Badge tone="neutral">
+                  {c.sessionsCompleted}/{c.sessionsTotal}
+                </Badge>
+                <ChevronRight className="h-4 w-4 text-stone-400" />
+              </Link>
             </li>
           ))}
         </ul>
@@ -70,7 +74,7 @@ export default async function AdminClientsPage() {
               className="rounded-xl border border-stone-200 bg-white p-3"
             >
               <Link
-                href={`/admin/clients/${c.id}/meals`}
+                href={`/admin/clients/${c.id}`}
                 className="flex items-center gap-3"
               >
                 <div className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-stone-100 font-mono text-[10px] text-stone-500">

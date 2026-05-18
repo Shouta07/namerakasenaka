@@ -18,10 +18,17 @@ export function InteractiveQaThread({
   conversationId,
   seed,
   viewerLabel = "あなた",
+  senderLabel,
 }: {
   conversationId: string;
   seed: SeedMessage[];
   viewerLabel?: string;
+  /**
+   * Display label attached to outgoing messages. When set (e.g. "サロンより"),
+   * a small badge appears under the input as a reminder of how messages
+   * appear to the recipient.
+   */
+  senderLabel?: string;
 }) {
   const stored = useStoredMessages(conversationId);
   const [body, setBody] = useState("");
@@ -109,6 +116,11 @@ export function InteractiveQaThread({
         }}
       >
         <div className="space-y-1">
+          {senderLabel ? (
+            <p className="text-[10px] text-stone-500">
+              送信者表示: <span className="font-semibold">{senderLabel}</span>
+            </p>
+          ) : null}
           <div className="flex items-end gap-2">
             <textarea
               ref={taRef}

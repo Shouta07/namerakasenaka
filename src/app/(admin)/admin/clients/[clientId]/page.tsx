@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import {
   demoClient,
@@ -9,12 +7,11 @@ import {
   demoProgressPhotos,
   demoTreatmentRecords,
 } from "@/lib/demo/fixtures";
-import { Button } from "@/components/ui/button";
 import { MobileAppBar } from "@/components/ui/app-bar";
 import { UnifiedCustomerDetail } from "@/components/clients/unified-customer-detail";
 import type { SeedMessage } from "@/components/qa/interactive-thread";
 
-export default async function TherapistClientDetailPage({
+export default async function AdminClientDetailPage({
   params,
 }: {
   params: Promise<{ clientId: string }>;
@@ -27,6 +24,7 @@ export default async function TherapistClientDetailPage({
       (clientId === demoClient.id ? demoClient : null);
     if (!client) notFound();
 
+    // Q&A: only client-yamada has rich seed; others get a generic stub.
     const qaConversationId = `qa-client-${client.id}`;
     const qaSeed: SeedMessage[] =
       client.id === demoClient.id
@@ -54,8 +52,8 @@ export default async function TherapistClientDetailPage({
       <div className="space-y-2">
         <MobileAppBar
           title={client.displayName}
-          eyebrow="Therapist"
-          backHref="/t/clients"
+          eyebrow="SalonAdmin"
+          backHref="/admin/clients"
         />
         <UnifiedCustomerDetail
           client={client}
@@ -64,40 +62,30 @@ export default async function TherapistClientDetailPage({
           fixtureRecords={records}
           qaSeed={qaSeed}
           qaConversationId={qaConversationId}
-          viewerRole="therapist"
-          viewerName={client.primaryTherapistName}
+          viewerRole="salon_admin"
+          viewerName="サロン管理者"
         />
       </div>
     );
   }
 
-  // Production branch: until the unified page is wired against real data, fall
-  // back to the previous links-only view so deployed envs keep working.
-  const supabase = await getServerSupabase();
-  const { data: client } = await supabase
-    .from("clients")
-    .select("id, skin_type, concerns")
-    .eq("id", clientId)
-    .maybeSingle();
-
+  // Non-demo branch: minimal placeholder using the same component shape.
+  // Production wiring would resolve real photos/meals/records via Supabase
+  // here. For now we render a stub message.
   return (
-    <div className="space-y-6">
-      <MobileAppBar title="顧客カルテ" eyebrow="Therapist" backHref="/t/clients" />
-      <header>
-        <h1 className="text-2xl font-semibold">顧客カルテ</h1>
-        <p className="mt-1 text-sm text-stone-600">
-          肌タイプ: {(client as { skin_type?: string | null } | null)?.skin_type ?? "—"} ・ 悩み:{" "}
-          {(client as { concerns?: string | null } | null)?.concerns ?? "—"}
-        </p>
-      </header>
-      <div className="flex gap-2">
-        <Link href={`/t/clients/${clientId}/records/new`}>
-          <Button>施術記録を追加</Button>
-        </Link>
-        <Link href={`/t/clients/${clientId}/photos/new`}>
-          <Button variant="secondary">進捗写真を追加</Button>
-        </Link>
-      </div>
+    <div className="space-y-4">
+      <MobileAppBar
+        title="顧客詳細"
+        eyebrow="SalonAdmin"
+        backHref="/admin/clients"
+      />
+      <h1 className="text-2xl font-semibold">顧客詳細</h1>
+      <p className="text-sm text-stone-600">
+        顧客ID: <span className="font-mono">{clientId}</span>
+      </p>
+      <p className="text-sm text-stone-500">
+        本番接続では、ここに統合顧客詳細画面が表示されます。
+      </p>
     </div>
   );
 }

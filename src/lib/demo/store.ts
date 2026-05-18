@@ -132,12 +132,31 @@ export type StoredCapturedAppt = {
   capturedAt: string;
 };
 
+export type SalonNoteTargetType =
+  | "photo"
+  | "self_log"
+  | "meal_log"
+  | "treatment_record"
+  | "qa_thread";
+
+export type StoredSalonNote = {
+  id: string;
+  clientId: string;
+  targetType: SalonNoteTargetType;
+  targetId: string;
+  authorRole: "therapist" | "salon_admin";
+  authorName: string;
+  body: string;
+  createdAt: string;
+};
+
 type Snapshot = {
   messages: StoredMessage[];
   selfLogs: StoredSelfLog[];
   mealLogs: StoredMealLog[];
   mealFeedbacks: StoredMealFeedback[];
   salonComments: StoredSalonComment[];
+  salonNotes: StoredSalonNote[];
   appointments: StoredAppointment[];
   progressPhotos: StoredProgressPhoto[];
   treatmentRecords: StoredTreatmentRecord[];
@@ -152,6 +171,7 @@ const EMPTY: Snapshot = {
   mealLogs: [],
   mealFeedbacks: [],
   salonComments: [],
+  salonNotes: [],
   appointments: [],
   progressPhotos: [],
   treatmentRecords: [],
@@ -381,6 +401,28 @@ export function updateStoredMealFeedback(id: string, patch: Partial<StoredMealFe
   update("mealFeedbacks", (cur) =>
     cur.map((f) => (f.id === id ? { ...f, ...patch } : f)),
   );
+}
+
+// Salon notes (generic, polymorphic) — any artifact type.
+export function useStoredSalonNotes(
+  targetType: SalonNoteTargetType,
+  targetId: string,
+): StoredSalonNote[] {
+  const all = useStore("salonNotes");
+  return all.filter((n) => n.targetType === targetType && n.targetId === targetId);
+}
+
+export function useStoredSalonNotesForClient(clientId: string): StoredSalonNote[] {
+  const all = useStore("salonNotes");
+  return all.filter((n) => n.clientId === clientId);
+}
+
+export function addStoredSalonNote(
+  input: Omit<StoredSalonNote, "id" | "createdAt">,
+): StoredSalonNote {
+  const next: StoredSalonNote = { id: newId(), createdAt: new Date().toISOString(), ...input };
+  update("salonNotes", (cur) => [...cur, next]);
+  return next;
 }
 
 // Salon comments

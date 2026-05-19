@@ -526,6 +526,30 @@ export function markAppointmentCaptured(appointmentId: string): void {
   });
 }
 
+// ---------- Cross-client snapshot hooks ----------
+
+/**
+ * Hooks that read all clients' data at once. Used by retention/evidence
+ * engines that need to compare cohorts. In production these become Supabase
+ * queries with RLS gating; here we poll the snapshot store at a slow cadence.
+ */
+
+export function useAllStoredSelfLogs(): StoredSelfLog[] {
+  return useStore("selfLogs");
+}
+
+export function useAllStoredProgressPhotos(): StoredProgressPhoto[] {
+  return useStore("progressPhotos");
+}
+
+export function useAllStoredMessages(): StoredMessage[] {
+  return useStore("messages");
+}
+
+export function useAllStoredTreatmentRecords(): StoredTreatmentRecord[] {
+  return useStore("treatmentRecords");
+}
+
 // ---------- Reset / readers ----------
 
 export function clearStore(): void {

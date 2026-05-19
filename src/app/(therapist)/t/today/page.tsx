@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { TreatmentDayCameraLauncher } from "@/components/progress/treatment-day-camera-launcher";
+import { TherapistAtRiskCard } from "@/components/admin/therapist-at-risk-card";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/types/domain";
 
 type AppointmentRow = {
@@ -106,6 +107,10 @@ function DemoTherapistToday() {
           </p>
         </div>
       </header>
+
+      <section>
+        <TherapistAtRiskCard primaryTherapistName={THERAPIST_NAME} />
+      </section>
 
       <section className="grid grid-cols-2 gap-3">
         <Card>

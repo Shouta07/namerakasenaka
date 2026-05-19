@@ -15,9 +15,9 @@ const items: NavItem[] = [
 const sidebarItems: NavItem[] = [
   { href: "/t/today", label: "本日", icon: "stethoscope" },
   { href: "/t/clients", label: "担当顧客", icon: "users" },
+  { href: "/t/clients?risk=high", label: "離脱予兆", icon: "alert-triangle" },
   { href: "/t/calendar", label: "カレンダー", icon: "calendar-days" },
   { href: "/t/qa", label: "Q&A", icon: "message-circle" },
-  { href: "/t/clients", label: "カルテ", icon: "clipboard-list" },
 ];
 
 export default function TherapistLayout({ children }: { children: React.ReactNode }) {

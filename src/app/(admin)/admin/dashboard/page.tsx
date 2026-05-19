@@ -10,6 +10,7 @@ import {
   formatJpy,
 } from "@/lib/demo/fixtures";
 import { KpiCards, type Kpi } from "@/components/admin/kpi-cards";
+import { RiskWidgets } from "@/components/admin/risk-widgets";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APPOINTMENT_STATUS_LABEL } from "@/types/domain";
@@ -132,6 +133,10 @@ function DemoAdminDashboard() {
     <div className="space-y-6">
       <section>
         <KpiCards kpis={kpis} />
+      </section>
+
+      <section>
+        <RiskWidgets />
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">

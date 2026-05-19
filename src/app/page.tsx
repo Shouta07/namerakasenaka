@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, AlertCircle, Camera, Search } from "lucide-react";
 import { RoleTopBar } from "@/components/ui/role-top-bar";
 import { KpiStrip, type KpiStripItem } from "@/components/admin/kpi-strip";
+import { RiskWidgets } from "@/components/admin/risk-widgets";
 import { Badge } from "@/components/ui/badge";
 import { DemoBanner } from "@/components/demo-banner";
 import {
@@ -63,6 +64,10 @@ export default function HomePage() {
 
         <section className="mt-4">
           <KpiStrip items={kpis} />
+        </section>
+
+        <section className="mt-4">
+          <RiskWidgets />
         </section>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-3">

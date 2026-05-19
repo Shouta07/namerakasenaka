@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Activity,
+  AlertTriangle,
   Calendar,
   CalendarDays,
   Camera,
   ClipboardList,
   CreditCard,
   LayoutDashboard,
+  LineChart,
   ListChecks,
   Mail,
   MessageCircle,
@@ -24,12 +26,14 @@ import { cn } from "@/lib/utils/cn";
 
 const iconMap = {
   activity: Activity,
+  "alert-triangle": AlertTriangle,
   calendar: Calendar,
   "calendar-days": CalendarDays,
   camera: Camera,
   "clipboard-list": ClipboardList,
   "credit-card": CreditCard,
   "layout-dashboard": LayoutDashboard,
+  "line-chart": LineChart,
   "list-checks": ListChecks,
   mail: Mail,
   "message-circle": MessageCircle,

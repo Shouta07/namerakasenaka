@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Camera,
   Calendar,
@@ -8,6 +10,8 @@ import {
   MessageSquare,
   StickyNote,
   CheckCircle2,
+  Printer,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +31,9 @@ import {
   addStoredProgressPhoto,
   addStoredTreatmentRecord,
   fileToResizedDataUrl,
+  useAllStoredMessages,
   useHydrated,
+  useStoredAppointments,
   useStoredMealLogs,
   useStoredProgressPhotos,
   useStoredSalonComments,
@@ -36,6 +42,7 @@ import {
   useStoredTreatmentRecords,
 } from "@/lib/demo/store";
 import {
+  demoAppointments,
   type DemoClient,
   type DemoMealLog,
   type DemoProgressPhoto,
@@ -43,6 +50,21 @@ import {
 } from "@/lib/demo/fixtures";
 import { cn } from "@/lib/utils/cn";
 import { MEAL_TYPE_LABEL, type MealType, type PhotoType } from "@/types/domain";
+import {
+  computeClientImprovement,
+  trendLabel,
+  type EvidencePhoto,
+  type EvidenceSelfLog,
+  type EvidenceTreatmentRecord,
+} from "@/lib/evidence";
+import {
+  assessClientRisk,
+  riskLabel,
+  type RetentionAppointment,
+  type RetentionPhoto,
+  type RetentionQaMessage,
+  type RetentionSelfLog,
+} from "@/lib/retention";
 
 type ViewerRole = "salon_admin" | "therapist";
 
@@ -67,6 +89,7 @@ export type UnifiedCustomerDetailProps = {
 
 type TabKey =
   | "overview"
+  | "evidence"
   | "photos"
   | "meals"
   | "self_log"
@@ -76,6 +99,7 @@ type TabKey =
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "overview", label: "概要" },
+  { key: "evidence", label: "エビデンス" },
   { key: "photos", label: "写真" },
   { key: "meals", label: "食事" },
   { key: "self_log", label: "セルフログ" },
@@ -106,6 +130,15 @@ export function UnifiedCustomerDetail({
   const storedRecords = useStoredTreatmentRecords(client.id);
   const storedSelfLogs = useStoredSelfLogs(client.id);
   const storedNotes = useStoredSalonNotesForClient(client.id);
+  const storedAppts = useStoredAppointments();
+  const allMessages = useAllStoredMessages();
+
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("compose") === "appointment") {
+      setBookingSheetOpen(true);
+    }
+  }, [searchParams]);
 
   type TimelinePhoto = {
     id: string;
@@ -214,9 +247,135 @@ export function UnifiedCustomerDetail({
     (client.sessionsCompleted / client.sessionsTotal) * 100,
   );
 
+  // Evidence engine input (merged fixtures + stored).
+  const evPhotos: EvidencePhoto[] = useMemo(
+    () => [
+      ...fixturePhotos.map((p) => ({
+        id: p.id,
+        takenAt: p.takenAt,
+        photoType: p.photoType,
+        selfRating: p.selfRating,
+      })),
+      ...storedPhotos.map((p) => ({
+        id: p.id,
+        takenAt: p.takenAt,
+        photoType: p.photoType,
+        selfRating: p.selfRating ?? null,
+      })),
+    ],
+    [fixturePhotos, storedPhotos],
+  );
+  const evSelfLogs: EvidenceSelfLog[] = useMemo(
+    () =>
+      storedSelfLogs.map((s) => ({
+        id: s.id,
+        loggedOn: s.loggedOn,
+        itchScore: s.itchScore,
+        rednessScore: s.rednessScore,
+      })),
+    [storedSelfLogs],
+  );
+  const evRecords: EvidenceTreatmentRecord[] = useMemo(
+    () => [
+      ...fixtureRecords.map((r) => ({ id: r.id, performedAt: r.performedAt })),
+      ...storedRecords.map((r) => ({ id: r.id, performedAt: r.performedAt })),
+    ],
+    [fixtureRecords, storedRecords],
+  );
+  const improvement = useMemo(
+    () =>
+      computeClientImprovement({
+        photos: evPhotos,
+        selfLogs: evSelfLogs,
+        treatmentRecords: evRecords,
+        courseStartedAt: client.startedOn,
+        sessionsCompleted: client.sessionsCompleted,
+        sessionsTotal: client.sessionsTotal,
+      }),
+    [
+      client.sessionsCompleted,
+      client.sessionsTotal,
+      client.startedOn,
+      evPhotos,
+      evRecords,
+      evSelfLogs,
+    ],
+  );
+
+  // Retention risk input (merged fixtures + stored).
+  const risk = useMemo(() => {
+    const appointments: RetentionAppointment[] = [
+      ...demoAppointments
+        .filter((a) => a.clientId === client.id)
+        .map((a) => ({
+          id: a.id,
+          clientId: a.clientId,
+          scheduledAt: a.scheduledAt,
+          status: a.status,
+        })),
+      ...storedAppts
+        .filter((a) => a.clientId === client.id)
+        .map((a) => ({
+          id: a.id,
+          clientId: a.clientId,
+          scheduledAt: a.scheduledAt,
+          status: a.status,
+        })),
+    ];
+    const selfLogsRet: RetentionSelfLog[] = storedSelfLogs.map((s) => ({
+      id: s.id,
+      clientId: s.clientId,
+      loggedOn: s.loggedOn,
+    }));
+    const photosRet: RetentionPhoto[] = [
+      ...fixturePhotos.map((p) => ({
+        id: p.id,
+        clientId: p.clientId,
+        takenAt: p.takenAt,
+      })),
+      ...storedPhotos.map((p) => ({
+        id: p.id,
+        clientId: p.clientId,
+        takenAt: p.takenAt,
+      })),
+    ];
+    const qaRet: RetentionQaMessage[] = allMessages
+      .filter((m) => m.conversationId === qaConversationId)
+      .map((m) => ({
+        id: m.id,
+        conversationId: m.conversationId,
+        createdAt: m.createdAt,
+        isMine: m.isMine,
+      }));
+    return assessClientRisk({
+      client: {
+        id: client.id,
+        displayName: client.displayName,
+        qaConversationId,
+        sessionsCompleted: client.sessionsCompleted,
+        sessionsTotal: client.sessionsTotal,
+      },
+      appointments,
+      selfLogs: selfLogsRet,
+      qaMessages: qaRet,
+      photos: photosRet,
+    });
+  }, [
+    allMessages,
+    client.displayName,
+    client.id,
+    client.sessionsCompleted,
+    client.sessionsTotal,
+    fixturePhotos,
+    qaConversationId,
+    storedAppts,
+    storedPhotos,
+    storedSelfLogs,
+  ]);
+
   return (
     <div className="space-y-4">
-      <CustomerHeader client={client} progressPct={progressPct} />
+      <CustomerHeader client={client} progressPct={progressPct} risk={risk} />
 
       <QuickActionsRow
         onCapturePhoto={() => setPhotoSheetOpen(true)}
@@ -237,6 +396,12 @@ export function UnifiedCustomerDetail({
             notes={storedNotes}
             hydrated={hydrated}
             onJump={setActive}
+          />
+        ) : null}
+        {active === "evidence" ? (
+          <EvidenceTab
+            clientId={client.id}
+            improvement={improvement}
           />
         ) : null}
         {active === "photos" ? (
@@ -309,10 +474,17 @@ export function UnifiedCustomerDetail({
 function CustomerHeader({
   client,
   progressPct,
+  risk,
 }: {
   client: DemoClient;
   progressPct: number;
+  risk: {
+    level: "low" | "medium" | "high";
+    reasons: string[];
+  };
 }) {
+  const [tipOpen, setTipOpen] = useState(false);
+  const rl = riskLabel(risk.level);
   return (
     <section className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -323,9 +495,39 @@ function CustomerHeader({
       />
       <div className="min-w-0 flex-1">
         <p className="text-xs text-stone-500">{client.furigana}</p>
-        <h1 className="text-xl font-bold text-stone-900">
-          {client.displayName} 様
-        </h1>
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-xl font-bold text-stone-900">
+            {client.displayName} 様
+          </h1>
+          <button
+            type="button"
+            onClick={() => setTipOpen((v) => !v)}
+            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+            aria-label="離脱予兆の詳細"
+            style={{
+              background:
+                rl.tone === "danger"
+                  ? "#fee2e2"
+                  : rl.tone === "warning"
+                    ? "#fef3c7"
+                    : "#f5f5f4",
+              color:
+                rl.tone === "danger"
+                  ? "#b91c1c"
+                  : rl.tone === "warning"
+                    ? "#a16207"
+                    : "#57534e",
+            }}
+          >
+            <AlertTriangle className="h-3 w-3" />
+            離脱予兆 {rl.text}
+          </button>
+        </div>
+        {tipOpen && risk.reasons.length > 0 ? (
+          <div className="mt-1 rounded-md bg-amber-50 px-2 py-1 text-[11px] text-amber-800">
+            {risk.reasons.join(" / ")}
+          </div>
+        ) : null}
         <p className="mt-0.5 text-xs text-stone-600">
           {client.courseName}・
           <span className="font-semibold">
@@ -342,6 +544,76 @@ function CustomerHeader({
         </div>
       </div>
     </section>
+  );
+}
+
+// ---------- Tabs: Evidence ----------
+
+function EvidenceTab({
+  clientId,
+  improvement,
+}: {
+  clientId: string;
+  improvement: import("@/lib/evidence").ClientImprovement;
+}) {
+  const tl = trendLabel(improvement.trend);
+  return (
+    <div className="space-y-3">
+      <Card>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-stone-900">進捗サマリ</h2>
+            <Link
+              href={`/admin/clients/${clientId}/report`}
+              className="inline-flex min-h-9 items-center gap-1 rounded-lg bg-brand-500 px-3 text-xs font-semibold text-white"
+            >
+              <Printer className="h-3.5 w-3.5" />
+              進捗レポートを出力
+            </Link>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <EvMetric label="経過週数" value={`${improvement.weeksTracked} 週`} />
+            <EvMetric label="撮影枚数" value={`${improvement.photosCount} 枚`} />
+            <EvMetric
+              label="自覚改善度Δ"
+              value={
+                improvement.selfRatingDelta == null
+                  ? "—"
+                  : improvement.selfRatingDelta > 0
+                    ? `+${improvement.selfRatingDelta.toFixed(2)}`
+                    : improvement.selfRatingDelta.toFixed(2)
+              }
+            />
+            <EvMetric label="トレンド" value={`${tl.glyph} ${tl.text}`} />
+          </div>
+          {improvement.itchScoreDelta != null ||
+          improvement.rednessScoreDelta != null ? (
+            <p className="mt-3 text-xs text-stone-600">
+              {improvement.itchScoreDelta != null
+                ? `痒みスコア改善: ${improvement.itchScoreDelta.toFixed(2)}　`
+                : ""}
+              {improvement.rednessScoreDelta != null
+                ? `赤みスコア改善: ${improvement.rednessScoreDelta.toFixed(2)}`
+                : ""}
+            </p>
+          ) : null}
+          <p className="mt-2 text-[10px] text-stone-400">
+            本サマリは個別の効果効能を保証するものではなく、参考情報です。
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function EvMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-stone-50 px-3 py-2">
+      <p className="text-[10px] text-stone-500">{label}</p>
+      <p className="mt-1 text-2xl font-semibold leading-none text-stone-900">
+        {value}
+      </p>
+    </div>
   );
 }
 

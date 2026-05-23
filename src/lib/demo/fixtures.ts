@@ -1045,3 +1045,299 @@ export const demoActivityFeed: DemoActivityEntry[] = [
 /** Convenience: formatted JPY. */
 export const formatJpy = (n: number) =>
   new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(n);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Availability engine
+//
+// Salon hours: 10:00 – 19:00, last slot starts at 18:30 (finishes 19:00).
+// Closed on Mondays. Weekend utilization runs higher than weekday utilization.
+// Concrete bookings derive from `demoAppointments` and `storedAppointments`
+// passed in by the caller; a deterministic pseudo-random fill brings the rest
+// of the day up to the target utilization so each day still tells a story.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Salon opens at 10:00. */
+export const SALON_OPEN_HOUR = 10;
+/** Salon closes at 19:00 — last slot starts 18:30. */
+export const SALON_CLOSE_HOUR = 19;
+/** Slot length in minutes. */
+export const SLOT_DURATION_MIN = 30;
+/** Day-of-week index for 定休日 (Monday). */
+export const SALON_CLOSED_WEEKDAY = 1;
+
+export type TimeSlotStatus = "open" | "booked" | "closed" | "past";
+
+export type TimeSlot = {
+  /** HH:mm — start time of this 30-minute slot. */
+  time: string;
+  status: TimeSlotStatus;
+  /** When booked, the originating appointment id (if known). */
+  appointmentId?: string;
+};
+
+export type DayAvailability = {
+  /** YYYY-MM-DD */
+  date: string;
+  /** 0-6 (Sunday = 0). */
+  weekday: number;
+  isClosed: boolean;
+  /** The course-recommended day for the primary user. */
+  isRecommended: boolean;
+  openSlots: number;
+  totalSlots: number;
+  slots: TimeSlot[];
+};
+
+/** Optional booking that can be folded in (e.g. user's localStorage). */
+export type ExternalBooking = {
+  scheduledAt: string;
+  durationMinutes?: number;
+  therapistName?: string;
+  appointmentId?: string;
+};
+
+function pad2(n: number): string {
+  return n.toString().padStart(2, "0");
+}
+
+function dateKey(d: Date): string {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
+function timeKey(hour: number, minute: number): string {
+  return `${pad2(hour)}:${pad2(minute)}`;
+}
+
+/** Inclusive list of slot start times (HH:mm) for a single salon day. */
+export function buildSlotTimes(): string[] {
+  const out: string[] = [];
+  for (let h = SALON_OPEN_HOUR; h < SALON_CLOSE_HOUR; h++) {
+    out.push(timeKey(h, 0));
+    out.push(timeKey(h, 30));
+  }
+  return out;
+}
+
+/** Cheap deterministic hash of a string → [0,1). */
+function hashUnit(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  // Convert to unsigned and divide.
+  return ((h >>> 0) % 100000) / 100000;
+}
+
+function isWeekend(weekday: number): boolean {
+  return weekday === 0 || weekday === 6;
+}
+
+type BuildOpts = {
+  therapistName?: string;
+  /** Bookings already on the books (fixtures + stored). */
+  bookings: ExternalBooking[];
+  /** "now" — slots earlier than this on the current day are `past`. */
+  now: Date;
+  /** Per-day target utilization (0..1). */
+  targetUtilization: number;
+  /** Seed mixed into the deterministic fill so therapists differ. */
+  seedScope: string;
+};
+
+function buildDayAvailability(d: Date, opts: BuildOpts): DayAvailability {
+  const weekday = d.getDay();
+  const date = dateKey(d);
+  const slotTimes = buildSlotTimes();
+  const isClosed = weekday === SALON_CLOSED_WEEKDAY;
+
+  if (isClosed) {
+    return {
+      date,
+      weekday,
+      isClosed: true,
+      isRecommended: false,
+      openSlots: 0,
+      totalSlots: slotTimes.length,
+      slots: slotTimes.map((t) => ({ time: t, status: "closed" as const })),
+    };
+  }
+
+  // Map concrete bookings onto slot times for this date.
+  const bookedAt = new Map<string, string | undefined>(); // time → appointmentId
+  for (const b of opts.bookings) {
+    const dt = new Date(b.scheduledAt);
+    if (dateKey(dt) !== date) continue;
+    if (opts.therapistName && b.therapistName && b.therapistName !== opts.therapistName)
+      continue;
+    const duration = b.durationMinutes ?? 90;
+    // Mark each 30-min slot covered by the appointment.
+    const startMin = dt.getHours() * 60 + dt.getMinutes();
+    const blocks = Math.max(1, Math.ceil(duration / SLOT_DURATION_MIN));
+    for (let i = 0; i < blocks; i++) {
+      const mins = startMin + i * SLOT_DURATION_MIN;
+      if (mins >= SALON_CLOSE_HOUR * 60) break;
+      const t = timeKey(Math.floor(mins / 60), mins % 60);
+      if (!bookedAt.has(t)) bookedAt.set(t, b.appointmentId);
+    }
+  }
+
+  // Deterministically "fill" the day to its target utilization.
+  // Slot is booked if (real booking) OR (pseudo-fill is below threshold).
+  const slots: TimeSlot[] = slotTimes.map((t) => {
+    // Past slots (today only).
+    const [hh, mm] = t.split(":").map(Number);
+    const slotMoment = new Date(d);
+    slotMoment.setHours(hh, mm, 0, 0);
+    if (slotMoment.getTime() <= opts.now.getTime()) {
+      return { time: t, status: "past" as const };
+    }
+    const realApptId = bookedAt.get(t);
+    if (realApptId !== undefined) {
+      return { time: t, status: "booked" as const, appointmentId: realApptId };
+    }
+    // Pseudo-fill — keeps the booked rate roughly at target utilization.
+    const noise = hashUnit(`${opts.seedScope}|${date}|${t}`);
+    if (noise < opts.targetUtilization) {
+      return { time: t, status: "booked" as const };
+    }
+    return { time: t, status: "open" as const };
+  });
+
+  const openSlots = slots.filter((s) => s.status === "open").length;
+  return {
+    date,
+    weekday,
+    isClosed: false,
+    isRecommended: false,
+    openSlots,
+    totalSlots: slots.length,
+    slots,
+  };
+}
+
+export type GetAvailabilityArgs = {
+  /** Optional therapist filter (matches against `therapistName`). */
+  therapistName?: string;
+  daysAhead?: number;
+  from?: Date;
+  /** Additional bookings beyond the fixture set — e.g. local-storage rows. */
+  extraBookings?: ExternalBooking[];
+  /** When present, this date gets `isRecommended: true` if open. */
+  recommendedDate?: string;
+};
+
+function pickRecommendedDate(days: DayAvailability[], explicit?: string): string | null {
+  if (explicit) {
+    const hit = days.find((d) => d.date === explicit && !d.isClosed);
+    if (hit) return hit.date;
+  }
+  // Choose the first non-closed, sufficiently-open day in the 7–21 day window.
+  const eligible = days.slice(7, 22).filter((d) => !d.isClosed && d.openSlots >= 2);
+  if (eligible.length > 0) return eligible[0].date;
+  // Fall back to any future non-closed day with at least one open slot.
+  const fallback = days.find((d) => !d.isClosed && d.openSlots > 0);
+  return fallback ? fallback.date : null;
+}
+
+/**
+ * Build a 14-day (default) availability schedule for one therapist or for the
+ * whole salon (when no `therapistName` is given the schedule reflects the
+ * therapist's own load — for true salon-wide aggregation use
+ * `getAvailabilityForSalon`).
+ */
+export function getAvailability(args: GetAvailabilityArgs = {}): DayAvailability[] {
+  const {
+    therapistName,
+    daysAhead = 14,
+    from = new Date(),
+    extraBookings = [],
+    recommendedDate,
+  } = args;
+
+  const bookings: ExternalBooking[] = [
+    ...demoAppointments.map((a) => ({
+      scheduledAt: a.scheduledAt,
+      durationMinutes: a.durationMinutes,
+      therapistName: a.therapistName,
+      appointmentId: a.id,
+    })),
+    ...extraBookings,
+  ];
+
+  const start = new Date(from);
+  start.setHours(0, 0, 0, 0);
+
+  const days: DayAvailability[] = [];
+  for (let i = 0; i < daysAhead; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const weekday = d.getDay();
+    const utilization = isWeekend(weekday) ? 0.9 : 0.7;
+    const seedScope = therapistName ?? "salon";
+    days.push(
+      buildDayAvailability(d, {
+        therapistName,
+        bookings,
+        now: from,
+        targetUtilization: utilization,
+        seedScope,
+      }),
+    );
+  }
+
+  const reco = pickRecommendedDate(days, recommendedDate);
+  if (reco) {
+    for (const day of days) {
+      if (day.date === reco) day.isRecommended = true;
+    }
+  }
+  return days;
+}
+
+/**
+ * Salon-wide availability — a slot is open when *any* therapist is free.
+ * Useful for admin views that don't want to commit to a single therapist yet.
+ */
+export function getAvailabilityForSalon(
+  args: Omit<GetAvailabilityArgs, "therapistName"> = {},
+): DayAvailability[] {
+  const perTherapist = demoTherapists.map((t) =>
+    getAvailability({ ...args, therapistName: t.name }),
+  );
+  if (perTherapist.length === 0) {
+    return getAvailability(args);
+  }
+  const dayCount = perTherapist[0].length;
+  const merged: DayAvailability[] = [];
+  for (let i = 0; i < dayCount; i++) {
+    const sample = perTherapist[0][i];
+    if (sample.isClosed) {
+      merged.push({ ...sample, isRecommended: false });
+      continue;
+    }
+    const slotTimes = buildSlotTimes();
+    const slots: TimeSlot[] = slotTimes.map((t) => {
+      const all = perTherapist.map((days) => days[i].slots.find((s) => s.time === t));
+      // 'past' wins (we don't show past slots as bookable for any therapist).
+      if (all.every((s) => s?.status === "past")) return { time: t, status: "past" };
+      const anyOpen = all.some((s) => s?.status === "open");
+      if (anyOpen) return { time: t, status: "open" };
+      return { time: t, status: "booked" };
+    });
+    merged.push({
+      ...sample,
+      slots,
+      openSlots: slots.filter((s) => s.status === "open").length,
+      isRecommended: false,
+    });
+  }
+  // Apply recommended date in aggregate as well.
+  const reco = pickRecommendedDate(merged, args.recommendedDate);
+  if (reco) {
+    for (const day of merged) {
+      if (day.date === reco) day.isRecommended = true;
+    }
+  }
+  return merged;
+}

@@ -3,8 +3,13 @@ export const dynamic = "force-dynamic";
 import { addDays, format, isSameDay, startOfWeek } from "date-fns";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
-import { demoAppointments, demoTherapistPerformance } from "@/lib/demo/fixtures";
+import {
+  demoAppointments,
+  demoTherapistPerformance,
+  demoTherapists,
+} from "@/lib/demo/fixtures";
 import { MonthGrid, type CalendarAppointment } from "@/components/calendar/month-grid";
+import { TherapistBookingCard } from "@/components/calendar/therapist-booking-card";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AppointmentStatus } from "@/types/domain";
 
@@ -220,6 +225,12 @@ function DemoAdminCalendar() {
           サロン全体の予定をセラピストごとに色分けして表示します。
         </p>
       </header>
+
+      <TherapistBookingCard
+        therapists={demoTherapists}
+        heading="新規予約 / 代理予約"
+        description="セラピストを選んで、お客様の代わりに 14 日間の空き枠から予約を確定できます。"
+      />
 
       <Card>
         <CardContent>

@@ -22,12 +22,13 @@ import { CameraCapture } from "@/components/progress/camera-capture";
 import { InteractiveQaThread, type SeedMessage } from "@/components/qa/interactive-thread";
 import { SalonNoteComposer } from "@/components/salon/note-composer";
 import { CommentComposer } from "@/components/meals/comment-composer";
-import { SlotPicker, type SlotCandidate } from "@/components/calendar/slot-picker";
+import { DateSlotPicker, combineDateTimeToIso } from "@/components/appointments/date-slot-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { containsBannedWord } from "@/lib/compliance/banned-words";
 import {
+  addStoredAppointment,
   addStoredProgressPhoto,
   addStoredTreatmentRecord,
   fileToResizedDataUrl,
@@ -43,6 +44,8 @@ import {
 } from "@/lib/demo/store";
 import {
   demoAppointments,
+  getAvailability,
+  type DayAvailability,
   type DemoClient,
   type DemoMealLog,
   type DemoProgressPhoto,
@@ -1498,39 +1501,59 @@ function BookingSheet({
   onClose: () => void;
   client: DemoClient;
 }) {
-  // Three sample slots: today + 28 days at common hours.
-  const base = new Date();
-  base.setDate(base.getDate() + 28);
-  base.setHours(15, 0, 0, 0);
-  const candidates: SlotCandidate[] = [
-    {
-      scheduledAt: new Date(base.getTime()).toISOString(),
-      label: `${base.getMonth() + 1}/${base.getDate()} 15:00`,
-      recommended: true,
-    },
-    {
-      scheduledAt: new Date(base.getTime() + 86400000).toISOString(),
-      label: `${base.getMonth() + 1}/${base.getDate() + 1} 11:00`,
-    },
-    {
-      scheduledAt: new Date(base.getTime() + 86400000 * 2).toISOString(),
-      label: `${base.getMonth() + 1}/${base.getDate() + 2} 17:00`,
-    },
-  ];
+  const availability: DayAvailability[] = useMemo(
+    () =>
+      getAvailability({
+        therapistName: client.primaryTherapistName,
+        daysAhead: 14,
+      }),
+    [client.primaryTherapistName],
+  );
+  const recommendedDate = availability.find((d) => d.isRecommended)?.date;
+  const [selectedDate, setSelectedDate] = useState<string | null>(recommendedDate ?? null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const onConfirm = ({ date, time }: { date: string; time: string }) => {
+    setSubmitting(true);
+    try {
+      const iso = combineDateTimeToIso(date, time);
+      addStoredAppointment({
+        clientId: client.id,
+        therapistId: client.primaryTherapistName,
+        scheduledAt: iso,
+        durationMin: 90,
+        status: "confirmed",
+        menuName: "背中トリートメント 90 分",
+        clientName: client.displayName,
+        therapistName: client.primaryTherapistName,
+      });
+      toast.success("ご予約を確定しました");
+      setTimeout(onClose, 300);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "store_error";
+      toast.error(`予約の保存に失敗しました（${msg}）`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <BottomSheet open={open} onClose={onClose} title="次回予約">
-      <SlotPicker
-        candidates={candidates}
-        demoMeta={{
-          clientId: client.id,
-          clientName: client.displayName,
-          therapistId: "therapist-current",
-          therapistName: client.primaryTherapistName,
+      <DateSlotPicker
+        availability={availability}
+        selectedDate={selectedDate}
+        onSelectDate={(d) => {
+          setSelectedDate(d);
+          setSelectedTime(null);
         }}
-        onConfirm={() => {
-          setTimeout(onClose, 400);
-        }}
+        selectedTime={selectedTime}
+        onSelectTime={setSelectedTime}
+        recommendedDate={recommendedDate}
+        recommendedTime="14:00"
+        therapistName={client.primaryTherapistName}
+        onConfirm={onConfirm}
+        submitting={submitting}
       />
     </BottomSheet>
   );

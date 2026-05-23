@@ -1,12 +1,12 @@
 export const dynamic = "force-dynamic";
 
-import { addDays, format, isSameDay } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { Clock } from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
-import { demoAppointments } from "@/lib/demo/fixtures";
+import { demoAppointments, demoTherapists } from "@/lib/demo/fixtures";
 import { MonthGrid, type CalendarAppointment } from "@/components/calendar/month-grid";
-import { SlotPicker, type SlotCandidate } from "@/components/calendar/slot-picker";
+import { TherapistBookingCard } from "@/components/calendar/therapist-booking-card";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AppointmentStatus } from "@/types/domain";
 
@@ -121,28 +121,12 @@ function DemoTherapistCalendar() {
     .filter((a) => isSameDay(new Date(a.scheduledAt), anchor))
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 
-  const candidates: SlotCandidate[] = [
-    {
-      scheduledAt: new Date(anchor.getTime() + 9 * 60 * 60 * 1000).toISOString(),
-      label: "18:00",
-    },
-    {
-      scheduledAt: new Date(addDays(anchor, 1).getTime() + 5 * 60 * 60 * 1000).toISOString(),
-      label: "翌日 14:00",
-      recommended: true,
-    },
-    {
-      scheduledAt: new Date(addDays(anchor, 1).getTime() + 7 * 60 * 60 * 1000).toISOString(),
-      label: "翌日 16:00",
-    },
-  ];
-
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold">{THERAPIST_NAME} さんの予定</h1>
         <p className="mt-1 text-sm text-stone-500">
-          月次グリッドと本日の予定、予定移動の候補枠を確認できます。
+          月次グリッドと本日の予定、お客様代理での予約追加を 1 画面で操作できます。
         </p>
       </header>
 
@@ -152,6 +136,7 @@ function DemoTherapistCalendar() {
             year={anchor.getFullYear()}
             month={anchor.getMonth()}
             appointments={myAppointments}
+            hrefForDate={() => null}
           />
         </CardContent>
       </Card>
@@ -178,24 +163,17 @@ function DemoTherapistCalendar() {
                   所要 {a.durationMin}分 ・ ステータス {a.status}
                 </p>
               </div>
-              <span className="text-xs text-stone-400">タップで移動</span>
             </li>
           ))}
         </ul>
       </section>
 
-      <Card>
-        <CardContent>
-          <p className="text-sm font-semibold text-stone-900">予定を移動</p>
-          <p className="mt-1 text-xs text-stone-500">
-            既存予約を別の枠に移したい場合、ワンタップで次の 3 つの候補を提示します。
-            お客様と相談しながらその場で決定できます。
-          </p>
-          <div className="mt-4">
-            <SlotPicker candidates={candidates} heading="次の3スロット候補" />
-          </div>
-        </CardContent>
-      </Card>
+      <TherapistBookingCard
+        fixedTherapistName={THERAPIST_NAME}
+        therapists={demoTherapists}
+        heading="代理予約を追加"
+        description="14 日間の空き枠から、お客様の代わりに予約を確定できます。"
+      />
     </div>
   );
 }

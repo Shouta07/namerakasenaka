@@ -1,11 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import { addDays, format } from "date-fns";
+import Link from "next/link";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import { MonthGrid, type CalendarAppointment } from "@/components/calendar/month-grid";
-import { SlotPicker, type SlotCandidate } from "@/components/calendar/slot-picker";
 import { DemoClientCalendar } from "@/components/calendar/demo-client-calendar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AppointmentStatus } from "@/types/domain";
 
@@ -18,43 +19,25 @@ type AppointmentRow = {
   client_id: string;
 };
 
-type ClientRow = {
-  id: string;
-  primary_therapist_id: string | null;
-};
-
 export default async function ClientCalendarPage() {
   if (isDemoMode()) {
     return <DemoClientCalendar />;
   }
 
   const supabase = await getServerSupabase();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   const today = new Date();
   const start = new Date(today.getFullYear(), today.getMonth() - 1, 1).toISOString();
   const end = new Date(today.getFullYear(), today.getMonth() + 2, 1).toISOString();
 
-  const [{ data: apptData }, { data: clientData }] = await Promise.all([
-    supabase
-      .from("appointments")
-      .select("id, scheduled_at, duration_min, status, therapist_id, client_id")
-      .gte("scheduled_at", start)
-      .lt("scheduled_at", end)
-      .order("scheduled_at", { ascending: true }),
-    user
-      ? supabase
-          .from("clients")
-          .select("id, primary_therapist_id")
-          .eq("user_id", user.id)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
-  ]);
+  const { data: apptData } = await supabase
+    .from("appointments")
+    .select("id, scheduled_at, duration_min, status, therapist_id, client_id")
+    .gte("scheduled_at", start)
+    .lt("scheduled_at", end)
+    .order("scheduled_at", { ascending: true });
 
   const rows = (apptData ?? []) as unknown as AppointmentRow[];
-  const meClient = clientData as ClientRow | null;
 
   const appointments: CalendarAppointment[] = rows.map((r) => ({
     id: r.id,
@@ -73,25 +56,18 @@ export default async function ClientCalendarPage() {
   recommended.setHours(15, 0, 0, 0);
   const recommendedIso = format(recommended, "yyyy-MM-dd");
 
-  const candidates: SlotCandidate[] = [
-    { scheduledAt: recommended.toISOString(), label: "15:00", recommended: true },
-    {
-      scheduledAt: new Date(recommended.getTime() + 2 * 60 * 60 * 1000).toISOString(),
-      label: "17:00",
-    },
-    {
-      scheduledAt: new Date(recommended.getTime() - 2 * 60 * 60 * 1000).toISOString(),
-      label: "13:00",
-    },
-  ];
-
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">カレンダー</h1>
-        <p className="mt-1 text-sm text-stone-500">
-          ご来店スケジュールと次回推奨枠を確認できます。
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">カレンダー</h1>
+          <p className="mt-1 text-sm text-stone-500">
+            ご来店スケジュールと次回推奨枠を確認できます。
+          </p>
+        </div>
+        <Link href="/c/appointments/new">
+          <Button>新しい予約 →</Button>
+        </Link>
       </header>
 
       <Card>
@@ -101,7 +77,17 @@ export default async function ClientCalendarPage() {
             month={today.getMonth()}
             appointments={appointments}
             recommendedDate={recommendedIso}
+            hrefForDate={(iso) => {
+              const d = new Date(iso);
+              const t = new Date();
+              t.setHours(0, 0, 0, 0);
+              if (d.getTime() < t.getTime()) return null;
+              return `/c/appointments/new?date=${iso}`;
+            }}
           />
+          <p className="mt-3 text-[11px] text-stone-500">
+            日付をタップすると、その日の空き枠から予約できます。
+          </p>
         </CardContent>
       </Card>
 
@@ -110,25 +96,19 @@ export default async function ClientCalendarPage() {
           <p className="text-xs text-brand-700">
             次回ご来店の推奨日:{" "}
             <span className="font-semibold">
-              {format(recommended, "yyyy年M月d日(EEE) HH:mm")}
+              {format(recommended, "yyyy年M月d日(EEE)")}
             </span>
           </p>
           <p className="mt-1 text-xs text-stone-500">
             ご契約コースの推奨間隔をもとに自動算出しています（コース理解型推奨）。
           </p>
-          <div className="mt-4">
-            <SlotPicker
-              candidates={candidates}
-              realPost={{
-                therapistId: meClient?.primary_therapist_id ?? undefined,
-                clientId: meClient?.id,
-                durationMin: 90,
-              }}
-            />
+          <div className="mt-3">
+            <Link href={`/c/appointments/new?date=${recommendedIso}`}>
+              <Button variant="secondary">推奨日で予約する</Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
     </div>
   );
 }
-

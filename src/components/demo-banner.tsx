@@ -4,19 +4,25 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { isDemoMode } from "@/lib/demo";
 import { clearStore } from "@/lib/demo/store";
+import { usePresentationMode } from "@/components/presentation-mode";
 
 /**
  * Subtle "sample data" badge shown in role layouts when Supabase env is unset.
  * Tap to reveal a "リセット" action that clears the demo localStorage namespace.
+ *
+ * Hidden entirely while presentation mode is active so screenshares look like
+ * a real product rather than a demo.
  */
 export function DemoBanner() {
   const demo = isDemoMode();
+  const { active } = usePresentationMode();
   const [open, setOpen] = useState(false);
   if (!demo) return null;
+  if (active) return null;
   return (
-    <div className="pointer-events-auto fixed right-3 top-3 z-40">
+    <div className="pointer-events-auto fixed right-3 top-12 z-40 sm:top-14">
       <div className="flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-700 shadow-sm">
-        <span>サンプルデータ表示中</span>
+        <span>サンプルデータ</span>
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -34,7 +40,6 @@ export function DemoBanner() {
               clearStore();
               toast.success("デモデータをリセットしました");
               setOpen(false);
-              // Force a fresh hydrate after reset.
               if (typeof window !== "undefined") {
                 setTimeout(() => window.location.reload(), 300);
               }

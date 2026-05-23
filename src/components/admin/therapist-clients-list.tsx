@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
 import {
   demoAppointments,
   demoClientRoster,
@@ -152,12 +153,7 @@ export function TherapistClientsList({
                 <Link href={`/t/clients/${c.id}`} className="block">
                   <Card>
                     <CardContent className="flex items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={c.avatarUrl}
-                        alt={c.displayName}
-                        className="h-10 w-10 flex-none rounded-full bg-stone-100 object-cover"
-                      />
+                      <CustomerAvatar name={c.displayName} size="md" role="customer" />
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-stone-900">
                           {c.displayName}

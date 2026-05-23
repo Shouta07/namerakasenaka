@@ -1,49 +1,94 @@
 import Link from "next/link";
-import { ArrowRight, AlertCircle, Camera, Search } from "lucide-react";
+import { ArrowRight, AlertCircle, Search } from "lucide-react";
 import { RoleTopBar } from "@/components/ui/role-top-bar";
-import { KpiStrip, type KpiStripItem } from "@/components/admin/kpi-strip";
+import { KpiCards, type KpiCardItem } from "@/components/admin/kpi-card";
 import { RiskWidgets } from "@/components/admin/risk-widgets";
+import { ActivityFeed } from "@/components/admin/activity-feed";
+import { RevenueTile } from "@/components/admin/revenue-tile";
 import { Badge } from "@/components/ui/badge";
 import { DemoBanner } from "@/components/demo-banner";
+import { PresentationModeToggle } from "@/components/presentation-mode";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
+import { HighlightsSection } from "@/components/admin/highlights-section";
+import { longDateJa, clockJa, relativeTimeJa } from "@/lib/demo/time";
 import {
+  demoActivityFeed,
   demoAppointments,
   demoClientRoster,
   demoKpiSnapshot,
   demoOrganization,
   demoQaThreads,
+  demoRevenueBreakdown,
   demoTherapistPerformance,
-  formatJpy,
 } from "@/lib/demo/fixtures";
 
-const today = new Date();
-
-const weekday = ["日", "月", "火", "水", "木", "金", "土"][today.getDay()];
-const formattedDate = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日(${weekday})`;
-
-const todaysAppointments = demoAppointments.slice(0, 5);
-const recentClients = demoClientRoster.slice(0, 5);
-const unreadThreads = demoQaThreads.filter((t) => t.unreadCount > 0);
-
-const kpis: KpiStripItem[] = [
-  { label: "本日来店", value: demoKpiSnapshot.todayAppointments },
-  { label: "今月新規", value: demoKpiSnapshot.monthlyNewClients },
-  { label: "今月完遂率", value: `${demoKpiSnapshot.monthlyCompletionRate}%`, tone: "brand" },
-  {
-    label: "未対応Q&A",
-    value: demoKpiSnapshot.pendingQa,
-    tone: demoKpiSnapshot.pendingQa > 0 ? "warning" : "neutral",
-  },
-];
-
-function appointmentTime(iso: string): string {
-  const d = new Date(iso);
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+function todaysAppointmentsList() {
+  const today = new Date().toISOString().slice(0, 10);
+  return demoAppointments
+    .filter((a) => a.scheduledAt.slice(0, 10) === today)
+    .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 }
 
 export default function HomePage() {
+  const today = new Date();
+  const todaysAppointments = todaysAppointmentsList();
+  const recentClients = demoClientRoster.slice(0, 6);
+  const unreadThreads = demoQaThreads.filter((t) => t.unreadCount > 0);
+
+  const kpis: KpiCardItem[] = [
+    {
+      label: "本日来店",
+      value: demoKpiSnapshot.todayAppointments,
+      deltaLabel: `${demoKpiSnapshot.todayAppointmentsDelta >= 0 ? "+" : ""}${demoKpiSnapshot.todayAppointmentsDelta}`,
+      vsLabel: "昨日",
+      direction:
+        demoKpiSnapshot.todayAppointmentsDelta > 0
+          ? "up"
+          : demoKpiSnapshot.todayAppointmentsDelta < 0
+            ? "down"
+            : "flat",
+      goodWhen: "up",
+      spark: [3, 4, 4, 5, 4, 5, 6],
+    },
+    {
+      label: "今月新規",
+      value: `${demoKpiSnapshot.monthlyNewClients} 名`,
+      deltaLabel: `${demoKpiSnapshot.monthlyNewClientsDelta >= 0 ? "+" : ""}${demoKpiSnapshot.monthlyNewClientsDelta} 名`,
+      vsLabel: "先月",
+      direction: demoKpiSnapshot.monthlyNewClientsDelta > 0 ? "up" : "down",
+      goodWhen: "up",
+      spark: [4, 5, 6, 6, 7, 8, 9],
+    },
+    {
+      label: "完遂率",
+      value: `${demoKpiSnapshot.monthlyCompletionRate}%`,
+      deltaLabel: `+${demoKpiSnapshot.monthlyCompletionRateDelta}pt`,
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
+      tone: "brand",
+      spark: [70, 71, 73, 72, 75, 77, 78],
+    },
+    {
+      label: "平均改善度",
+      value: `+${demoKpiSnapshot.averageImprovement.toFixed(1)}`,
+      deltaLabel: `+${demoKpiSnapshot.averageImprovementDelta.toFixed(1)}`,
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
+      tone: "brand",
+      spark: [0.3, 0.4, 0.5, 0.6, 0.6, 0.7, 0.8],
+    },
+  ];
+
   return (
     <div className="min-h-dvh bg-stone-50">
-      <RoleTopBar role="経営者" persona="salon" eyebrow={demoOrganization.name} />
+      <RoleTopBar
+        role="経営者"
+        persona="salon"
+        eyebrow={demoOrganization.name}
+        right={<PresentationModeToggle />}
+      />
       <DemoBanner />
 
       <main
@@ -52,18 +97,15 @@ export default function HomePage() {
       >
         <section className="flex items-baseline justify-between gap-3 pt-5">
           <div>
-            <p className="text-[11px] text-stone-500">{formattedDate}</p>
+            <p className="text-[11px] text-stone-500">{longDateJa(today)}</p>
             <h2 className="mt-0.5 text-base font-semibold text-stone-900">
               本日 {todaysAppointments.length} 件の予約があります
             </h2>
           </div>
-          <p className="text-[11px] text-stone-500">
-            売上見込 <span className="font-semibold text-stone-900">{formatJpy(demoKpiSnapshot.monthlyRevenueJpy)}</span>
-          </p>
         </section>
 
         <section className="mt-4">
-          <KpiStrip items={kpis} />
+          <KpiCards items={kpis} />
         </section>
 
         <section className="mt-4">
@@ -83,15 +125,16 @@ export default function HomePage() {
               </Link>
             </header>
             <ul className="divide-y divide-stone-100">
-              {todaysAppointments.map((a) => (
+              {todaysAppointments.slice(0, 5).map((a) => (
                 <li key={a.id}>
                   <Link
                     href={`/admin/clients/${a.clientId}`}
                     className="flex items-center gap-3 px-4 py-3 hover:bg-stone-50"
                   >
                     <span className="w-12 flex-none text-sm font-semibold tabular-nums text-stone-900">
-                      {appointmentTime(a.scheduledAt)}
+                      {clockJa(a.scheduledAt)}
                     </span>
+                    <CustomerAvatar name={a.clientName} size="sm" role="customer" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium text-stone-900">
                         {a.clientName}
@@ -115,39 +158,59 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <div className="rounded-lg border border-stone-200 bg-white">
-            <header className="flex items-center gap-2 border-b border-stone-200 px-4 py-2.5">
-              <AlertCircle className="h-3.5 w-3.5 text-amber-600" />
-              <h3 className="text-sm font-semibold text-stone-900">要対応</h3>
-            </header>
-            <ul className="divide-y divide-stone-100">
-              {unreadThreads.length === 0 ? (
-                <li className="px-4 py-6 text-center text-[11px] text-stone-400">
-                  未対応はありません
-                </li>
-              ) : (
-                unreadThreads.map((t) => (
-                  <li key={t.id}>
-                    <Link
-                      href="/admin/clients"
-                      className="flex items-center gap-2 px-4 py-3 hover:bg-stone-50"
-                    >
-                      <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1 text-[10px] font-semibold text-amber-700">
-                        {t.unreadCount}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-xs font-medium text-stone-900">
-                          {t.clientName}
-                        </span>
-                        <span className="block truncate text-[11px] text-stone-500">
-                          {t.lastMessage}
-                        </span>
-                      </span>
-                    </Link>
+          <div className="space-y-4">
+            <ActivityFeed entries={demoActivityFeed} />
+
+            <div className="rounded-lg border border-stone-200 bg-white">
+              <header className="flex items-center gap-2 border-b border-stone-200 px-4 py-2.5">
+                <AlertCircle className="h-3.5 w-3.5 text-amber-600" />
+                <h3 className="text-sm font-semibold text-stone-900">要対応</h3>
+              </header>
+              <ul className="divide-y divide-stone-100">
+                {unreadThreads.length === 0 ? (
+                  <li className="px-4 py-6 text-center text-[11px] text-stone-400">
+                    未対応はありません
                   </li>
-                ))
-              )}
-            </ul>
+                ) : (
+                  unreadThreads.map((t) => (
+                    <li key={t.id}>
+                      <Link
+                        href={`/admin/clients/${t.clientId}`}
+                        className="flex items-center gap-2 px-4 py-3 hover:bg-stone-50"
+                      >
+                        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1 text-[10px] font-semibold text-amber-700">
+                          {t.unreadCount}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-xs font-medium text-stone-900">
+                            {t.clientName}
+                          </span>
+                          <span className="block truncate text-[11px] text-stone-500">
+                            {t.lastMessage}
+                          </span>
+                        </span>
+                        <span className="text-[10px] text-stone-400">
+                          {relativeTimeJa(t.lastMessageAt)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-6 grid gap-4 lg:grid-cols-3">
+          <div className="lg:col-span-1">
+            <RevenueTile
+              monthlyTotalJpy={demoKpiSnapshot.monthlyRevenueJpy}
+              breakdown={demoRevenueBreakdown}
+              vsLastMonthPct={demoKpiSnapshot.monthlyRevenueVsLastPct}
+            />
+          </div>
+          <div className="lg:col-span-2">
+            <HighlightsSection />
           </div>
         </section>
 
@@ -180,12 +243,7 @@ export default function HomePage() {
                     href={`/admin/clients/${c.id}`}
                     className="flex items-center gap-3 px-4 py-3 hover:bg-stone-50"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={c.avatarUrl}
-                      alt={c.displayName}
-                      className="h-9 w-9 flex-none rounded-full object-cover"
-                    />
+                    <CustomerAvatar name={c.displayName} size="sm" role="customer" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium text-stone-900">
                         {c.displayName}
@@ -238,7 +296,12 @@ export default function HomePage() {
               <tbody className="divide-y divide-stone-100">
                 {demoTherapistPerformance.map((t) => (
                   <tr key={t.name}>
-                    <td className="px-4 py-2.5 font-medium text-stone-900">{t.name}</td>
+                    <td className="px-4 py-2.5 font-medium text-stone-900">
+                      <span className="inline-flex items-center gap-2">
+                        <CustomerAvatar name={t.name} size="xs" role="therapist" />
+                        {t.name}
+                      </span>
+                    </td>
                     <td className="px-4 py-2.5 text-right tabular-nums">{t.activeClients}</td>
                     <td className="px-4 py-2.5 text-right tabular-nums text-brand-700">
                       {t.monthlyCompletions}
@@ -254,19 +317,6 @@ export default function HomePage() {
               </tbody>
             </table>
           </div>
-        </section>
-
-        <section className="mt-6 flex items-center justify-between rounded-lg border border-dashed border-stone-300 bg-stone-50 px-4 py-3 text-[11px]">
-          <span className="inline-flex items-center gap-1.5 text-stone-600">
-            <Camera className="h-3.5 w-3.5 text-stone-500" />
-            施術日には顧客詳細から進捗写真をアップロードできます
-          </span>
-          <Link
-            href="/admin/clients"
-            className="font-medium text-brand-700 hover:underline"
-          >
-            顧客一覧へ
-          </Link>
         </section>
       </main>
     </div>

@@ -26,7 +26,7 @@ type QueueItem = {
   loggedAt: string;
   mealType: MealType;
   memo: string;
-  photoUrl: string;
+  photoUrl: string | null;
   aiDraft: string;
   approved: boolean;
   rejected: boolean;
@@ -110,12 +110,18 @@ export function DemoNutritionistQueue() {
                   </p>
 
                   <div className="grid gap-3 sm:grid-cols-[140px_1fr]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={d.photoUrl}
-                      alt="食事の写真"
-                      className="aspect-[7/5] w-full rounded-lg bg-stone-100 object-cover sm:aspect-square"
-                    />
+                    {d.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={d.photoUrl}
+                        alt="食事の写真"
+                        className="aspect-[7/5] w-full rounded-lg bg-stone-100 object-cover sm:aspect-square"
+                      />
+                    ) : (
+                      <div className="flex aspect-[7/5] w-full items-center justify-center rounded-lg bg-gradient-to-br from-emerald-50 to-amber-50 text-[10px] text-stone-500 sm:aspect-square">
+                        食事ログ
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <div className="rounded-lg bg-stone-50 p-3 text-xs text-stone-700">
                         <p className="font-semibold text-stone-900">顧客メモ</p>

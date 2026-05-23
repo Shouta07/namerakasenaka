@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from "react";
 import type { TimelinePhoto } from "./photo-timeline";
+import {
+  BackPhotoPlaceholder,
+  severityFromSelfRating,
+} from "./back-photo-placeholder";
 
 export function PhotoCompare({ photos }: { photos: TimelinePhoto[] }) {
   const [leftId, setLeftId] = useState<string | null>(photos[0]?.id ?? null);
@@ -69,6 +73,14 @@ function ComparePane({ label, photo }: { label: string; photo?: TimelinePhoto })
       {photo?.signedUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={photo.signedUrl} alt={`比較写真${label}`} className="w-full object-cover" />
+      ) : photo ? (
+        <div className="aspect-[3/4] w-full bg-stone-100">
+          <BackPhotoPlaceholder
+            severity={photo.severity ?? severityFromSelfRating(photo.selfRating)}
+            lighting={photo.lighting ?? "warm"}
+            caption={photo.caption ?? "比較写真"}
+          />
+        </div>
       ) : (
         <div className="flex h-64 items-center justify-center bg-stone-100 text-sm text-stone-400">
           選択してください

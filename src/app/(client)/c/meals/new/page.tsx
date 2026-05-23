@@ -64,7 +64,10 @@ export default function NewMealLogPage() {
         }
         const photoUrl = photo
           ? await fileToResizedDataUrl(photo, 900, 0.8)
-          : `https://picsum.photos/seed/meal-${Date.now()}/700/500`;
+          : "data:image/svg+xml;utf8," +
+            encodeURIComponent(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ecfccb"/><stop offset="100%" stop-color="#fef3c7"/></linearGradient></defs><rect width="700" height="500" fill="url(%23g)"/><text x="350" y="260" font-size="22" fill="#78716c" text-anchor="middle" font-family="sans-serif">お食事の記録</text></svg>`,
+            );
         const log = addStoredMealLog({
           clientId: demoClient.id,
           mealType,

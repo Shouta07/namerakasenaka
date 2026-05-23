@@ -4,6 +4,7 @@ import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import { demoClientRoster } from "@/lib/demo/fixtures";
 import { Badge } from "@/components/ui/badge";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
 
 type ClientRow = {
   id: string;
@@ -25,12 +26,7 @@ export default async function AdminClientsPage() {
                 href={`/admin/clients/${c.id}`}
                 className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-3 active:bg-stone-50"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={c.avatarUrl}
-                  alt={c.displayName}
-                  className="h-11 w-11 flex-none rounded-full bg-stone-100 object-cover"
-                />
+                <CustomerAvatar name={c.displayName} size="md" role="customer" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-stone-900">
                     {c.displayName}

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { Printer, ArrowLeft } from "lucide-react";
+import { Printer, ArrowLeft, Sparkles } from "lucide-react";
 import {
   type DemoClient,
   type DemoProgressPhoto,
@@ -20,6 +20,12 @@ import {
   type EvidenceSelfLog,
   type EvidenceTreatmentRecord,
 } from "@/lib/evidence";
+import {
+  BackPhotoPlaceholder,
+  severityFromSelfRating,
+  type BackPhotoLighting,
+  type BackPhotoSeverity,
+} from "@/components/progress/back-photo-placeholder";
 
 /**
  * Single-page A4-friendly progress report. Designed to be saved to PDF via
@@ -185,10 +191,28 @@ export function ProgressReport({
           出力できます。
         </div>
 
-        <article className="print-page rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
-          <header className="border-b border-stone-200 pb-4">
-            <p className="text-xs text-stone-500">{salonName}</p>
-            <h1 className="mt-1 text-2xl font-semibold text-stone-900">
+        <article className="print-page relative rounded-2xl border border-stone-200 bg-white p-6 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.18),0_20px_40px_-20px_rgba(0,0,0,0.10)] ring-1 ring-stone-200/50 sm:p-10">
+          {/* Letterhead */}
+          <header className="border-b-2 border-brand-500 pb-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-700">
+                  <Sparkles className="h-3 w-3" />
+                  CARAT
+                </p>
+                <p className="mt-1 text-base font-semibold text-stone-900">{salonName}</p>
+                <p className="mt-0.5 text-[10px] text-stone-500">
+                  背中ケア 進捗管理 ・ Senacare CRM
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] uppercase tracking-wider text-stone-500">Report No.</p>
+                <p className="mt-0.5 font-mono text-xs text-stone-700">
+                  {`SC-${client.id.slice(-6).toUpperCase()}-${todayLabel.replace(/\//g, "")}`}
+                </p>
+              </div>
+            </div>
+            <h1 className="mt-4 text-2xl font-semibold text-stone-900">
               {client.displayName} 様 ・ 進捗レポート
             </h1>
             <p className="mt-1 text-xs text-stone-500">
@@ -243,12 +267,29 @@ export function ProgressReport({
             {evPhotos.length === 0 ? (
               <p className="text-sm text-stone-500">写真がまだありません。</p>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
-                {beforePhotos.map((p) => (
-                  <PhotoCell key={p.id} url={lookupUrl(p, seedPhotos, storedPhotos)} caption="Before" takenAt={p.takenAt} />
+              <div className="grid grid-cols-2 gap-4">
+                {beforePhotos.slice(0, 1).map((p) => (
+                  <PhotoCell
+                    key={p.id}
+                    url={lookupUrl(p, seedPhotos, storedPhotos)}
+                    severity={lookupSeverity(p, seedPhotos)}
+                    lighting="cool"
+                    caption="Before"
+                    weekLabel={`Week 1`}
+                    takenAt={p.takenAt}
+                  />
                 ))}
-                {afterPhotos.map((p) => (
-                  <PhotoCell key={p.id} url={lookupUrl(p, seedPhotos, storedPhotos)} caption="After" takenAt={p.takenAt} />
+                {afterPhotos.slice(0, 1).map((p) => (
+                  <PhotoCell
+                    key={p.id}
+                    url={lookupUrl(p, seedPhotos, storedPhotos)}
+                    severity={lookupSeverity(p, seedPhotos)}
+                    lighting="warm"
+                    caption="After"
+                    weekLabel={`Week ${Math.max(1, Math.round(summary.weeksTracked))}`}
+                    takenAt={p.takenAt}
+                    highlight
+                  />
                 ))}
               </div>
             )}
@@ -309,6 +350,37 @@ export function ProgressReport({
             )}
           </Section>
 
+          <Section title="6. 監修">
+            <div className="rounded-lg border border-stone-200 bg-stone-50 p-3 text-xs">
+              <p className="font-medium text-stone-700">食事フィードバック監修</p>
+              <p className="mt-1 text-stone-600">
+                田中 栄養士（管理栄養士 登録番号: 5512-9023）
+              </p>
+              <p className="mt-2 text-[10px] text-stone-500">
+                本レポートに含まれる栄養関連の助言は、管理栄養士による監修を受けています。
+              </p>
+            </div>
+          </Section>
+
+          <Section title="7. 署名">
+            <div className="grid grid-cols-2 gap-6 pt-2">
+              <div>
+                <p className="text-[10px] text-stone-500">担当セラピスト</p>
+                <div className="mt-6 border-b border-stone-400 pb-1 text-xs text-stone-700">
+                  {client.primaryTherapistName}
+                </div>
+                <p className="mt-1 text-[9px] text-stone-400">署名 / 印</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-stone-500">サロン担当</p>
+                <div className="mt-6 border-b border-stone-400 pb-1 text-xs text-stone-700">
+                  &nbsp;
+                </div>
+                <p className="mt-1 text-[9px] text-stone-400">署名 / 印</p>
+              </div>
+            </div>
+          </Section>
+
           <footer className="mt-8 border-t border-stone-200 pt-3 text-[10px] text-stone-500">
             <p>
               本資料は個別の効果効能を保証するものではなく、参考情報です。
@@ -365,22 +437,49 @@ function PhotoCell({
   url,
   caption,
   takenAt,
+  severity,
+  lighting,
+  weekLabel,
+  highlight,
 }: {
-  url: string;
+  url: string | null;
   caption: string;
   takenAt: string;
+  severity: BackPhotoSeverity;
+  lighting: BackPhotoLighting;
+  weekLabel?: string;
+  highlight?: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-stone-200">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={url}
-        alt={caption}
-        className="aspect-[3/4] w-full rounded-t-lg bg-stone-100 object-cover"
-      />
-      <div className="flex items-center justify-between px-2 py-1.5 text-[10px]">
-        <span className="font-medium text-stone-700">{caption}</span>
-        <span className="text-stone-500">
+    <div
+      className={`overflow-hidden rounded-lg border ${
+        highlight ? "border-brand-500 ring-2 ring-brand-100" : "border-stone-200"
+      }`}
+    >
+      <div className="aspect-[3/4] w-full bg-stone-100">
+        {url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt={caption}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <BackPhotoPlaceholder
+            severity={severity}
+            lighting={lighting}
+            caption={caption}
+          />
+        )}
+      </div>
+      <div className="flex items-center justify-between px-2.5 py-2">
+        <div>
+          <p className="text-sm font-semibold text-stone-900">{caption}</p>
+          {weekLabel ? (
+            <p className="text-[10px] text-stone-500">{weekLabel}</p>
+          ) : null}
+        </div>
+        <span className="text-[10px] text-stone-500">
           {new Date(takenAt).toLocaleDateString("ja-JP")}
         </span>
       </div>
@@ -404,9 +503,17 @@ function lookupUrl(
   p: EvidencePhoto,
   seed: DemoProgressPhoto[],
   stored: { id: string; signedUrl: string }[],
-): string {
+): string | null {
   const fxs = seed.find((x) => x.id === p.id);
   if (fxs) return fxs.signedUrl;
   const stx = stored.find((x) => x.id === p.id);
-  return stx?.signedUrl ?? "";
+  return stx?.signedUrl ?? null;
+}
+
+function lookupSeverity(
+  p: EvidencePhoto,
+  seed: DemoProgressPhoto[],
+): BackPhotoSeverity {
+  const fxs = seed.find((x) => x.id === p.id);
+  return fxs?.severity ?? severityFromSelfRating(p.selfRating);
 }

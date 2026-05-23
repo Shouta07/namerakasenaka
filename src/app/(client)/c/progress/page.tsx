@@ -12,6 +12,7 @@ import { DemoProgressTimeline } from "@/components/progress/demo-progress-timeli
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
 import { MEAL_TYPE_LABEL } from "@/types/domain";
 
 type VideoRow = {
@@ -144,12 +145,7 @@ function DemoClientProgress() {
   return (
     <div className="space-y-6">
       <section className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={demoClient.avatarUrl}
-          alt={demoClient.displayName}
-          className="h-16 w-16 flex-none rounded-full bg-stone-100 object-cover"
-        />
+        <CustomerAvatar name={demoClient.displayName} size="lg" role="customer" />
         <div className="min-w-0 flex-1">
           <p className="text-xs text-stone-500">{demoClient.furigana}</p>
           <h1 className="text-xl font-bold text-stone-900">

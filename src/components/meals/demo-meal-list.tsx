@@ -23,7 +23,7 @@ type MergedMeal = {
   loggedAt: string;
   mealType: FixtureMeal["mealType"];
   memo: string;
-  photoUrl: string;
+  photoUrl: string | null;
   feedback: {
     status: string;
     finalText: string | null;
@@ -38,7 +38,9 @@ export function DemoMealList() {
   const feedbacks = useStoredMealFeedbacks();
 
   const merged = useMemo<MergedMeal[]>(() => {
-    const fixtureItems: MergedMeal[] = demoMealLogs.map((m) => ({
+    const fixtureItems: MergedMeal[] = demoMealLogs
+      .filter((m) => m.clientId === demoClient.id)
+      .map((m) => ({
       id: m.id,
       loggedAt: m.loggedAt,
       mealType: m.mealType,
@@ -114,12 +116,18 @@ function MealCard({ log }: { log: MergedMeal }) {
           <Badge tone="brand">{MEAL_TYPE_LABEL[log.mealType]}</Badge>
         </div>
 
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={log.photoUrl}
-          alt="お食事の写真"
-          className="aspect-[7/5] w-full rounded-xl bg-stone-100 object-cover"
-        />
+        {log.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={log.photoUrl}
+            alt="お食事の写真"
+            className="aspect-[7/5] w-full rounded-xl bg-stone-100 object-cover"
+          />
+        ) : (
+          <div className="flex aspect-[7/5] w-full items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-amber-50 text-xs text-stone-500">
+            食事の記録
+          </div>
+        )}
 
         <div className="rounded-lg bg-stone-50 p-3 text-xs text-stone-700">
           <p className="font-semibold text-stone-900">あなたのメモ</p>

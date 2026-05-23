@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
 
 export type QuickSearchClient = {
   id: string;
@@ -59,12 +60,7 @@ export function CustomerQuickSearch({ clients }: { clients: QuickSearchClient[] 
                   href={`/admin/clients/${c.id}`}
                   className="flex items-center gap-3 px-3 py-2 hover:bg-stone-50"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={c.avatarUrl}
-                    alt=""
-                    className="h-8 w-8 flex-none rounded-full bg-stone-100 object-cover"
-                  />
+                  <CustomerAvatar name={c.displayName} size="sm" role="customer" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-stone-900">
                       {c.displayName}

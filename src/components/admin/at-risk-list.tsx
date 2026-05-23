@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
+import { relativeTimeJa } from "@/lib/demo/time";
 import { containsBannedWord } from "@/lib/compliance/banned-words";
 import {
   addStoredMessage,
@@ -188,12 +190,7 @@ export function AtRiskList({
               className="rounded-2xl border border-stone-200 bg-white p-3"
             >
               <div className="flex items-start gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={c.avatarUrl}
-                  alt={c.displayName}
-                  className="h-12 w-12 flex-none rounded-full bg-stone-100 object-cover"
-                />
+                <CustomerAvatar name={c.displayName} size="md" role="customer" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <Link
@@ -217,7 +214,7 @@ export function AtRiskList({
                   <p className="mt-1 text-[11px] text-stone-400">
                     最終アクティビティ:{" "}
                     {risk.lastActivityAt
-                      ? risk.lastActivityAt.toLocaleDateString("ja-JP")
+                      ? relativeTimeJa(risk.lastActivityAt)
                       : "—"}
                   </p>
                 </div>

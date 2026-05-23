@@ -1,9 +1,13 @@
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
-import { demoProgressPhotos } from "@/lib/demo/fixtures";
+import { demoClient, demoProgressPhotos } from "@/lib/demo/fixtures";
 import { PhotoCompare } from "@/components/progress/photo-compare";
 import { MobileAppBar } from "@/components/ui/app-bar";
 import { Badge } from "@/components/ui/badge";
+import {
+  BackPhotoPlaceholder,
+  severityFromSelfRating,
+} from "@/components/progress/back-photo-placeholder";
 import type { TimelinePhoto } from "@/components/progress/photo-timeline";
 import { PHOTO_TYPE_LABEL } from "@/types/domain";
 
@@ -53,8 +57,9 @@ export default async function ProgressComparePage() {
 }
 
 function DemoCompare() {
-  const first = demoProgressPhotos[0];
-  const last = demoProgressPhotos[demoProgressPhotos.length - 1];
+  const clientPhotos = demoProgressPhotos.filter((p) => p.clientId === demoClient.id);
+  const first = clientPhotos[0];
+  const last = clientPhotos[clientPhotos.length - 1];
 
   return (
     <div className="space-y-6">
@@ -62,11 +67,11 @@ function DemoCompare() {
       <header className="hidden md:block">
         <h1 className="text-2xl font-semibold">Before / After 比較</h1>
         <p className="mt-1 text-sm text-stone-600">
-          Week 1（初回）と Week {Math.ceil(demoProgressPhotos.length)} を並べて確認できます。
+          Week 1（初回）と Week {Math.ceil(clientPhotos.length)} を並べて確認できます。
         </p>
       </header>
       <p className="text-sm text-stone-600 md:hidden">
-        Week 1（初回）と Week {Math.ceil(demoProgressPhotos.length)} を縦に並べて確認できます。
+        Week 1（初回）と Week {Math.ceil(clientPhotos.length)} を縦に並べて確認できます。
       </p>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -86,7 +91,7 @@ function DemoCompare() {
           </li>
           <li className="flex justify-between">
             <span className="text-stone-500">撮影回数</span>
-            <span>{demoProgressPhotos.length} 回</span>
+            <span>{clientPhotos.length} 回</span>
           </li>
           <li className="flex justify-between">
             <span className="text-stone-500">セルフ評価の変化</span>
@@ -124,12 +129,22 @@ function ComparePane({
           {PHOTO_TYPE_LABEL[photo.photoType]}
         </Badge>
       </div>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={photo.signedUrl}
-        alt={photo.caption}
-        className="aspect-[3/4] w-full bg-stone-100 object-cover"
-      />
+      <div className="aspect-[3/4] w-full bg-stone-100">
+        {photo.signedUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photo.signedUrl}
+            alt={photo.caption}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <BackPhotoPlaceholder
+            severity={photo.severity ?? severityFromSelfRating(photo.selfRating)}
+            lighting={photo.lighting ?? "warm"}
+            caption={photo.caption}
+          />
+        )}
+      </div>
       <div className="px-3 py-2 text-xs text-stone-600">
         <p>{new Date(photo.takenAt).toLocaleDateString("ja-JP")}</p>
         <p className="mt-1 text-stone-500">{photo.caption}</p>

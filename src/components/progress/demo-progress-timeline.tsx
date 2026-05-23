@@ -12,14 +12,18 @@ export function DemoProgressTimeline() {
   const stored = useStoredProgressPhotos(demoClient.id);
 
   const merged = useMemo<TimelinePhoto[]>(() => {
-    const fixtures: TimelinePhoto[] = demoProgressPhotos.map((p) => ({
-      id: p.id,
-      takenAt: p.takenAt,
-      photoType: p.photoType,
-      signedUrl: p.signedUrl,
-      caption: p.caption,
-      selfRating: p.selfRating,
-    }));
+    const fixtures: TimelinePhoto[] = demoProgressPhotos
+      .filter((p) => p.clientId === demoClient.id)
+      .map((p) => ({
+        id: p.id,
+        takenAt: p.takenAt,
+        photoType: p.photoType,
+        signedUrl: p.signedUrl,
+        caption: p.caption,
+        selfRating: p.selfRating,
+        severity: p.severity,
+        lighting: p.lighting,
+      }));
     const mine: TimelinePhoto[] = stored.map((p) => ({
       id: p.id,
       takenAt: p.takenAt,

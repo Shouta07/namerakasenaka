@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { TreatmentDayCameraLauncher } from "@/components/progress/treatment-day-camera-launcher";
 import { TherapistAtRiskCard } from "@/components/admin/therapist-at-risk-card";
+import { AppointmentFlowRow } from "@/components/appointments/appointment-row";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
+import { longDateJa } from "@/lib/demo/time";
 import { APPOINTMENT_STATUS_LABEL, type AppointmentStatus } from "@/types/domain";
 
 type AppointmentRow = {
@@ -86,11 +89,9 @@ export default async function TherapistTodayPage() {
 const THERAPIST_NAME = "佐藤 美咲";
 
 function DemoTherapistToday() {
+  const todayStr = new Date().toISOString().slice(0, 10);
   const todayAppointments = demoAppointments
-    .filter(
-      (a) =>
-        new Date(a.scheduledAt).toDateString() === new Date("2026-05-18").toDateString(),
-    )
+    .filter((a) => a.scheduledAt.slice(0, 10) === todayStr)
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 
   const myClients = demoClientRoster.filter(
@@ -103,7 +104,7 @@ function DemoTherapistToday() {
         <div>
           <h1 className="text-xl font-semibold text-stone-900">本日の予約</h1>
           <p className="mt-0.5 text-xs text-stone-500">
-            2026年5月18日（月）・ 担当 {THERAPIST_NAME}
+            {longDateJa(new Date())} ・ 担当 {THERAPIST_NAME}
           </p>
         </div>
       </header>
@@ -145,45 +146,15 @@ function DemoTherapistToday() {
         </h2>
         <ul className="mt-3 space-y-2">
           {todayAppointments.map((appt) => (
-            <li
+            <AppointmentFlowRow
               key={appt.id}
-              className="rounded-xl border border-stone-200 bg-white p-3"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-stone-900">
-                    {new Date(appt.scheduledAt).toLocaleTimeString("ja-JP", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    ・ {appt.clientName} 様
-                  </p>
-                  <p className="mt-0.5 text-xs text-stone-500">
-                    {appt.menuName} ・ {appt.therapistName}
-                  </p>
-                </div>
-                <Badge
-                  tone={
-                    appt.status === "completed"
-                      ? "success"
-                      : appt.status === "confirmed"
-                        ? "brand"
-                        : "neutral"
-                  }
-                >
-                  {APPOINTMENT_STATUS_LABEL[appt.status]}
-                </Badge>
-              </div>
-              {appt.status !== "completed" ? (
-                <div className="mt-3">
-                  <TreatmentDayCameraLauncher
-                    clientId={appt.clientId}
-                    appointmentId={appt.id}
-                    demo
-                  />
-                </div>
-              ) : null}
-            </li>
+              appointmentId={appt.id}
+              clientId={appt.clientId}
+              clientName={appt.clientName}
+              therapistName={appt.therapistName}
+              menuName={appt.menuName}
+              scheduledAt={appt.scheduledAt}
+            />
           ))}
         </ul>
       </section>
@@ -207,12 +178,7 @@ function DemoTherapistToday() {
                 }
                 className="flex items-center gap-3"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={c.avatarUrl}
-                  alt={c.displayName}
-                  className="h-10 w-10 flex-none rounded-full bg-stone-100 object-cover"
-                />
+                <CustomerAvatar name={c.displayName} size="md" role="customer" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-stone-900">
                     {c.displayName}

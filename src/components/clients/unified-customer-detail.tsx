@@ -51,6 +51,14 @@ import {
 import { cn } from "@/lib/utils/cn";
 import { MEAL_TYPE_LABEL, type MealType, type PhotoType } from "@/types/domain";
 import {
+  BackPhotoPlaceholder,
+  severityFromSelfRating,
+  type BackPhotoLighting,
+  type BackPhotoSeverity,
+} from "@/components/progress/back-photo-placeholder";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
+import { relativeTimeJa } from "@/lib/demo/time";
+import {
   computeClientImprovement,
   trendLabel,
   type EvidencePhoto,
@@ -142,10 +150,13 @@ export function UnifiedCustomerDetail({
 
   type TimelinePhoto = {
     id: string;
-    signedUrl: string;
+    signedUrl: string | null;
     caption: string | null;
     takenAt: string;
     photoType: PhotoType;
+    selfRating?: number | null;
+    severity?: BackPhotoSeverity;
+    lighting?: BackPhotoLighting;
     source: "fixture" | "stored";
   };
   type TimelineMeal = {
@@ -176,6 +187,9 @@ export function UnifiedCustomerDetail({
       caption: p.caption,
       takenAt: p.takenAt,
       photoType: p.photoType,
+      selfRating: p.selfRating,
+      severity: p.severity,
+      lighting: p.lighting,
       source: "fixture",
     }));
     const mine: TimelinePhoto[] = storedPhotos.map((p) => ({
@@ -184,6 +198,7 @@ export function UnifiedCustomerDetail({
       caption: p.caption,
       takenAt: p.takenAt,
       photoType: p.photoType,
+      selfRating: p.selfRating ?? null,
       source: "stored",
     }));
     return [...fxs, ...mine].sort((a, b) => b.takenAt.localeCompare(a.takenAt));
@@ -487,12 +502,7 @@ function CustomerHeader({
   const rl = riskLabel(risk.level);
   return (
     <section className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={client.avatarUrl}
-        alt={client.displayName}
-        className="h-16 w-16 flex-none rounded-full bg-stone-100 object-cover"
-      />
+      <CustomerAvatar name={client.displayName} size="lg" role="customer" />
       <div className="min-w-0 flex-1">
         <p className="text-xs text-stone-500">{client.furigana}</p>
         <div className="flex flex-wrap items-center gap-2">
@@ -834,10 +844,13 @@ function PhotosTab({
   clientId: string;
   photos: {
     id: string;
-    signedUrl: string;
+    signedUrl: string | null;
     caption: string | null;
     takenAt: string;
     photoType: PhotoType;
+    selfRating?: number | null;
+    severity?: BackPhotoSeverity;
+    lighting?: BackPhotoLighting;
   }[];
   onLaunch: () => void;
 }) {
@@ -858,17 +871,27 @@ function PhotosTab({
         <ul className="space-y-4">
           {photos.map((p) => (
             <li key={p.id} className="rounded-2xl border border-stone-200 bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={p.signedUrl}
-                alt={p.caption ?? "進捗写真"}
-                className="aspect-[3/4] w-full rounded-t-2xl bg-stone-100 object-cover"
-              />
+              <div className="aspect-[3/4] w-full rounded-t-2xl bg-stone-100">
+                {p.signedUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={p.signedUrl}
+                    alt={p.caption ?? "進捗写真"}
+                    className="h-full w-full rounded-t-2xl object-cover"
+                  />
+                ) : (
+                  <BackPhotoPlaceholder
+                    severity={p.severity ?? severityFromSelfRating(p.selfRating)}
+                    lighting={p.lighting ?? "warm"}
+                    caption={p.caption ?? "進捗写真"}
+                  />
+                )}
+              </div>
               <div className="px-4 pb-4 pt-3">
                 <div className="flex items-center justify-between">
                   <Badge tone="neutral">{p.photoType}</Badge>
                   <span className="text-[11px] text-stone-500">
-                    {new Date(p.takenAt).toLocaleString("ja-JP")}
+                    {relativeTimeJa(p.takenAt)}
                   </span>
                 </div>
                 {p.caption ? (

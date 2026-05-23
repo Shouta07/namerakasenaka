@@ -22,12 +22,22 @@ import {
   useStoredSalonComments,
   useStoredTreatmentRecords,
 } from "@/lib/demo/store";
+import {
+  BackPhotoPlaceholder,
+  severityFromSelfRating,
+  type BackPhotoLighting,
+  type BackPhotoSeverity,
+} from "@/components/progress/back-photo-placeholder";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
 
 type Photo = {
   id: string;
-  signedUrl: string;
+  signedUrl: string | null;
   caption: string | null;
   takenAt: string;
+  severity?: BackPhotoSeverity;
+  lighting?: BackPhotoLighting;
+  selfRating?: number | null;
 };
 
 export function DemoTherapistClientDetail() {
@@ -36,17 +46,23 @@ export function DemoTherapistClientDetail() {
   const storedMeals = useStoredMealLogs(demoClient.id);
 
   const photos = useMemo<Photo[]>(() => {
-    const fixtures: Photo[] = demoProgressPhotos.map((p) => ({
-      id: p.id,
-      signedUrl: p.signedUrl,
-      caption: p.caption,
-      takenAt: p.takenAt,
-    }));
+    const fixtures: Photo[] = demoProgressPhotos
+      .filter((p) => p.clientId === demoClient.id)
+      .map((p) => ({
+        id: p.id,
+        signedUrl: p.signedUrl,
+        caption: p.caption,
+        takenAt: p.takenAt,
+        severity: p.severity,
+        lighting: p.lighting,
+        selfRating: p.selfRating,
+      }));
     const mine: Photo[] = stored.map((p) => ({
       id: p.id,
       signedUrl: p.signedUrl,
       caption: p.caption,
       takenAt: p.takenAt,
+      selfRating: p.selfRating ?? null,
     }));
     return [...fixtures, ...mine].sort((a, b) =>
       b.takenAt.localeCompare(a.takenAt),
@@ -113,12 +129,7 @@ export function DemoTherapistClientDetail() {
   return (
     <div className="space-y-6">
       <section className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={demoClient.avatarUrl}
-          alt={demoClient.displayName}
-          className="h-16 w-16 flex-none rounded-full bg-stone-100 object-cover"
-        />
+        <CustomerAvatar name={demoClient.displayName} size="lg" role="customer" />
         <div className="min-w-0 flex-1">
           <p className="text-xs text-stone-500">{demoClient.furigana}</p>
           <h1 className="text-xl font-bold text-stone-900">
@@ -147,12 +158,22 @@ export function DemoTherapistClientDetail() {
               key={p.id}
               className="overflow-hidden rounded-xl border border-stone-200 bg-white"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={p.signedUrl}
-                alt={p.caption ?? "進捗写真"}
-                className="aspect-[3/4] w-full bg-stone-100 object-cover"
-              />
+              <div className="aspect-[3/4] w-full bg-stone-100">
+                {p.signedUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={p.signedUrl}
+                    alt={p.caption ?? "進捗写真"}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <BackPhotoPlaceholder
+                    severity={p.severity ?? severityFromSelfRating(p.selfRating)}
+                    lighting={p.lighting ?? "warm"}
+                    caption={p.caption ?? "進捗写真"}
+                  />
+                )}
+              </div>
               <p className="px-2 py-1 text-[10px] text-stone-500">
                 {new Date(p.takenAt).toLocaleDateString("ja-JP")}
               </p>

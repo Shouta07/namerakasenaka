@@ -1,5 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { PHOTO_TYPE_LABEL, type PhotoType } from "@/types/domain";
+import {
+  BackPhotoPlaceholder,
+  severityFromSelfRating,
+  type BackPhotoLighting,
+  type BackPhotoSeverity,
+} from "@/components/progress/back-photo-placeholder";
 
 export type TimelinePhoto = {
   id: string;
@@ -8,6 +14,8 @@ export type TimelinePhoto = {
   signedUrl: string | null;
   caption?: string | null;
   selfRating?: number | null;
+  severity?: BackPhotoSeverity;
+  lighting?: BackPhotoLighting;
 };
 
 export function PhotoTimeline({ photos }: { photos: TimelinePhoto[] }) {
@@ -39,8 +47,12 @@ export function PhotoTimeline({ photos }: { photos: TimelinePhoto[] }) {
               className="w-full bg-stone-100 object-cover"
             />
           ) : (
-            <div className="flex h-64 items-center justify-center bg-stone-100 text-sm text-stone-400">
-              署名URL未取得
+            <div className="aspect-[3/4] w-full bg-stone-100">
+              <BackPhotoPlaceholder
+                severity={p.severity ?? severityFromSelfRating(p.selfRating)}
+                lighting={p.lighting ?? "warm"}
+                caption={p.caption ?? "進捗写真"}
+              />
             </div>
           )}
           {p.caption ? (

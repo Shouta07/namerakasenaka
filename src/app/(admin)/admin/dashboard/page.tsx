@@ -1,19 +1,25 @@
-import { AlertCircle, TrendingUp } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import {
+  demoActivityFeed,
   demoAppointments,
   demoKpiSnapshot,
   demoOrganization,
   demoQaThreads,
+  demoRevenueBreakdown,
   demoTherapistPerformance,
-  formatJpy,
 } from "@/lib/demo/fixtures";
-import { KpiCards, type Kpi } from "@/components/admin/kpi-cards";
+import { KpiCards as LegacyKpiCards, type Kpi } from "@/components/admin/kpi-cards";
+import { KpiCards, type KpiCardItem } from "@/components/admin/kpi-card";
 import { RiskWidgets } from "@/components/admin/risk-widgets";
+import { ActivityFeed } from "@/components/admin/activity-feed";
+import { RevenueTile } from "@/components/admin/revenue-tile";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APPOINTMENT_STATUS_LABEL } from "@/types/domain";
+import { clockJa, relativeTimeJa } from "@/lib/demo/time";
 
 type AppointmentRow = {
   id: string;
@@ -57,17 +63,16 @@ export default async function AdminDashboardPage() {
 
   const todays = (today.data ?? []) as unknown as AppointmentRow[];
 
+  const prodKpis: Kpi[] = [
+    { label: "顧客数", value: clientCount ?? 0 },
+    { label: "今月の予約", value: monthAppts ?? 0 },
+    { label: "未読Q&A", value: pendingQa ?? 0, hint: "要対応" },
+    { label: "本日来店", value: todays.length },
+  ];
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">ダッシュボード</h1>
-      <KpiCards
-        kpis={[
-          { label: "顧客数", value: clientCount ?? 0 },
-          { label: "今月の予約", value: monthAppts ?? 0 },
-          { label: "未読Q&A", value: pendingQa ?? 0, hint: "要対応" },
-          { label: "本日来店", value: todays.length },
-        ]}
-      />
+      <LegacyKpiCards kpis={prodKpis} />
       <Card>
         <CardHeader>
           <CardTitle>本日の来店</CardTitle>
@@ -97,34 +102,46 @@ export default async function AdminDashboardPage() {
 }
 
 function DemoAdminDashboard() {
-  const kpis: Kpi[] = [
+  const kpis: KpiCardItem[] = [
     {
       label: "本日来店",
       value: demoKpiSnapshot.todayAppointments,
-      hint: "予約確定 + 完了",
+      deltaLabel: `${demoKpiSnapshot.todayAppointmentsDelta >= 0 ? "+" : ""}${demoKpiSnapshot.todayAppointmentsDelta}`,
+      vsLabel: "昨日",
+      direction: demoKpiSnapshot.todayAppointmentsDelta > 0 ? "up" : "flat",
+      goodWhen: "up",
     },
     {
       label: "今月新規",
-      value: demoKpiSnapshot.monthlyNewClients,
-      hint: "前月比 +2",
+      value: `${demoKpiSnapshot.monthlyNewClients} 名`,
+      deltaLabel: `+${demoKpiSnapshot.monthlyNewClientsDelta}`,
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
     },
     {
       label: "完遂率",
       value: `${demoKpiSnapshot.monthlyCompletionRate}%`,
-      hint: "6 ヶ月コース基準",
+      deltaLabel: `+${demoKpiSnapshot.monthlyCompletionRateDelta}pt`,
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
+      tone: "brand",
     },
     {
-      label: "要対応 Q&A",
-      value: demoKpiSnapshot.pendingQa,
-      hint: "24h 以内未回答",
+      label: "平均改善度",
+      value: `+${demoKpiSnapshot.averageImprovement.toFixed(1)}`,
+      deltaLabel: `+${demoKpiSnapshot.averageImprovementDelta.toFixed(1)}`,
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
+      tone: "brand",
     },
   ];
 
+  const todayStr = new Date().toISOString().slice(0, 10);
   const todayAppointments = demoAppointments
-    .filter(
-      (a) =>
-        new Date(a.scheduledAt).toDateString() === new Date("2026-05-18").toDateString(),
-    )
+    .filter((a) => a.scheduledAt.slice(0, 10) === todayStr)
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 
   const maxClients = Math.max(...demoTherapistPerformance.map((t) => t.activeClients));
@@ -132,7 +149,7 @@ function DemoAdminDashboard() {
   return (
     <div className="space-y-6">
       <section>
-        <KpiCards kpis={kpis} />
+        <KpiCards items={kpis} />
       </section>
 
       <section>
@@ -140,18 +157,11 @@ function DemoAdminDashboard() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent>
-            <p className="text-xs text-stone-500">今月売上（見込）</p>
-            <p className="mt-1 text-2xl font-semibold text-stone-900">
-              {formatJpy(demoKpiSnapshot.monthlyRevenueJpy)}
-            </p>
-            <p className="mt-1 inline-flex items-center gap-1 text-[11px] text-emerald-700">
-              <TrendingUp className="h-3 w-3" />
-              前月比 +12%
-            </p>
-          </CardContent>
-        </Card>
+        <RevenueTile
+          monthlyTotalJpy={demoKpiSnapshot.monthlyRevenueJpy}
+          breakdown={demoRevenueBreakdown}
+          vsLastMonthPct={demoKpiSnapshot.monthlyRevenueVsLastPct}
+        />
         <Card>
           <CardContent>
             <p className="text-xs text-stone-500">アクティブ顧客</p>
@@ -172,6 +182,10 @@ function DemoAdminDashboard() {
         </Card>
       </section>
 
+      <section>
+        <ActivityFeed entries={demoActivityFeed} />
+      </section>
+
       <section className="grid gap-6 lg:grid-cols-2">
         <div>
           <h2 className="text-base font-semibold text-stone-900">本日の予約</h2>
@@ -179,15 +193,15 @@ function DemoAdminDashboard() {
             {todayAppointments.map((a) => (
               <li
                 key={a.id}
-                className="flex items-center justify-between rounded-xl border border-stone-200 bg-white p-3"
+                className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-3"
               >
-                <div className="min-w-0">
+                <span className="w-12 flex-none text-sm font-semibold tabular-nums text-stone-900">
+                  {clockJa(a.scheduledAt)}
+                </span>
+                <CustomerAvatar name={a.clientName} size="sm" role="customer" />
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-stone-900">
-                    {new Date(a.scheduledAt).toLocaleTimeString("ja-JP", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    ・ {a.clientName} 様
+                    {a.clientName} 様
                   </p>
                   <p className="mt-0.5 text-xs text-stone-500">
                     {a.therapistName} ・ {a.menuName}
@@ -226,8 +240,7 @@ function DemoAdminDashboard() {
                   </p>
                   <p className="mt-0.5 text-xs text-amber-800">{q.lastMessage}</p>
                   <p className="mt-1 text-[11px] text-amber-700">
-                    {new Date(q.lastMessageAt).toLocaleString("ja-JP")} ・ 未読{" "}
-                    {q.unreadCount} 件
+                    {relativeTimeJa(q.lastMessageAt)} ・ 未読 {q.unreadCount} 件
                   </p>
                 </div>
               </li>

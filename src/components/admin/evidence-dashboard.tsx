@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { ArrowUpRight, Printer } from "lucide-react";
-import { KpiCards, type Kpi } from "@/components/admin/kpi-cards";
+import { KpiCards, type KpiCardItem } from "@/components/admin/kpi-card";
 import { Badge } from "@/components/ui/badge";
+import { CustomerAvatar } from "@/components/ui/customer-avatar";
 import {
   demoClientRoster,
   demoProgressPhotos,
@@ -98,11 +99,15 @@ export function EvidenceDashboard() {
     return computeSalonAggregate(input);
   }, [summaries]);
 
-  const kpis: Kpi[] = [
+  const kpis: KpiCardItem[] = [
     {
       label: "完遂率",
       value: `${aggregate.completionRatePct}%`,
-      hint: "コース完了 / 開始者",
+      deltaLabel: "+6pt",
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
+      tone: "brand",
     },
     {
       label: "平均改善度",
@@ -110,24 +115,34 @@ export function EvidenceDashboard() {
         aggregate.avgSelfRatingImprovement > 0
           ? `+${aggregate.avgSelfRatingImprovement.toFixed(2)}`
           : aggregate.avgSelfRatingImprovement.toFixed(2),
-      hint: "自覚スコアΔ (5段階)",
+      deltaLabel: "+0.2",
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
+      tone: "brand",
     },
     {
       label: "総撮影枚数",
       value: aggregate.totalPhotos,
-      hint: "デモ + 撮影済み",
+      deltaLabel: "+8 枚",
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
     },
     {
       label: "改善トレンド",
       value: `${aggregate.clientsWithImprovingTrend} / ${aggregate.totalActiveClients}`,
-      hint: "改善傾向の顧客",
+      deltaLabel: "+1 名",
+      vsLabel: "先月",
+      direction: "up",
+      goodWhen: "up",
     },
   ];
 
   return (
     <div className="space-y-4">
       <section>
-        <KpiCards kpis={kpis} />
+        <KpiCards items={kpis} />
       </section>
 
       <section className="space-y-3">
@@ -184,12 +199,7 @@ export function EvidenceDashboard() {
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={client.avatarUrl}
-                              alt={client.displayName}
-                              className="h-8 w-8 flex-none rounded-full bg-stone-100 object-cover"
-                            />
+                            <CustomerAvatar name={client.displayName} size="sm" role="customer" />
                             <div>
                               <p className="font-medium text-stone-900">
                                 {client.displayName}
@@ -255,12 +265,7 @@ function MobileSummaryCard({
   return (
     <>
       <div className="flex items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={client.avatarUrl}
-          alt={client.displayName}
-          className="h-10 w-10 flex-none rounded-full bg-stone-100 object-cover"
-        />
+        <CustomerAvatar name={client.displayName} size="md" role="customer" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-stone-900">
             {client.displayName}

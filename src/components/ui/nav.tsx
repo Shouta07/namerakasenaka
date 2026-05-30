@@ -10,6 +10,7 @@ import {
   Camera,
   ClipboardList,
   CreditCard,
+  ImageDown,
   LayoutDashboard,
   LineChart,
   ListChecks,
@@ -18,6 +19,7 @@ import {
   Salad,
   Sparkles,
   Stethoscope,
+  Tag,
   UserRoundCog,
   Users,
 } from "lucide-react";
@@ -32,6 +34,7 @@ const iconMap = {
   camera: Camera,
   "clipboard-list": ClipboardList,
   "credit-card": CreditCard,
+  "image-down": ImageDown,
   "layout-dashboard": LayoutDashboard,
   "line-chart": LineChart,
   "list-checks": ListChecks,
@@ -40,6 +43,7 @@ const iconMap = {
   salad: Salad,
   sparkles: Sparkles,
   stethoscope: Stethoscope,
+  tag: Tag,
   "user-round-cog": UserRoundCog,
   users: Users,
 } as const;

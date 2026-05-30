@@ -150,6 +150,35 @@ export type StoredSalonNote = {
   createdAt: string;
 };
 
+export type StoredCase = {
+  id: string;
+  organizationId: string;
+  anonymousId: string;
+  age: number | null;
+  gender: "female" | "male" | "other" | "no_answer" | null;
+  occupation: string | null;
+  concernDuration: string | null;
+  mainConcern: string;
+  firstVisitDate: string | null;
+  treatmentCount: number;
+  improvementPeriod: string;
+  severity: "light" | "medium" | "heavy";
+  beforeImageUrl: string | null;
+  afterImageUrl: string | null;
+  staffMemo: string | null;
+  counselingComment: string;
+  tagIds: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type StoredCaseTag = {
+  id: string;
+  organizationId: string;
+  name: string;
+  sortOrder: number;
+};
+
 type Snapshot = {
   messages: StoredMessage[];
   selfLogs: StoredSelfLog[];
@@ -163,6 +192,8 @@ type Snapshot = {
   treatmentVideos: StoredTreatmentVideo[];
   invites: StoredInvite[];
   capturedAppts: StoredCapturedAppt[];
+  cases: StoredCase[];
+  caseTags: StoredCaseTag[];
 };
 
 const EMPTY: Snapshot = {
@@ -178,6 +209,8 @@ const EMPTY: Snapshot = {
   treatmentVideos: [],
   invites: [],
   capturedAppts: [],
+  cases: [],
+  caseTags: [],
 };
 
 // ---------- Low-level access ----------
@@ -548,6 +581,96 @@ export function useAllStoredMessages(): StoredMessage[] {
 
 export function useAllStoredTreatmentRecords(): StoredTreatmentRecord[] {
   return useStore("treatmentRecords");
+}
+
+// Cases ----------------------------------------------------------------------
+
+export function useStoredCases(): StoredCase[] {
+  return useStore("cases");
+}
+
+export function addStoredCase(
+  input: Omit<StoredCase, "id" | "createdAt" | "updatedAt"> & {
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  },
+): StoredCase {
+  const now = new Date().toISOString();
+  const next: StoredCase = {
+    id: input.id ?? newId(),
+    createdAt: input.createdAt ?? now,
+    updatedAt: input.updatedAt ?? now,
+    organizationId: input.organizationId,
+    anonymousId: input.anonymousId,
+    age: input.age,
+    gender: input.gender,
+    occupation: input.occupation,
+    concernDuration: input.concernDuration,
+    mainConcern: input.mainConcern,
+    firstVisitDate: input.firstVisitDate,
+    treatmentCount: input.treatmentCount,
+    improvementPeriod: input.improvementPeriod,
+    severity: input.severity,
+    beforeImageUrl: input.beforeImageUrl,
+    afterImageUrl: input.afterImageUrl,
+    staffMemo: input.staffMemo,
+    counselingComment: input.counselingComment,
+    tagIds: input.tagIds,
+  };
+  update("cases", (cur) => [...cur, next]);
+  return next;
+}
+
+export function updateStoredCase(id: string, patch: Partial<StoredCase>): void {
+  update("cases", (cur) =>
+    cur.map((c) =>
+      c.id === id
+        ? { ...c, ...patch, updatedAt: new Date().toISOString() }
+        : c,
+    ),
+  );
+}
+
+export function removeStoredCase(id: string): void {
+  update("cases", (cur) => cur.filter((c) => c.id !== id));
+}
+
+export function findStoredCase(id: string): StoredCase | null {
+  if (!isBrowser()) return null;
+  return read().cases.find((c) => c.id === id) ?? null;
+}
+
+// Case tags ------------------------------------------------------------------
+
+export function useStoredCaseTags(): StoredCaseTag[] {
+  return useStore("caseTags");
+}
+
+export function addStoredCaseTag(
+  input: Omit<StoredCaseTag, "id"> & { id?: string },
+): StoredCaseTag {
+  const next: StoredCaseTag = {
+    id: input.id ?? newId(),
+    organizationId: input.organizationId,
+    name: input.name,
+    sortOrder: input.sortOrder,
+  };
+  update("caseTags", (cur) => [...cur, next]);
+  return next;
+}
+
+export function updateStoredCaseTag(
+  id: string,
+  patch: Partial<StoredCaseTag>,
+): void {
+  update("caseTags", (cur) =>
+    cur.map((t) => (t.id === id ? { ...t, ...patch } : t)),
+  );
+}
+
+export function removeStoredCaseTag(id: string): void {
+  update("caseTags", (cur) => cur.filter((t) => t.id !== id));
 }
 
 // ---------- Reset / readers ----------

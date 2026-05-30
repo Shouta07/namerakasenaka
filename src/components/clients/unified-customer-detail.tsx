@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Printer,
   AlertTriangle,
+  ImageDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -393,7 +394,12 @@ export function UnifiedCustomerDetail({
 
   return (
     <div className="space-y-4">
-      <CustomerHeader client={client} progressPct={progressPct} risk={risk} />
+      <CustomerHeader
+        client={client}
+        progressPct={progressPct}
+        risk={risk}
+        viewerRole={viewerRole}
+      />
 
       <QuickActionsRow
         onCapturePhoto={() => setPhotoSheetOpen(true)}
@@ -493,6 +499,7 @@ function CustomerHeader({
   client,
   progressPct,
   risk,
+  viewerRole,
 }: {
   client: DemoClient;
   progressPct: number;
@@ -500,9 +507,11 @@ function CustomerHeader({
     level: "low" | "medium" | "high";
     reasons: string[];
   };
+  viewerRole: ViewerRole;
 }) {
   const [tipOpen, setTipOpen] = useState(false);
   const rl = riskLabel(risk.level);
+  const caseSearchHref = buildCaseSearchDeepLink(client, viewerRole);
   return (
     <section className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4">
       <CustomerAvatar name={client.displayName} size="lg" role="customer" />
@@ -556,8 +565,36 @@ function CustomerHeader({
           </Badge>
         </div>
       </div>
+      <Link
+        href={caseSearchHref}
+        className="inline-flex h-10 flex-none items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100"
+      >
+        <ImageDown className="h-3.5 w-3.5" />
+        症例を検索
+      </Link>
     </section>
   );
+}
+
+function buildCaseSearchDeepLink(client: DemoClient, viewerRole: ViewerRole): string {
+  const base = viewerRole === "therapist" ? "/t/cases/search" : "/admin/cases/search";
+  const params = new URLSearchParams();
+  // Map "30代" → 30 as a representative age.
+  const ageMatch = client.ageRange.match(/(\d+)/);
+  if (ageMatch) params.set("age", String(Number(ageMatch[1])));
+  // Rough heuristic: skinType mentions 敏感肌/乾燥 → light, 脂性 → medium.
+  const skin = client.skinType ?? "";
+  let severity: "light" | "medium" | "heavy" = "medium";
+  if (skin.includes("敏感") || skin.includes("乾燥")) severity = "light";
+  else if (skin.includes("脂性")) severity = "medium";
+  params.set("severity", severity);
+  // Seed a couple of likely tag ids based on skin keywords.
+  const tagIds: string[] = [];
+  if (skin.includes("乾燥")) tagIds.push("tag-dry");
+  if (skin.includes("敏感")) tagIds.push("tag-itch");
+  if (skin.includes("脂性")) tagIds.push("tag-oily", "tag-clog");
+  if (tagIds.length > 0) params.set("tags", tagIds.join(","));
+  return `${base}?${params.toString()}`;
 }
 
 // ---------- Tabs: Evidence ----------

@@ -12,6 +12,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { MealType, PhotoType } from "@/types/domain";
+import type { RecoveryGuideJson } from "@/lib/guide/schema";
 
 const NS_KEY = "senacare-demo-v1";
 const MAX_BYTES = 1_500_000; // 1.5 MB hard cap on a single data URL.
@@ -179,6 +180,50 @@ export type StoredCaseTag = {
   sortOrder: number;
 };
 
+// Recovery guide (三社共同開発) -------------------------------------------------
+
+export type StoredGuideCustomer = {
+  id: string;
+  organizationId: string;
+  clientId: string | null;
+  name: string;
+  age: number | null;
+  concern: string;
+  shareToken: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type StoredHealthRecord = {
+  id: string;
+  guideCustomerId: string;
+  testResultMemo: string;
+  doctorComment: string;
+  salonMemo: string;
+  dietaryRestrictions: string;
+  currentProblem: string;
+  aiSummaryJson: RecoveryGuideJson | null;
+  aiGeneratedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DailyCheckActionLevel = "yes" | "mostly" | "rest";
+
+export type StoredDailyCheck = {
+  id: string;
+  guideCustomerId: string;
+  /** YYYY-MM-DD */
+  date: string;
+  actionDone: boolean;
+  /** Finer-grained UI state (はい/だいたい/おやすみ) — demo-store only. */
+  actionLevel?: DailyCheckActionLevel;
+  skinCondition: number | null;
+  bodyCondition: number | null;
+  memo: string | null;
+  createdAt: string;
+};
+
 type Snapshot = {
   messages: StoredMessage[];
   selfLogs: StoredSelfLog[];
@@ -194,6 +239,9 @@ type Snapshot = {
   capturedAppts: StoredCapturedAppt[];
   cases: StoredCase[];
   caseTags: StoredCaseTag[];
+  guideCustomers: StoredGuideCustomer[];
+  healthRecords: StoredHealthRecord[];
+  dailyChecks: StoredDailyCheck[];
 };
 
 const EMPTY: Snapshot = {
@@ -211,6 +259,9 @@ const EMPTY: Snapshot = {
   capturedAppts: [],
   cases: [],
   caseTags: [],
+  guideCustomers: [],
+  healthRecords: [],
+  dailyChecks: [],
 };
 
 // ---------- Low-level access ----------
@@ -671,6 +722,126 @@ export function updateStoredCaseTag(
 
 export function removeStoredCaseTag(id: string): void {
   update("caseTags", (cur) => cur.filter((t) => t.id !== id));
+}
+
+// Recovery guide ---------------------------------------------------------------
+
+export function useStoredGuideCustomers(): StoredGuideCustomer[] {
+  return useStore("guideCustomers");
+}
+
+export function addStoredGuideCustomer(
+  input: Omit<StoredGuideCustomer, "id" | "createdAt" | "updatedAt"> & {
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  },
+): StoredGuideCustomer {
+  const now = new Date().toISOString();
+  const next: StoredGuideCustomer = {
+    id: input.id ?? newId(),
+    createdAt: input.createdAt ?? now,
+    updatedAt: input.updatedAt ?? now,
+    organizationId: input.organizationId,
+    clientId: input.clientId,
+    name: input.name,
+    age: input.age,
+    concern: input.concern,
+    shareToken: input.shareToken,
+  };
+  // Upsert by id so fixture overrides land in the store too.
+  update("guideCustomers", (cur) => {
+    const idx = cur.findIndex((c) => c.id === next.id);
+    if (idx >= 0) {
+      const copy = cur.slice();
+      copy[idx] = next;
+      return copy;
+    }
+    return [...cur, next];
+  });
+  return next;
+}
+
+export function updateStoredGuideCustomer(
+  id: string,
+  patch: Partial<StoredGuideCustomer>,
+): void {
+  update("guideCustomers", (cur) =>
+    cur.map((c) =>
+      c.id === id ? { ...c, ...patch, updatedAt: new Date().toISOString() } : c,
+    ),
+  );
+}
+
+export function useStoredHealthRecords(): StoredHealthRecord[] {
+  return useStore("healthRecords");
+}
+
+export function addStoredHealthRecord(
+  input: Omit<StoredHealthRecord, "id" | "createdAt" | "updatedAt"> & {
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  },
+): StoredHealthRecord {
+  const now = new Date().toISOString();
+  const next: StoredHealthRecord = {
+    id: input.id ?? newId(),
+    createdAt: input.createdAt ?? now,
+    updatedAt: input.updatedAt ?? now,
+    guideCustomerId: input.guideCustomerId,
+    testResultMemo: input.testResultMemo,
+    doctorComment: input.doctorComment,
+    salonMemo: input.salonMemo,
+    dietaryRestrictions: input.dietaryRestrictions,
+    currentProblem: input.currentProblem,
+    aiSummaryJson: input.aiSummaryJson,
+    aiGeneratedAt: input.aiGeneratedAt,
+  };
+  // Upsert by id — editing a fixture-sourced record writes the full row here.
+  update("healthRecords", (cur) => {
+    const idx = cur.findIndex((r) => r.id === next.id);
+    if (idx >= 0) {
+      const copy = cur.slice();
+      copy[idx] = next;
+      return copy;
+    }
+    return [...cur, next];
+  });
+  return next;
+}
+
+export function useStoredDailyChecks(): StoredDailyCheck[] {
+  return useStore("dailyChecks");
+}
+
+/** Upserts on (guideCustomerId, date) — one check per customer per day. */
+export function upsertStoredDailyCheck(
+  input: Omit<StoredDailyCheck, "id" | "createdAt"> & { id?: string },
+): StoredDailyCheck {
+  const next: StoredDailyCheck = {
+    id: input.id ?? newId(),
+    createdAt: new Date().toISOString(),
+    guideCustomerId: input.guideCustomerId,
+    date: input.date,
+    actionDone: input.actionDone,
+    actionLevel: input.actionLevel,
+    skinCondition: input.skinCondition,
+    bodyCondition: input.bodyCondition,
+    memo: input.memo,
+  };
+  update("dailyChecks", (cur) => {
+    const idx = cur.findIndex(
+      (c) => c.guideCustomerId === next.guideCustomerId && c.date === next.date,
+    );
+    if (idx >= 0) {
+      const copy = cur.slice();
+      copy[idx] = { ...next, id: copy[idx].id, createdAt: copy[idx].createdAt };
+      return copy;
+    }
+    return [...cur, next];
+  });
+  return next;
 }
 
 // ---------- Reset / readers ----------

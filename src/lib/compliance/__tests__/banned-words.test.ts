@@ -29,6 +29,21 @@ describe("containsBannedWord", () => {
     expect(containsBannedWord("").ok).toBe(true);
   });
 
+  it("detects the recovery-guide additions (§17)", () => {
+    expect(containsBannedWord("続ければ治りますよ。").hits).toContain("治ります");
+    expect(containsBannedWord("これは必ず改善します。").ok).toBe(false);
+    expect(containsBannedWord("あなたは病気です。").hits).toContain("病気です");
+    expect(containsBannedWord("医師の指示は不要です。").ok).toBe(false);
+    expect(containsBannedWord("これをしないと悪化します。").ok).toBe(false);
+  });
+
+  it("allows gentle recovery-guide phrasing", () => {
+    const r = containsBannedWord(
+      "腸の炎症が関係している可能性があります。先生の方針に沿って、7割できればOKという気持ちで進めましょう。",
+    );
+    expect(r.ok).toBe(true);
+  });
+
   it("covers all listed words", () => {
     for (const w of BANNED_WORDS) {
       const r = containsBannedWord(`テスト：${w}と書きます。`);

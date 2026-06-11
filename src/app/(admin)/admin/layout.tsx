@@ -10,6 +10,7 @@ import { demoOrganization } from "@/lib/demo/fixtures";
 const sidebarItems: NavItem[] = [
   { href: "/admin/dashboard", label: "概況", icon: "layout-dashboard" },
   { href: "/admin/clients", label: "顧客", icon: "users" },
+  { href: "/admin/customers", label: "回復ガイド", icon: "sparkles" },
   { href: "/admin/cases", label: "症例ライブラリ", icon: "image-down" },
   { href: "/admin/cases/tags", label: "タグ管理", icon: "tag" },
   { href: "/admin/at-risk", label: "離脱予兆", icon: "alert-triangle" },

@@ -7,7 +7,9 @@ const PUBLIC_PATHS = [
   "/login",
   "/invite",
   "/counseling",
+  "/share",
   "/api/stripe/webhook",
+  "/api/daily-checks",
 ];
 
 function isPublic(pathname: string) {

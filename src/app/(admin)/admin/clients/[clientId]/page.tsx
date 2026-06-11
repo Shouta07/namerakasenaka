@@ -9,6 +9,7 @@ import {
 } from "@/lib/demo/fixtures";
 import { MobileAppBar } from "@/components/ui/app-bar";
 import { UnifiedCustomerDetail } from "@/components/clients/unified-customer-detail";
+import { RecoveryGuideChip } from "@/components/guide/recovery-guide-chip";
 import type { SeedMessage } from "@/components/qa/interactive-thread";
 
 export default async function AdminClientDetailPage({
@@ -55,6 +56,9 @@ export default async function AdminClientDetailPage({
           eyebrow="SalonAdmin"
           backHref="/admin/clients"
         />
+        <div className="flex justify-end">
+          <RecoveryGuideChip clientId={client.id} clientName={client.displayName} />
+        </div>
         <UnifiedCustomerDetail
           client={client}
           fixturePhotos={photos}

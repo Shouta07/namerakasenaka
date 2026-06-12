@@ -50,6 +50,19 @@ export function useGuideCustomerByToken(token: string): GuideCustomerRecord | nu
   return all.find((c) => c.shareToken === token) ?? null;
 }
 
+/**
+ * ログイン中の顧客（/c/*）に紐付くガイド顧客。
+ * TODO(phase-1): 本番では Supabase の guide_customers を
+ * client_id = ログインユーザーの client id で照会する。
+ */
+export function useGuideCustomerByClientId(
+  clientId: string | null,
+): GuideCustomerRecord | null {
+  const all = useGuideCustomers();
+  if (!clientId) return null;
+  return all.find((c) => c.clientId === clientId) ?? null;
+}
+
 export function useHealthRecords(): HealthRecordRecord[] {
   const stored = useStoredHealthRecords();
   return useMemo(() => {

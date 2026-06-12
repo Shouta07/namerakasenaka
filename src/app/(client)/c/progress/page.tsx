@@ -7,6 +7,7 @@ import {
   demoClient,
   demoMealLogs,
 } from "@/lib/demo/fixtures";
+import { HypothesisCard } from "@/components/guide/hypothesis-card";
 import { PhotoTimeline, type TimelinePhoto } from "@/components/progress/photo-timeline";
 import { DemoProgressTimeline } from "@/components/progress/demo-progress-timeline";
 import { Badge } from "@/components/ui/badge";
@@ -171,6 +172,9 @@ function DemoClientProgress() {
           </div>
         </div>
       </section>
+
+      {/* 状態仮説カード — 回復ガイドがある顧客にだけ表示（なければ静かにスキップ） */}
+      <HypothesisCard clientId={demoClient.id} />
 
       {nextAppointment ? (
         <Card>

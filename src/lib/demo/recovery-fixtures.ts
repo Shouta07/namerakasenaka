@@ -124,8 +124,9 @@ export const DEMO_GUIDE_CUSTOMERS: DemoGuideCustomer[] = [
   {
     id: TAMURA_GUIDE_CUSTOMER_ID,
     organizationId: demoOrganization.id,
-    // 既存カルテ顧客に同名がいないためスタンドアロン発行（§17）。
-    clientId: null,
+    // デモのログイン顧客（client-yamada）に紐付け、/c/guide からも
+    // 同じガイド・同じデイリーチェックを参照できるようにする（§17）。
+    clientId: "client-yamada",
     name: "田村 洋子",
     age: 42,
     concern: "背中ニキビ、肌荒れ、食事制限が続くか不安",

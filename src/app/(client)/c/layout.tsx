@@ -11,7 +11,8 @@ const items: NavItem[] = [
   { href: "/c/meals", label: "食事", icon: "salad" },
   { href: "/c/calendar", label: "予約", icon: "calendar-days" },
   { href: "/c/qa", label: "Q&A", icon: "message-circle" },
-  { href: "/c/self-log", label: "セルフ", icon: "sparkles" },
+  // セルフログはサイドバー + /c/guide 内のリンクから引き続き到達できる。
+  { href: "/c/guide", label: "ガイド", icon: "sparkles" },
 ];
 
 // Sidebar (md+) keeps a richer item set — appointments listing stays
@@ -22,6 +23,7 @@ const sidebarItems: NavItem[] = [
   { href: "/c/calendar", label: "カレンダー", icon: "calendar-days" },
   { href: "/c/appointments", label: "予約一覧", icon: "calendar-days" },
   { href: "/c/qa", label: "Q&A", icon: "message-circle" },
+  { href: "/c/guide", label: "回復ガイド", icon: "sparkles" },
   { href: "/c/self-log", label: "セルフログ", icon: "sparkles" },
 ];
 

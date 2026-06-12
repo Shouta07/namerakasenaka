@@ -5,6 +5,8 @@ import type { RecoveryGuideJson } from "@/lib/guide/schema";
 import type { DailyCheckRecord } from "@/lib/guide/source";
 import { DailyCheckCard, type DailyCheckSubmit } from "./daily-check-card";
 import { ChangeRecordCard } from "./change-record-card";
+import { ResultMappingCard } from "./result-mapping-card";
+import { DAILY_CHECK_ANCHOR_ID, TodaysOneThing } from "./todays-one-thing";
 
 /**
  * 回復ガイド本体のセクション群。
@@ -38,6 +40,13 @@ export function GuideContent({
         <Paragraphs text={guide.today_summary} lead />
       </SoftCard>
 
+      {/* 1.5 きょうのひとつ — 今なにをすればいいかをひとつだけ */}
+      <TodaysOneThing
+        actions={guide.weekly_actions}
+        today={today}
+        todayCheck={todayCheck}
+      />
+
       {/* 2. あなたの身体で起きていること */}
       <SoftCard>
         <Eyebrow>あなたの身体で起きていること</Eyebrow>
@@ -67,6 +76,11 @@ export function GuideContent({
           ))}
         </div>
       </SoftCard>
+
+      {/* 2.5 あなたの結果とつながり — 検査結果 → 原因 → 対策の視覚マップ */}
+      {guide.result_mappings && guide.result_mappings.length > 0 ? (
+        <ResultMappingCard mappings={guide.result_mappings} />
+      ) : null}
 
       {/* 3. 背中ニキビとの関係 */}
       <SoftCard>
@@ -131,9 +145,14 @@ export function GuideContent({
       </section>
 
       {/* 6. 今日のチェック */}
-      <SoftCard>
+      <SoftCard id={DAILY_CHECK_ANCHOR_ID}>
         <Eyebrow>今日のチェック</Eyebrow>
-        <DailyCheckCard today={today} existing={todayCheck} onSubmit={onCheckSubmit} />
+        <DailyCheckCard
+          today={today}
+          existing={todayCheck}
+          checks={checks}
+          onSubmit={onCheckSubmit}
+        />
         {selfLogHref ? (
           <p className="mt-4 text-right">
             <Link
@@ -185,16 +204,20 @@ export function GuideContent({
 export function SoftCard({
   children,
   accent = false,
+  id,
 }: {
   children: React.ReactNode;
   accent?: boolean;
+  /** アンカーリンク（scrollIntoView）用の DOM id。 */
+  id?: string;
 }) {
   return (
     <section
+      id={id}
       className={
         accent
-          ? "rounded-3xl border-2 border-[#cfe3cf] bg-white p-5 shadow-sm sm:p-6"
-          : "rounded-3xl border border-[#e3ece3] bg-white/90 p-5 shadow-sm sm:p-6"
+          ? "scroll-mt-4 rounded-3xl border-2 border-[#cfe3cf] bg-white p-5 shadow-sm sm:p-6"
+          : "scroll-mt-4 rounded-3xl border border-[#e3ece3] bg-white/90 p-5 shadow-sm sm:p-6"
       }
     >
       {children}

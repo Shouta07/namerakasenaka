@@ -27,7 +27,25 @@ export const recoveryGuideJsonSchema = z.object({
   monthly_policy: z.string().min(1),
   encouraging_message: z.string().min(1),
   next_counseling_points: z.array(z.string().min(1)).min(1),
+  /**
+   * 「あなたの結果とつながり」— 検査結果 → 身体の状態 → 行動 の対応表。
+   * optional: 既存の保存済みガイド（旧スキーマ）も引き続き読めるようにする。
+   */
+  result_mappings: z
+    .array(
+      z.object({
+        /** 例:「腸内カンジダ菌がやや多め」 */
+        finding: z.string().min(1),
+        /** 例:「腸の中のバランスが揺らいでいる可能性があります」 */
+        meaning: z.string().min(1),
+        /** 例:「甘いものを少し控えて、発酵食品をとり入れてみましょう」 */
+        action: z.string().min(1),
+      }),
+    )
+    .optional(),
 });
+
+export type ResultMapping = NonNullable<RecoveryGuideJson["result_mappings"]>[number];
 
 export type RecoveryGuideJson = z.infer<typeof recoveryGuideJsonSchema>;
 
@@ -61,6 +79,7 @@ export function collectGuideTexts(guide: RecoveryGuideJson): string[] {
     guide.monthly_policy,
     guide.encouraging_message,
     ...guide.next_counseling_points,
+    ...(guide.result_mappings ?? []).flatMap((m) => [m.finding, m.meaning, m.action]),
   ];
 }
 

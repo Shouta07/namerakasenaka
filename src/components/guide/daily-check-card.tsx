@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import type { DailyCheckRecord } from "@/lib/guide/source";
 import type { DailyCheckActionLevel } from "@/lib/demo/store";
+import { computeCheckStats, MILESTONE_DAYS } from "@/lib/guide/milestones";
 import { cn } from "@/lib/utils/cn";
+
+const MILESTONE_STREAKS = new Set<number>(Object.values(MILESTONE_DAYS));
 
 const ACTION_OPTIONS: { value: DailyCheckActionLevel; label: string; done: boolean }[] = [
   { value: "yes", label: "はい", done: true },
@@ -25,12 +29,15 @@ export type DailyCheckSubmit = {
 export function DailyCheckCard({
   today,
   existing,
+  checks = [],
   onSubmit,
 }: {
   /** YYYY-MM-DD for today's check. */
   today: string;
   /** Today's already-recorded check, if any. */
   existing: DailyCheckRecord | null;
+  /** Full check history — マイルストーン到達のお祝いトースト判定に使う。 */
+  checks?: DailyCheckRecord[];
   /** Persists the check (demo store or API). Resolves when saved. */
   onSubmit: (input: DailyCheckSubmit) => Promise<void>;
 }) {
@@ -54,11 +61,13 @@ export function DailyCheckCard({
 
   async function handleSubmit() {
     if (!action) return;
+    const actionDone = ACTION_OPTIONS.find((o) => o.value === action)?.done ?? false;
+    const wasAlreadyRecorded = existing != null;
     setSaving(true);
     try {
       await onSubmit({
         date: today,
-        actionDone: ACTION_OPTIONS.find((o) => o.value === action)?.done ?? false,
+        actionDone,
         actionLevel: action,
         skinCondition: skin,
         bodyCondition: body,
@@ -66,6 +75,21 @@ export function DailyCheckCard({
       });
       setJustSaved(true);
       setEditing(false);
+
+      // 達成と祝福: 今日の記録で連続日数が 3/7/14/28 に到達したら特別トースト。
+      // 修正（既存記録の上書き）では連続日数が変わらないので鳴らさない。
+      if (!wasAlreadyRecorded) {
+        const merged = checks
+          .filter((c) => c.date !== today)
+          .map((c) => ({ date: c.date, actionDone: c.actionDone }));
+        merged.push({ date: today, actionDone });
+        const { currentStreak } = computeCheckStats(merged);
+        if (MILESTONE_STREAKS.has(currentStreak)) {
+          toast.success(`🌱 ${currentStreak}日連続で記録できました！`, {
+            duration: 6000,
+          });
+        }
+      }
     } finally {
       setSaving(false);
     }

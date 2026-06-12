@@ -44,10 +44,22 @@ const SYSTEM_PROMPT = `あなたは「なめらかせなか」（背中ケア専
   "weekly_actions": string[],         // 今週やること。必ず3つだけ。具体的な行動
   "monthly_policy": string,           // 今月の方針
   "encouraging_message": string,      // 温かい応援メッセージ。プレッシャーを与えない
-  "next_counseling_points": string[]  // 次回カウンセリングで話すこと
+  "next_counseling_points": string[], // 次回カウンセリングで話すこと
+  "result_mappings": [                // 「あなたの結果とつながり」3〜5件
+    {
+      "finding": string,   // 検査でわかったこと。例:「腸内カンジダ菌がやや多め」
+      "meaning": string,   // からだで起きていること。「〜の可能性があります」「〜かもしれません」とやわらかく
+      "action": string     // ためしてみること。「〜してみましょう」と具体的でやさしい一歩
+    }
+  ]
 }
 
-weekly_actions は必ず3つちょうどにすること。多くても少なくてもいけません。`;
+weekly_actions は必ず3つちょうどにすること。多くても少なくてもいけません。
+
+result_mappings は検査結果メモの主要な所見から3〜5件作成すること。各行は
+「検査でわかったこと → からだで起きていること → ためしてみること」が
+一本の線でつながるように書く。意味づけ（meaning）は断定せず、行動（action）は
+今日から試せる小さな一歩にする。ここでも禁止表現は絶対に使わない。`;
 
 function buildUserPrompt(input: RecoveryGuideInput): string {
   return [

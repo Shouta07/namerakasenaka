@@ -118,6 +118,28 @@ export const TAMURA_SAMPLE_GUIDE: RecoveryGuideJson = {
     "肌の調子の記録で気づいたこと",
     "次の1ヶ月で増やせそうな「食べてよいもの」",
   ],
+  result_mappings: [
+    {
+      finding: "腸内カンジダ菌がやや多め",
+      meaning: "腸の中の菌のバランスが揺らいでいる可能性があります",
+      action: "甘いものを少し控えて、発酵食品（乳製品以外）をとり入れてみましょう",
+    },
+    {
+      finding: "ゾヌリン値が高め（リーキーガット傾向）",
+      meaning: "腸の壁が敏感になり、刺激が肌にあらわれやすい状態かもしれません",
+      action: "お米と魚を中心にした、腸にやさしい和食を続けてみましょう",
+    },
+    {
+      finding: "乳製品・卵・グルテンに高めの反応",
+      meaning: "いまのからだには、少し負担になりやすい食材の可能性があります",
+      action: "先生の方針に沿って、3ヶ月を目安にいったんお休みしてみましょう",
+    },
+    {
+      finding: "牛肉に中程度の反応",
+      meaning: "完全にやめなくても、回数をへらすだけで負担が軽くなる可能性があります",
+      action: "牛肉は週1回までを目安に、豚肉やラム肉に置きかえてみましょう",
+    },
+  ],
 };
 
 export const DEMO_GUIDE_CUSTOMERS: DemoGuideCustomer[] = [
@@ -162,9 +184,13 @@ function dateOnly(daysAgo: number): string {
 }
 
 /**
- * 直近10日分のチェック履歴。
- * アクション実践7日 / おやすみ3日、肌の調子は 2 → 4 へゆっくり上向き。
- * 「今日」はまだ未記録（共有ページで入力フォームが生きて見えるように）。
+ * チェック履歴 — デモ用のストーリー（§17 達成と祝福）:
+ *
+ * - 8日ぶん記録（実践6日 / おやすみ2日）、肌の調子は 2 → 4 へゆっくり上向き。
+ * - 最初の4日連続（10〜7日前）で「3日」マイルストーン達成済み。
+ * - 6〜5日前は記録のおやすみ（連続が一度切れる — 責めない設計の見せ場）。
+ * - 4日前〜昨日で再び4日連続 → 現在の連続記録は4日。「7日」はこれから。
+ * - 「今日」は未記録: デモ中にその場で記録すると連続5日に伸びて見える。
  */
 export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
   {
@@ -207,26 +233,7 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     memo: null,
     createdAt: daysAgoIso(7, 21),
   },
-  {
-    id: "check-tamura-6",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
-    date: dateOnly(6),
-    actionDone: true,
-    skinCondition: 3,
-    bodyCondition: 3,
-    memo: "ランチに焼き魚定食。おいしかった",
-    createdAt: daysAgoIso(6, 20),
-  },
-  {
-    id: "check-tamura-5",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
-    date: dateOnly(5),
-    actionDone: false,
-    skinCondition: 3,
-    bodyCondition: 2,
-    memo: "忙しくて朝はパンになった",
-    createdAt: daysAgoIso(5, 22),
-  },
+  // 6〜5日前: 記録のおやすみ（意図的なギャップ — 連続記録が一度切れる）。
   {
     id: "check-tamura-4",
     guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
@@ -234,7 +241,7 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     actionDone: true,
     skinCondition: 3,
     bodyCondition: 3,
-    memo: null,
+    memo: "ランチに焼き魚定食。おいしかった",
     createdAt: daysAgoIso(4, 21),
   },
   {

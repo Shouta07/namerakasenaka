@@ -5,6 +5,7 @@ import {
   localDateString,
   useDailyChecksFor,
   useGuideCustomerByClientId,
+  useGuideMessagesFor,
   useHealthRecordFor,
 } from "@/lib/guide/source";
 import { upsertStoredDailyCheck } from "@/lib/demo/store";
@@ -23,6 +24,7 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
   const customer = useGuideCustomerByClientId(clientId);
   const healthRecord = useHealthRecordFor(customer?.id ?? null);
   const checks = useDailyChecksFor(customer?.id ?? null);
+  const companionMessages = useGuideMessagesFor(customer?.id ?? null);
 
   const guide = healthRecord?.aiSummaryJson
     ? safeParseRecoveryGuideJson(healthRecord.aiSummaryJson)
@@ -71,6 +73,8 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
         checks={checks}
         onCheckSubmit={handleCheckSubmit}
         selfLogHref="/c/self-log"
+        companionMessages={companionMessages}
+        guideCustomerId={customer.id}
       />
       <p className="px-2 pb-2 text-center text-xs leading-relaxed text-stone-400">
         本ガイドは医療診断ではありません。検査・診断についてはエクシアクリニックにご相談ください。効果には個人差があります。

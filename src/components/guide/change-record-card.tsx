@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Leaf, Sparkles } from "lucide-react";
+import { BookOpen, Check, Leaf, Sparkles } from "lucide-react";
 import type { DailyCheckRecord } from "@/lib/guide/source";
 import { localDateString } from "@/lib/guide/source";
 import {
@@ -8,6 +8,8 @@ import {
   latestReachedMilestone,
   MILESTONE_DAYS,
 } from "@/lib/guide/milestones";
+import { LESSONS, LESSON_TOTAL } from "@/lib/lessons/fixtures";
+import { useLessonProgressFor } from "@/lib/lessons/source";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -15,7 +17,14 @@ import { cn } from "@/lib/utils/cn";
  * 肌の調子ミニトレンド + 直近メモ。
  * 「自分の身体は変えられる」という実感（自信）のための小さなダッシュボード。
  */
-export function ChangeRecordCard({ checks }: { checks: DailyCheckRecord[] }) {
+export function ChangeRecordCard({
+  checks,
+  guideCustomerId,
+}: {
+  checks: DailyCheckRecord[];
+  /** Optional — when present, shows a small 「学び {n}/7」 row inline. */
+  guideCustomerId?: string | null;
+}) {
   const byDate = new Map(checks.map((c) => [c.date, c]));
   const stats = computeCheckStats(checks);
   const latestMilestone = latestReachedMilestone(stats);
@@ -68,6 +77,9 @@ export function ChangeRecordCard({ checks }: { checks: DailyCheckRecord[] }) {
           <Leaf className="h-4 w-4 text-[#5d8a6c]" aria-hidden />
           れんぞく {stats.currentStreak}日
         </span>
+        {guideCustomerId ? (
+          <LessonSeedsRow guideCustomerId={guideCustomerId} />
+        ) : null}
         <p className="text-sm text-stone-500">
           これまで {stats.totalDays}日 記録できました
           <span className="ml-1.5 text-stone-400">
@@ -166,5 +178,35 @@ export function ChangeRecordCard({ checks }: { checks: DailyCheckRecord[] }) {
         {encouragement}
       </p>
     </div>
+  );
+}
+
+/**
+ * 「学び {n}/7」 — change-record の連続記録の隣にそっと並ぶ小さなチップ。
+ * 7 個のミニドットで現在の学習進捗を視覚化する。
+ */
+function LessonSeedsRow({ guideCustomerId }: { guideCustomerId: string }) {
+  const progress = useLessonProgressFor(guideCustomerId);
+  const done = new Set(progress.map((p) => p.lessonId));
+  const doneCount = done.size;
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full bg-stone-100 px-3 py-1.5 text-xs font-medium text-stone-700"
+      title={`腸のおはなし ${doneCount}/${LESSON_TOTAL} 完了`}
+    >
+      <BookOpen className="h-3 w-3 text-[#5d8a6c]" aria-hidden />
+      学び {doneCount}/{LESSON_TOTAL}
+      <span aria-hidden className="ml-1 flex items-center gap-0.5">
+        {LESSONS.map((l) => (
+          <span
+            key={l.id}
+            className={
+              "h-1.5 w-1.5 rounded-full " +
+              (done.has(l.id) ? "bg-[#5d8a6c]" : "bg-stone-300")
+            }
+          />
+        ))}
+      </span>
+    </span>
   );
 }

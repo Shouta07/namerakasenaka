@@ -149,10 +149,10 @@ describe("computeCheckStats", () => {
     expect(unknown.skinTrend).toBe("unknown");
   });
 
-  it("demo fixture: streak of 4 through yesterday, 3日 reached, 7日 upcoming", () => {
+  it("demo fixture: streak of 5 through yesterday, 3日 reached, 7日 upcoming", () => {
     // フィクスチャは実時間相対（daysAgoIso）なので実際の now で評価する。
     const stats = computeCheckStats(DEMO_DAILY_CHECKS, new Date());
-    expect(stats.currentStreak).toBe(4);
+    expect(stats.currentStreak).toBe(5);
     const byId = new Map(stats.milestones.map((m) => [m.id, m.reachedAt]));
     expect(byId.get("3days")).not.toBeNull();
     expect(byId.get("7days")).toBeNull();

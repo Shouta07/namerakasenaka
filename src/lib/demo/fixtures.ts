@@ -51,8 +51,8 @@ export type DemoClient = {
 
 export const demoClient: DemoClient = {
   id: "client-yamada",
-  displayName: "山田 花子",
-  furigana: "やまだ はなこ",
+  displayName: "田村 洋子",
+  furigana: "たむら ようこ",
   ageRange: "30代",
   skinType: "敏感肌・乾燥傾向",
   courseName: "背中ケア 6 ヶ月コース",
@@ -726,7 +726,7 @@ export const demoPendingDrafts: DemoPendingDraft[] = [
 /** One example draft that has already been approved — shows audit trail. */
 export const demoApprovedExample = {
   id: "approved-1",
-  clientName: "山田 花子",
+  clientName: "田村 洋子",
   approvedAt: hoursAgoIso(1),
   approvedBy: NUTRITIONIST_NAME,
   licenseNumber: NUTRITIONIST_LICENSE,
@@ -973,7 +973,7 @@ export const demoActivityFeed: DemoActivityEntry[] = [
     kind: "photo",
     actor: "佐藤 美咲",
     actorRole: "therapist",
-    body: "山田 花子 様の進捗写真を撮影",
+    body: "田村 洋子 様の進捗写真を撮影",
     at: minutesAgoIso(2),
     href: "/admin/clients/client-yamada",
   },
@@ -998,7 +998,7 @@ export const demoActivityFeed: DemoActivityEntry[] = [
   {
     id: "act-4",
     kind: "appointment",
-    actor: "山田 花子",
+    actor: "田村 洋子",
     actorRole: "customer",
     body: "次回予約を確定",
     at: hoursAgoIso(1),

@@ -6,6 +6,7 @@ import {
   localDateString,
   useDailyChecksFor,
   useGuideCustomerByToken,
+  useGuideMessagesFor,
   useHealthRecordFor,
   type DailyCheckRecord,
 } from "@/lib/guide/source";
@@ -25,6 +26,7 @@ export function ShareGuideView({ token }: { token: string }) {
   const customer = useGuideCustomerByToken(token);
   const healthRecord = useHealthRecordFor(customer?.id ?? null);
   const demoChecks = useDailyChecksFor(customer?.id ?? null);
+  const companionMessages = useGuideMessagesFor(customer?.id ?? null);
   const [remoteChecks, setRemoteChecks] = useState<DailyCheckRecord[]>([]);
 
   const demo = isDemoMode();
@@ -119,6 +121,9 @@ export function ShareGuideView({ token }: { token: string }) {
             todayCheck={todayCheck}
             checks={checks}
             onCheckSubmit={handleCheckSubmit}
+            companionMessages={companionMessages}
+            shareToken={token}
+            guideCustomerId={customer.id}
           />
 
           {/* 三社フッタ */}

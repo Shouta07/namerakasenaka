@@ -13,7 +13,9 @@ import { useMemo } from "react";
 import {
   useStoredDailyChecks,
   useStoredGuideCustomers,
+  useStoredGuideMessages,
   useStoredHealthRecords,
+  type GuideMessage,
   type StoredDailyCheck,
   type StoredGuideCustomer,
   type StoredHealthRecord,
@@ -21,12 +23,14 @@ import {
 import {
   DEMO_DAILY_CHECKS,
   DEMO_GUIDE_CUSTOMERS,
+  DEMO_GUIDE_MESSAGES,
   DEMO_HEALTH_RECORDS,
 } from "@/lib/demo/recovery-fixtures";
 
 export type GuideCustomerRecord = StoredGuideCustomer;
 export type HealthRecordRecord = StoredHealthRecord;
 export type DailyCheckRecord = StoredDailyCheck;
+export type GuideMessageRecord = GuideMessage;
 
 export function useGuideCustomers(): GuideCustomerRecord[] {
   const stored = useStoredGuideCustomers();
@@ -100,6 +104,27 @@ export function useDailyChecksFor(
     }
     return Array.from(byDate.values()).sort((a, b) =>
       a.date.localeCompare(b.date),
+    );
+  }, [stored, guideCustomerId]);
+}
+
+/**
+ * 伴走ループ — サロン→顧客メッセージ。フィクスチャと localStorage をマージし、
+ * 新着順（createdAt desc）で返す。stored が同 id を持てば stored が勝つ。
+ */
+export function useGuideMessagesFor(
+  guideCustomerId: string | null,
+): GuideMessageRecord[] {
+  const stored = useStoredGuideMessages(guideCustomerId ?? "");
+  return useMemo(() => {
+    if (!guideCustomerId) return [];
+    const byId = new Map<string, GuideMessageRecord>();
+    for (const m of DEMO_GUIDE_MESSAGES) {
+      if (m.guideCustomerId === guideCustomerId) byId.set(m.id, m);
+    }
+    for (const s of stored) byId.set(s.id, s);
+    return Array.from(byId.values()).sort((a, b) =>
+      b.createdAt.localeCompare(a.createdAt),
     );
   }, [stored, guideCustomerId]);
 }

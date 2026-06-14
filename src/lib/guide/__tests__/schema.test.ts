@@ -107,10 +107,10 @@ describe("RecoveryGuideJson schema", () => {
 });
 
 describe("recovery demo fixtures", () => {
-  it("daily checks tell the 6-done / 2-rest story with an upward skin trend", () => {
+  it("daily checks tell the 7-done / 2-rest story with an upward skin trend", () => {
     const checks = DEMO_DAILY_CHECKS;
-    expect(checks).toHaveLength(8);
-    expect(checks.filter((c) => c.actionDone)).toHaveLength(6);
+    expect(checks).toHaveLength(9);
+    expect(checks.filter((c) => c.actionDone)).toHaveLength(7);
     expect(checks.filter((c) => !c.actionDone)).toHaveLength(2);
     const sorted = [...checks].sort((a, b) => a.date.localeCompare(b.date));
     expect(sorted[0].skinCondition).toBe(2);

@@ -224,6 +224,39 @@ export type StoredDailyCheck = {
   createdAt: string;
 };
 
+/**
+ * 🌱 「腸のおはなし」 — レッスン進捗。
+ *
+ * 1 レッスン = 1 行。完了日と「初回クイズ正解だったか」を記録。
+ * 同じレッスンを後日読み返しても completedAt は変わらない（最初に終えた日）。
+ * revisitCount は読み返した回数（バッジ判定には使わない）。
+ */
+export type LessonProgress = {
+  guideCustomerId: string;
+  lessonId: string;
+  completedAt: string; // ISO when first finished
+  quizCorrectFirstTry: boolean;
+  revisitCount: number;
+};
+
+/**
+ * 伴走ループ — サロン → 顧客の一言メッセージ。
+ *
+ * 顧客の daily_check.memo に対するお返事や、自由形式のひとことを保存する。
+ * direction は今のところ salon_to_customer のみ。将来の双方向に備えて型は残す。
+ */
+export type GuideMessage = {
+  id: string;
+  guideCustomerId: string;
+  direction: "salon_to_customer";
+  /** ≤ 200 chars enforced at composer; not validated here. */
+  body: string;
+  createdAt: string; // ISO
+  readAt: string | null;
+  /** Optional — links a reply to a customer memo on that date (YYYY-MM-DD). */
+  respondingToCheckDate: string | null;
+};
+
 type Snapshot = {
   messages: StoredMessage[];
   selfLogs: StoredSelfLog[];
@@ -242,6 +275,8 @@ type Snapshot = {
   guideCustomers: StoredGuideCustomer[];
   healthRecords: StoredHealthRecord[];
   dailyChecks: StoredDailyCheck[];
+  guideMessages: GuideMessage[];
+  lessonProgress: LessonProgress[];
 };
 
 const EMPTY: Snapshot = {
@@ -262,6 +297,8 @@ const EMPTY: Snapshot = {
   guideCustomers: [],
   healthRecords: [],
   dailyChecks: [],
+  guideMessages: [],
+  lessonProgress: [],
 };
 
 // ---------- Low-level access ----------
@@ -842,6 +879,112 @@ export function upsertStoredDailyCheck(
     return [...cur, next];
   });
   return next;
+}
+
+// Guide messages (salon → customer 伴走ループ) -------------------------------
+
+export function useStoredGuideMessages(guideCustomerId: string): GuideMessage[] {
+  const all = useStore("guideMessages");
+  return all
+    .filter((m) => m.guideCustomerId === guideCustomerId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function addStoredGuideMessage(
+  input: Omit<GuideMessage, "id" | "createdAt" | "readAt"> & {
+    id?: string;
+    createdAt?: string;
+    readAt?: string | null;
+  },
+): GuideMessage {
+  const next: GuideMessage = {
+    id: input.id ?? newId(),
+    createdAt: input.createdAt ?? new Date().toISOString(),
+    readAt: input.readAt ?? null,
+    guideCustomerId: input.guideCustomerId,
+    direction: input.direction,
+    body: input.body,
+    respondingToCheckDate: input.respondingToCheckDate,
+  };
+  update("guideMessages", (cur) => {
+    const idx = cur.findIndex((m) => m.id === next.id);
+    if (idx >= 0) {
+      const copy = cur.slice();
+      copy[idx] = next;
+      return copy;
+    }
+    return [...cur, next];
+  });
+  return next;
+}
+
+export function markStoredGuideMessageRead(id: string): void {
+  update("guideMessages", (cur) =>
+    cur.map((m) =>
+      m.id === id ? { ...m, readAt: m.readAt ?? new Date().toISOString() } : m,
+    ),
+  );
+}
+
+// Lesson progress (🌱 腸のおはなし) ----------------------------------------
+
+export function useStoredLessonProgress(
+  guideCustomerId: string,
+): LessonProgress[] {
+  const all = useStore("lessonProgress");
+  return all.filter((p) => p.guideCustomerId === guideCustomerId);
+}
+
+/**
+ * Mark a lesson finished. First-time completion stamps completedAt;
+ * subsequent calls are no-ops on completedAt (the first day stays).
+ * Returns `{ firstCompletion: boolean }` so the caller can choose
+ * which toast / badge celebration to fire.
+ */
+export function markStoredLessonCompleted(input: {
+  guideCustomerId: string;
+  lessonId: string;
+  quizCorrectFirstTry: boolean;
+}): { firstCompletion: boolean } {
+  let firstCompletion = false;
+  update("lessonProgress", (cur) => {
+    const idx = cur.findIndex(
+      (p) =>
+        p.guideCustomerId === input.guideCustomerId &&
+        p.lessonId === input.lessonId,
+    );
+    if (idx >= 0) {
+      // Already completed once — keep the original timestamp / first-try result.
+      return cur;
+    }
+    firstCompletion = true;
+    return [
+      ...cur,
+      {
+        guideCustomerId: input.guideCustomerId,
+        lessonId: input.lessonId,
+        completedAt: new Date().toISOString(),
+        quizCorrectFirstTry: input.quizCorrectFirstTry,
+        revisitCount: 0,
+      },
+    ];
+  });
+  return { firstCompletion };
+}
+
+/** Bumps the re-visit counter (only for already-completed lessons). */
+export function bumpStoredLessonRevisit(input: {
+  guideCustomerId: string;
+  lessonId: string;
+}): void {
+  update("lessonProgress", (cur) =>
+    cur.map((p) =>
+      p.guideCustomerId === input.guideCustomerId &&
+      p.lessonId === input.lessonId
+        ? { ...p, revisitCount: p.revisitCount + 1 }
+        : p,
+    ),
+  );
 }
 
 // ---------- Reset / readers ----------

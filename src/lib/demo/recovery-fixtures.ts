@@ -186,11 +186,12 @@ function dateOnly(daysAgo: number): string {
 /**
  * チェック履歴 — デモ用のストーリー（§17 達成と祝福）:
  *
- * - 8日ぶん記録（実践6日 / おやすみ2日）、肌の調子は 2 → 4 へゆっくり上向き。
+ * - 9日ぶん記録（実践7日 / おやすみ2日）、肌の調子は 2 → 4 へゆっくり上向き。
  * - 最初の4日連続（10〜7日前）で「3日」マイルストーン達成済み。
- * - 6〜5日前は記録のおやすみ（連続が一度切れる — 責めない設計の見せ場）。
- * - 4日前〜昨日で再び4日連続 → 現在の連続記録は4日。「7日」はこれから。
- * - 「今日」は未記録: デモ中にその場で記録すると連続5日に伸びて見える。
+ * - 6日前は記録のおやすみ（連続が一度切れる — 責めない設計の見せ場）。
+ * - 5日前〜昨日で再び5日連続 → 現在の連続記録は5日。「7日」はもうすぐ。
+ * - 7日前と5日前のメモにはサロンからのお返事メッセージが届く（伴走ループ）。
+ * - 「今日」は未記録: デモ中にその場で記録すると連続6日に伸びて見える。
  */
 export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
   {
@@ -220,7 +221,7 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     actionDone: false,
     skinCondition: 2,
     bodyCondition: 2,
-    memo: "会食でチーズを少し。気にしすぎないようにする",
+    memo: "夜の白湯、続けられた日は寝つきがよかったです",
     createdAt: daysAgoIso(8, 23),
   },
   {
@@ -233,7 +234,17 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     memo: null,
     createdAt: daysAgoIso(7, 21),
   },
-  // 6〜5日前: 記録のおやすみ（意図的なギャップ — 連続記録が一度切れる）。
+  // 6日前: 記録のおやすみ（意図的なギャップ — 連続記録が一度切れる）。
+  {
+    id: "check-tamura-5",
+    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    date: dateOnly(5),
+    actionDone: true,
+    skinCondition: 3,
+    bodyCondition: 3,
+    memo: "外食で焼き魚を選びました、わかりやすかったです",
+    createdAt: daysAgoIso(5, 22),
+  },
   {
     id: "check-tamura-4",
     guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
@@ -273,5 +284,97 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     bodyCondition: 4,
     memo: "背中のざらつきが少しやわらいだ気がする",
     createdAt: daysAgoIso(1, 21),
+  },
+];
+
+export type DemoGuideMessage = {
+  id: string;
+  guideCustomerId: string;
+  direction: "salon_to_customer";
+  body: string;
+  createdAt: string;
+  readAt: string | null;
+  respondingToCheckDate: string | null;
+};
+
+/**
+ * 伴走ループ — サロンから田村さんへのお返事メッセージ（§17 自分を責めさせない）。
+ *
+ * - 8日前: 白湯の習慣について（メモなし時点でも温かい一言）。
+ * - 5日前: 「外食での焼き魚定食」メモへのお返事（7日前のメモにリンク）。
+ * - 2日前: 「3日連続」を祝う一言。最新メッセージは未読のままにして、
+ *   /c/progress に「サロンから新しいお返事が届いています」を表示する。
+ *
+ * すべての本文は §8.2 + §17 禁止語フィルタを通過すること（テストで担保）。
+ */
+export const DEMO_GUIDE_MESSAGES: DemoGuideMessage[] = [
+  {
+    id: "guide-msg-tamura-8",
+    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    direction: "salon_to_customer",
+    body: "寝る前の白湯、続けられるとよいですね。少しずつで大丈夫です。",
+    createdAt: daysAgoIso(8, 19),
+    readAt: daysAgoIso(7, 8),
+    respondingToCheckDate: null,
+  },
+  {
+    id: "guide-msg-tamura-5",
+    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    direction: "salon_to_customer",
+    body: "外食での焼き魚定食、選び方がとても素敵でした。続けやすい工夫を見つけていきましょう。",
+    createdAt: daysAgoIso(5, 11),
+    readAt: daysAgoIso(4, 8),
+    respondingToCheckDate: dateOnly(5),
+  },
+  {
+    id: "guide-msg-tamura-2",
+    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    direction: "salon_to_customer",
+    body: "3日続きましたね、すばらしい積み重ねです。あなたのペースで、一緒に歩んでいきましょう。",
+    createdAt: daysAgoIso(2, 10),
+    readAt: null,
+    respondingToCheckDate: null,
+  },
+];
+
+/**
+ * 🌱 「腸のおはなし」 — 田村さんの学習進捗デモシード。
+ *
+ * Lesson 1, 2, 3 が完了済み（3つのバッジ取得済み）、4-7 は未着手。
+ * デモ中に Lesson 4「乳酸菌が逆効果になることもあります」を読了すると
+ * 🥛 「やさしい知恵」 バッジが live で増える ── これが見どころ。
+ *
+ * 3 番目だけ quizCorrectFirstTry: false にしてあるので、
+ * 「不正解でも責められずバッジは取れる」という設計をそのまま画面で見せられる。
+ */
+export type DemoLessonProgress = {
+  guideCustomerId: string;
+  lessonId: string;
+  completedAt: string;
+  quizCorrectFirstTry: boolean;
+  revisitCount: number;
+};
+
+export const DEMO_LESSON_PROGRESS: DemoLessonProgress[] = [
+  {
+    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    lessonId: "lesson-1-gut-map",
+    completedAt: daysAgoIso(6, 21),
+    quizCorrectFirstTry: true,
+    revisitCount: 1,
+  },
+  {
+    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    lessonId: "lesson-2-sibo",
+    completedAt: daysAgoIso(4, 22),
+    quizCorrectFirstTry: true,
+    revisitCount: 0,
+  },
+  {
+    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    lessonId: "lesson-3-fructan",
+    completedAt: daysAgoIso(2, 21),
+    quizCorrectFirstTry: false,
+    revisitCount: 0,
   },
 ];

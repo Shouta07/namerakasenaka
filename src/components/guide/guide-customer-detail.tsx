@@ -17,6 +17,8 @@ import {
 import { addStoredHealthRecord, newId } from "@/lib/demo/store";
 import type { RecoveryGuideJson } from "@/lib/guide/schema";
 import { copyShareUrl } from "./admin-customers-list";
+import { CustomerMemosSection } from "./customer-memos-section";
+import { AdminLessonProgressSection } from "./admin-lesson-progress-section";
 
 type RecordDraft = {
   testResultMemo: string;
@@ -282,6 +284,12 @@ export function GuideCustomerDetail({ guideCustomerId }: { guideCustomerId: stri
           {guide ? <GuidePreview guide={guide} /> : null}
         </CardContent>
       </Card>
+
+      {/* 🌱 学習進捗 — 腸のおはなしの完了状況 */}
+      <AdminLessonProgressSection guideCustomerId={customer.id} />
+
+      {/* お客さまの気づきメモ + 伴走返信 */}
+      <CustomerMemosSection guideCustomerId={customer.id} />
     </div>
   );
 }

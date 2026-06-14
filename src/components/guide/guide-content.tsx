@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import type { RecoveryGuideJson } from "@/lib/guide/schema";
-import type { DailyCheckRecord } from "@/lib/guide/source";
+import type { DailyCheckRecord, GuideMessageRecord } from "@/lib/guide/source";
+import { LessonsCard } from "@/components/lessons/lessons-card";
 import { DailyCheckCard, type DailyCheckSubmit } from "./daily-check-card";
 import { ChangeRecordCard } from "./change-record-card";
+import { CompanionMessagesCard } from "./companion-messages-card";
 import { ResultMappingCard } from "./result-mapping-card";
 import { DAILY_CHECK_ANCHOR_ID, TodaysOneThing } from "./todays-one-thing";
 
@@ -22,6 +24,9 @@ export function GuideContent({
   checks,
   onCheckSubmit,
   selfLogHref,
+  companionMessages,
+  shareToken,
+  guideCustomerId,
 }: {
   guide: RecoveryGuideJson;
   /** YYYY-MM-DD — 今日のチェックの粒度。 */
@@ -31,6 +36,12 @@ export function GuideContent({
   onCheckSubmit: (input: DailyCheckSubmit) => Promise<void>;
   /** /c/guide ではセルフログへの導線を出す（共有ページでは出さない）。 */
   selfLogHref?: string;
+  /** 伴走ループ — サロンからのお返事メッセージ。空配列でも空状態を描く。 */
+  companionMessages?: GuideMessageRecord[];
+  /** /share/[token] からの呼び出しのみ — 既読化 API の認証に渡す。 */
+  shareToken?: string;
+  /** 🌱 腸のおはなし — 学習進捗のキー。null/未指定ならレッスンセクションを描かない。 */
+  guideCustomerId?: string | null;
 }) {
   return (
     <>
@@ -46,6 +57,11 @@ export function GuideContent({
         today={today}
         todayCheck={todayCheck}
       />
+
+      {/* 1.7 🌱 腸のおはなし — 学習レッスン（顧客IDがある時だけ） */}
+      {guideCustomerId ? (
+        <LessonsCard guideCustomerId={guideCustomerId} />
+      ) : null}
 
       {/* 2. あなたの身体で起きていること */}
       <SoftCard>
@@ -168,8 +184,16 @@ export function GuideContent({
       {/* 7. 変化の記録 */}
       <SoftCard>
         <Eyebrow>変化の記録</Eyebrow>
-        <ChangeRecordCard checks={checks} />
+        <ChangeRecordCard checks={checks} guideCustomerId={guideCustomerId ?? null} />
       </SoftCard>
+
+      {/* 7.5 サロンからのお返事 — 伴走ループの顧客側エンドポイント */}
+      {companionMessages ? (
+        <CompanionMessagesCard
+          messages={companionMessages}
+          shareToken={shareToken}
+        />
+      ) : null}
 
       {/* 8. 次回カウンセリング */}
       <SoftCard>

@@ -8,6 +8,7 @@ import {
   demoMealLogs,
 } from "@/lib/demo/fixtures";
 import { HypothesisCard } from "@/components/guide/hypothesis-card";
+import { UnreadCompanionBanner } from "@/components/guide/unread-banner";
 import { PhotoTimeline, type TimelinePhoto } from "@/components/progress/photo-timeline";
 import { DemoProgressTimeline } from "@/components/progress/demo-progress-timeline";
 import { Badge } from "@/components/ui/badge";
@@ -172,6 +173,9 @@ function DemoClientProgress() {
           </div>
         </div>
       </section>
+
+      {/* 伴走ループ — サロンから未読のお返事があるときだけ表示 */}
+      <UnreadCompanionBanner clientId={demoClient.id} />
 
       {/* 状態仮説カード — 回復ガイドがある顧客にだけ表示（なければ静かにスキップ） */}
       <HypothesisCard clientId={demoClient.id} />

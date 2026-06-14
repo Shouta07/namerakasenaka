@@ -1,64 +1,87 @@
+import { Caption, DiagramFrame, VConnector } from "./_atoms";
+
 /**
- * 🛠 Lesson 5 — まず「整える」順序。
- *
- * 3 つのナンバー付きステージカード： ① 整える(ほうき) → ② エサ(タネ) → ③ 菌(ドット)。
+ * Lesson 5: まず「整える」順序
+ * ① 整える → ② エサ → ③ 菌
  */
 export function TidyOrderIllustration({ className }: { className?: string }) {
-  const stage = (x: number, n: number, label: string, glyph: string) => (
-    <g key={n}>
-      <rect
-        x={x}
-        y={48}
-        width={92}
-        height={112}
-        rx={16}
-        fill="#ffffff"
-        stroke="#7c5e3b"
-        strokeWidth={1.6}
-      />
-      <circle cx={x + 18} cy={64} r={11} fill="#5d8a6c" />
-      <text
-        x={x + 18}
-        y={68}
-        fontSize="11"
-        fill="#ffffff"
-        textAnchor="middle"
-        fontWeight={700}
-      >
-        {n}
-      </text>
-      <text x={x + 46} y={110} fontSize="32" textAnchor="middle">
-        {glyph}
-      </text>
-      <text x={x + 46} y={144} fontSize="11" fill="#7c5e3b" textAnchor="middle">
-        {label}
-      </text>
-    </g>
-  );
-
   return (
-    <svg
-      className={className}
-      viewBox="0 0 360 200"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="腸を整える3つのステップ"
+    <DiagramFrame title="腸を整える 3 ステップ" className={className}>
+      <Step
+        number="①"
+        emoji="🧹"
+        title="整える"
+        body="渋滞を解消するところからスタート"
+        tone="brand"
+      />
+      <VConnector />
+      <Step
+        number="②"
+        emoji="🌾"
+        title="エサを入れる"
+        body="今いる善玉菌をやさしくサポート"
+        tone="amber"
+      />
+      <VConnector />
+      <Step
+        number="③"
+        emoji="🦠"
+        title="菌を入れる"
+        body="自分に合う菌を、必要な分だけ"
+        tone="emerald"
+      />
+
+      <p className="px-3 text-center text-[11px] leading-relaxed text-stone-500">
+        順番を変えると、せっかくの努力がすれ違ってしまうことがあります。
+      </p>
+    </DiagramFrame>
+  );
+}
+
+function Step({
+  number,
+  emoji,
+  title,
+  body,
+  tone,
+}: {
+  number: string;
+  emoji: string;
+  title: string;
+  body: string;
+  tone: "brand" | "amber" | "emerald";
+}) {
+  const cls = {
+    brand: "border-brand-200 bg-brand-50",
+    amber: "border-amber-200 bg-amber-50",
+    emerald: "border-emerald-200 bg-emerald-50",
+  }[tone];
+  const captionTone = {
+    brand: "brand",
+    amber: "muted",
+    emerald: "emerald",
+  }[tone] as "brand" | "muted" | "emerald";
+  const numberCls = {
+    brand: "text-brand-700 bg-white border-brand-200",
+    amber: "text-amber-800 bg-white border-amber-200",
+    emerald: "text-emerald-700 bg-white border-emerald-200",
+  }[tone];
+  return (
+    <div
+      className={`flex w-full items-center gap-3 rounded-2xl border px-3 py-3 ${cls}`}
     >
-      <rect width="360" height="200" fill="#fdf7f3" rx="14" />
-
-      {stage(14, 1, "整える", "🧹")}
-
-      <path d="M114 104 L132 104" stroke="#7c5e3b" strokeWidth="2" strokeLinecap="round" />
-      <polygon points="132,104 124,99 124,109" fill="#7c5e3b" />
-
-      {stage(134, 2, "エサ", "🌱")}
-
-      <path d="M234 104 L252 104" stroke="#7c5e3b" strokeWidth="2" strokeLinecap="round" />
-      <polygon points="252,104 244,99 244,109" fill="#7c5e3b" />
-
-      {stage(254, 3, "菌", "🦠")}
-
-      <text x="12" y="36" fontSize="11" fill="#7c5e3b">順番が大切。①→②→③ で安全に。</text>
-    </svg>
+      <span
+        className={`flex h-10 w-10 flex-none items-center justify-center rounded-full border text-sm font-bold ${numberCls}`}
+      >
+        {number}
+      </span>
+      <div className="flex flex-1 items-center gap-2">
+        <span className="text-2xl">{emoji}</span>
+        <div className="min-w-0 flex-1">
+          <Caption tone={captionTone}>{title}</Caption>
+          <p className="mt-0.5 text-[11px] leading-relaxed text-stone-700">{body}</p>
+        </div>
+      </div>
+    </div>
   );
 }

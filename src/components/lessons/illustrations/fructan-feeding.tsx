@@ -1,85 +1,105 @@
+import { BacteriaCluster, Caption, DiagramFrame, VConnector } from "./_atoms";
+
 /**
- * 🌾 Lesson 3 — フルクタン。
- *
- * 玉ねぎ・小麦 → 小腸 (吸収✕) → 大腸（菌が食べる） → ガス。
- * 3段階の横フローを chevron で繋ぐ。
+ * Lesson 3: 玉ねぎ・小麦のフルクタン
+ * 食べもの → 小腸（吸収✕）→ 大腸で発酵 → ガス
  */
 export function FructanFeedingIllustration({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 360 200"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="フルクタンを菌が食べてガスができる流れの図"
-    >
-      <rect width="360" height="200" fill="#fdf7f3" rx="14" />
+    <DiagramFrame title="フルクタンの旅" className={className}>
+      <div className="flex w-full flex-col items-stretch gap-2">
+        {/* 1. 食べもの */}
+        <Stage
+          step="①"
+          tone="brand"
+          title="フルクタンを含む食べもの"
+        >
+          <div className="flex flex-wrap items-center justify-center gap-2 text-2xl">
+            <FoodChip label="玉ねぎ" emoji="🧅" />
+            <FoodChip label="小麦" emoji="🌾" />
+            <FoodChip label="にんにく" emoji="🧄" />
+          </div>
+        </Stage>
 
-      {/* ステージ① 食材 */}
-      <rect
-        x="14"
-        y="56"
-        width="92"
-        height="92"
-        rx="14"
-        fill="#ffffff"
-        stroke="#7c5e3b"
-        strokeWidth="1.6"
-      />
-      <text x="36" y="46" fontSize="9" fill="#7c5e3b">食べもの</text>
-      <text x="32" y="100" fontSize="22">🧅</text>
-      <text x="64" y="100" fontSize="22">🌾</text>
-      <text x="32" y="132" fontSize="11" fill="#7c5e3b">玉ねぎ・小麦</text>
+        <VConnector />
 
-      {/* chevron 1 */}
-      <path d="M112 100 L132 100" stroke="#7c5e3b" strokeWidth="2" strokeLinecap="round" />
-      <polygon points="132,100 124,95 124,105" fill="#7c5e3b" />
+        {/* 2. 小腸 */}
+        <Stage
+          step="②"
+          tone="amber"
+          title="小腸"
+          subtitle="吸収されにくい"
+        >
+          <p className="text-center text-base">
+            <span className="text-2xl">🌿</span>
+            <span className="ml-1 font-semibold text-amber-700">吸収 ✕</span>
+          </p>
+        </Stage>
 
-      {/* ステージ② 小腸 — 吸収✕ */}
-      <rect
-        x="138"
-        y="56"
-        width="84"
-        height="92"
-        rx="14"
-        fill="#ffffff"
-        stroke="#7c5e3b"
-        strokeWidth="1.6"
-      />
-      <text x="156" y="46" fontSize="9" fill="#7c5e3b">小腸</text>
-      <text x="156" y="98" fontSize="18" fill="#7c5e3b">吸収</text>
-      <text x="190" y="98" fontSize="20" fill="#c97a4d">✕</text>
-      <text x="154" y="132" fontSize="9" fill="#a5896b">通り過ぎる</text>
+        <VConnector />
 
-      {/* chevron 2 */}
-      <path d="M226 100 L246 100" stroke="#7c5e3b" strokeWidth="2" strokeLinecap="round" />
-      <polygon points="246,100 238,95 238,105" fill="#7c5e3b" />
+        {/* 3. 大腸 */}
+        <Stage
+          step="③"
+          tone="emerald"
+          title="大腸"
+          subtitle="菌が発酵させる"
+        >
+          <div className="flex flex-col items-center gap-1">
+            <BacteriaCluster count={14} tone="emerald" size="sm" />
+            <p className="text-[11px] text-emerald-700">↓ 発酵</p>
+            <p className="text-lg">💨 💨 💨</p>
+            <p className="text-[11px] text-stone-500">おなかが張る</p>
+          </div>
+        </Stage>
+      </div>
+    </DiagramFrame>
+  );
+}
 
-      {/* ステージ③ 大腸 — 菌が食べてガス */}
-      <rect
-        x="252"
-        y="56"
-        width="94"
-        height="92"
-        rx="14"
-        fill="#eaf3ea"
-        stroke="#7c5e3b"
-        strokeWidth="1.6"
-      />
-      <text x="278" y="46" fontSize="9" fill="#3c6347">大腸</text>
-      {/* 菌のドット */}
-      {[
-        [266, 84], [282, 92], [298, 84], [314, 92], [330, 86],
-        [274, 108], [292, 116], [308, 108], [324, 116],
-        [266, 130], [282, 138], [302, 132], [320, 138],
-      ].map(([cx, cy], i) => (
-        <circle key={i} cx={cx} cy={cy} r="2.8" fill="#3c6347" />
-      ))}
-      {/* ガスの泡 */}
-      <circle cx="300" cy="28" r="5" fill="#fde68a" opacity="0.85" />
-      <circle cx="316" cy="20" r="4" fill="#fde68a" opacity="0.7" />
-      <text x="280" y="22" fontSize="10">💨</text>
-      <text x="324" y="14" fontSize="9">💨</text>
-    </svg>
+function Stage({
+  step,
+  tone,
+  title,
+  subtitle,
+  children,
+}: {
+  step: string;
+  tone: "brand" | "amber" | "emerald";
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
+  const cls = {
+    brand: "border-brand-200 bg-brand-50",
+    amber: "border-amber-200 bg-amber-50",
+    emerald: "border-emerald-200 bg-emerald-50",
+  }[tone];
+  const captionTone = {
+    brand: "brand",
+    amber: "muted",
+    emerald: "emerald",
+  }[tone] as "brand" | "muted" | "emerald";
+  return (
+    <section className={`rounded-2xl border px-3 py-3 ${cls}`}>
+      <div className="mb-1.5 flex items-center justify-between">
+        <Caption tone={captionTone}>
+          {step} {title}
+        </Caption>
+        {subtitle ? (
+          <span className="text-[10px] text-stone-500">{subtitle}</span>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function FoodChip({ label, emoji }: { label: string; emoji: string }) {
+  return (
+    <div className="inline-flex flex-col items-center rounded-xl border border-brand-200 bg-white px-2.5 py-1.5">
+      <span className="text-xl leading-none">{emoji}</span>
+      <span className="mt-0.5 text-[10px] font-medium text-stone-600">{label}</span>
+    </div>
   );
 }

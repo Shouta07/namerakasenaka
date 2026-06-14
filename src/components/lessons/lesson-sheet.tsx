@@ -101,8 +101,8 @@ export function LessonSheet({
 
         {/* フル幅イラスト */}
         {Illustration ? (
-          <div className="flex items-center justify-center overflow-hidden rounded-2xl bg-[#fdf7f3]">
-            <Illustration className="h-auto w-full max-h-[250px]" />
+          <div className="flex items-center justify-center rounded-2xl bg-[#fdf7f3] px-3 py-5">
+            <Illustration className="w-full" />
           </div>
         ) : null}
 

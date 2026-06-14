@@ -8,6 +8,7 @@ const PUBLIC_PATHS = [
   "/invite",
   "/counseling",
   "/share",
+  "/lessons-preview",
   "/api/stripe/webhook",
   "/api/daily-checks",
 ];

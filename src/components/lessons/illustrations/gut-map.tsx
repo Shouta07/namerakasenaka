@@ -7,7 +7,6 @@ export function GutMapIllustration({ className }: { className?: string }) {
       className={className}
       gradient="calm-emerald"
       hero="🌿"
-      caption="おなかの地図"
       accents={[
         { emoji: "👄", top: 12, left: 18, size: "md", opacity: 70 },
         { emoji: "🍽️", top: 22, left: 80, size: "sm", opacity: 55, rotate: -8 },

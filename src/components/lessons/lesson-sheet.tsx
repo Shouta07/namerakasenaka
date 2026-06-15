@@ -99,11 +99,9 @@ export function LessonSheet({
           </h2>
         </header>
 
-        {/* フル幅イラスト */}
+        {/* フル幅イラスト（ムードカードが自己完結） */}
         {Illustration ? (
-          <div className="flex items-center justify-center rounded-2xl bg-[#fdf7f3] px-3 py-5">
-            <Illustration className="w-full" />
-          </div>
+          <Illustration className="w-full" />
         ) : null}
 
         {/* カード本体 */}

@@ -7,7 +7,6 @@ export function SiboTrafficIllustration({ className }: { className?: string }) {
       className={className}
       gradient="warm-amber"
       hero="🚦"
-      caption="菌の渋滞 — SIBO"
       accents={[
         { emoji: "💨", top: 18, left: 22, size: "md", opacity: 70 },
         { emoji: "💨", top: 14, left: 76, size: "lg", opacity: 60 },

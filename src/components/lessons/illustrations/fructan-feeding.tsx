@@ -7,7 +7,6 @@ export function FructanFeedingIllustration({ className }: { className?: string }
       className={className}
       gradient="soft-brand"
       hero="🌾"
-      caption="フルクタン"
       accents={[
         { emoji: "🧅", top: 22, left: 18, size: "lg", opacity: 75, rotate: -6 },
         { emoji: "🧄", top: 22, left: 80, size: "md", opacity: 70, rotate: 8 },

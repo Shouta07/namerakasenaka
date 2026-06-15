@@ -7,7 +7,6 @@ export function InflammationFlowIllustration({ className }: { className?: string
       className={className}
       gradient="petal"
       hero="💖"
-      caption="つながりの話"
       accents={[
         { emoji: "🌿", top: 20, left: 22, size: "lg", opacity: 70 },
         { emoji: "🫀", top: 22, left: 78, size: "md", opacity: 65 },

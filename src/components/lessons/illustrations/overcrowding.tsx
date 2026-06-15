@@ -7,7 +7,6 @@ export function OvercrowdingIllustration({ className }: { className?: string }) 
       className={className}
       gradient="rose-cream"
       hero="🥛"
-      caption="入れる前に、知る"
       accents={[
         { emoji: "🦠", top: 18, left: 18, size: "md", opacity: 65 },
         { emoji: "🦠", top: 24, left: 82, size: "sm", opacity: 55 },

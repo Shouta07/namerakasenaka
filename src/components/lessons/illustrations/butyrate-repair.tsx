@@ -7,7 +7,6 @@ export function ButyrateRepairIllustration({ className }: { className?: string }
       className={className}
       gradient="fresh-green"
       hero="🌱"
-      caption="酪酸菌 — 腸の修理屋さん"
       accents={[
         { emoji: "👷", top: 22, left: 20, size: "lg", opacity: 80 },
         { emoji: "🧱", top: 24, left: 82, size: "md", opacity: 70 },

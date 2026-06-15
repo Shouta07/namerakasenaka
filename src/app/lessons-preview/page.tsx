@@ -57,11 +57,9 @@ export default function LessonsPreviewPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-b from-stone-50 to-white px-6 py-8">
+              <div className="px-6 py-8">
                 {Illustration ? (
-                  <div className="mx-auto flex max-w-md justify-center">
-                    <Illustration className="w-full" />
-                  </div>
+                  <Illustration className="w-full" />
                 ) : (
                   <p className="text-center text-xs text-stone-400">
                     （イラスト未設定）

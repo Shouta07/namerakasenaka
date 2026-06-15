@@ -7,7 +7,6 @@ export function TidyOrderIllustration({ className }: { className?: string }) {
       className={className}
       gradient="earth-sand"
       hero="🛠"
-      caption="腸を整える 3 ステップ"
       accents={[
         { emoji: "🧹", top: 20, left: 20, size: "lg", opacity: 70, rotate: -10 },
         { emoji: "🌾", top: 22, left: 80, size: "lg", opacity: 65, rotate: 8 },

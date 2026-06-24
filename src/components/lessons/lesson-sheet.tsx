@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Leaf, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
@@ -122,40 +122,44 @@ export function LessonSheet({
           <p className="text-base font-medium leading-snug text-stone-800">
             {lesson.quiz.question}
           </p>
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {lesson.quiz.options.map((opt, i) => {
               const isSelected = selected === i;
               const isCorrect = i === lesson.quiz.correctIndex;
+              const showCorrect = revealed && isCorrect;
+              const showWrong = revealed && isSelected && !isCorrect;
               return (
                 <li key={i}>
                   <button
                     type="button"
                     onClick={() => handleSelect(i)}
                     disabled={revealed}
+                    aria-pressed={isSelected}
                     className={cn(
-                      "flex w-full min-h-12 items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-left text-base leading-snug transition",
+                      "flex w-full min-h-[44px] items-center gap-3 rounded-2xl border-2 px-3.5 py-2.5 text-left text-base leading-snug transition-all duration-200",
                       !revealed &&
-                        "border-stone-200 bg-white hover:border-[#cfe3cf] hover:bg-[#f3f8f3]",
-                      revealed && isCorrect &&
-                        "border-[#5d8a6c] bg-[#eaf3ea] text-[#3c6347]",
-                      revealed && isSelected && !isCorrect &&
-                        "border-stone-300 bg-stone-50 text-stone-700",
-                      revealed && !isSelected && !isCorrect &&
-                        "border-stone-100 bg-white text-stone-500",
+                        "border-stone-200 bg-white shadow-sm active:scale-[0.99] hover:border-[#bcd8c4] hover:bg-[#f3f8f3] hover:shadow",
+                      showCorrect &&
+                        "border-[#5d8a6c] bg-[#eaf3ea] text-[#2f5239] shadow-sm",
+                      showWrong &&
+                        "border-[#e0b6b6] bg-[#fbf1f1] text-[#8a5151]",
+                      revealed && !showCorrect && !showWrong &&
+                        "border-stone-100 bg-white text-stone-400",
                     )}
                   >
                     <span
                       aria-hidden
                       className={cn(
-                        "flex h-7 w-7 flex-none items-center justify-center rounded-full text-xs font-semibold",
-                        revealed && isCorrect
-                          ? "bg-[#5d8a6c] text-white"
-                          : "bg-stone-100 text-stone-600",
+                        "flex h-8 w-8 flex-none items-center justify-center rounded-full text-sm font-bold transition-colors",
+                        showCorrect && "bg-[#5d8a6c] text-white",
+                        showWrong && "bg-[#cf9b9b] text-white",
+                        !revealed && "bg-stone-100 text-stone-600",
+                        revealed && !showCorrect && !showWrong && "bg-stone-100 text-stone-400",
                       )}
                     >
-                      {revealed && isCorrect ? "○" : String.fromCharCode(65 + i)}
+                      {showCorrect ? "✓" : showWrong ? "−" : String.fromCharCode(65 + i)}
                     </span>
-                    <span className="flex-1">{opt}</span>
+                    <span className="flex-1 font-medium">{opt}</span>
                   </button>
                 </li>
               );
@@ -178,10 +182,11 @@ export function LessonSheet({
         <Button
           type="button"
           size="lg"
-          className="w-full"
+          className="w-full rounded-2xl shadow-sm transition-transform active:scale-[0.99]"
           disabled={!revealed && !alreadyCompleted}
           onClick={handleDone}
         >
+          <Leaf className="h-4 w-4" aria-hidden />
           {alreadyCompleted ? "読み返しました" : "わかった！"}
         </Button>
         {!revealed && !alreadyCompleted ? (

@@ -14,6 +14,12 @@ const SCREEN_EDGE = "#d6c8b8";
 const ACCENT = "#8c5a3c";
 const SOFT = "#f6cda9";
 
+/**
+ * iPad のフレーム。中身（children）はクリッピングしない。
+ * 同一ページ上に複数の IPad/Phone を置く場合、clipPath の ID 衝突で
+ * 中身が消える事故が起きるため、コンテンツ側で「スクリーン内に収まる
+ * 座標」を守ることで設計する。
+ */
 function IPad({
   x,
   y,
@@ -29,20 +35,10 @@ function IPad({
 }) {
   return (
     <g>
-      {/* ベゼル */}
       <rect x={x} y={y} width={w} height={h} rx={6} fill="#3b3128" />
-      {/* スクリーン */}
       <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx={3} fill={SCREEN_BG} />
-      {/* Home インジケータ */}
       <rect x={x + w / 2 - 8} y={y + h - 3.5} width={16} height={1.4} rx={0.7} fill="#cfc2b3" />
-      <g clipPath={`url(#ipad-clip-${x}-${y})`}>
-        <defs>
-          <clipPath id={`ipad-clip-${x}-${y}`}>
-            <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx={3} />
-          </clipPath>
-        </defs>
-        {children}
-      </g>
+      {children}
     </g>
   );
 }
@@ -64,16 +60,8 @@ function Phone({
     <g>
       <rect x={x} y={y} width={w} height={h} rx={9} fill="#3b3128" />
       <rect x={x + 3} y={y + 3} width={w - 6} height={h - 6} rx={6} fill={SCREEN_BG} />
-      {/* ノッチ */}
       <rect x={x + w / 2 - 8} y={y + 4} width={16} height={3} rx={1.5} fill="#3b3128" />
-      <g>
-        <defs>
-          <clipPath id={`phone-clip-${x}-${y}`}>
-            <rect x={x + 3} y={y + 3} width={w - 6} height={h - 6} rx={6} />
-          </clipPath>
-        </defs>
-        <g clipPath={`url(#phone-clip-${x}-${y})`}>{children}</g>
-      </g>
+      {children}
     </g>
   );
 }
@@ -583,32 +571,38 @@ export function SceneRevisit({ className }: { className?: string }) {
         </IPad>
       </g>
 
-      {/* 右: お客様の笑顔 + 吹き出し */}
-      <g transform="translate(232 70)">
-        <Person x={48} y={68} scale={1.15} hair="#5a3a2a" color="#e7c3c0" />
-        <text x={48} y={132} fontSize={9} fontWeight={700} fill={C.ink} textAnchor="middle">
-          鈴木様
+      {/* 右: 吹き出し + お客様 */}
+      <g transform="translate(202 70)">
+        {/* 吹き出し本体（シンプルな角丸 + 三角タイル） */}
+        <rect
+          x={0}
+          y={0}
+          width={130}
+          height={66}
+          rx={14}
+          fill="#fff"
+          stroke="#e1cfb6"
+          strokeWidth={1.4}
+        />
+        <polygon points="58,66 64,82 74,66" fill="#fff" stroke="#e1cfb6" strokeWidth={1.4} />
+        {/* タイル線の境目を白で重ねて隠す */}
+        <line x1={59} y1={66} x2={73} y2={66} stroke="#fff" strokeWidth={2} />
+
+        <text x={65} y={22} fontSize={10} fill={C.ink} textAnchor="middle">
+          かゆみが
+        </text>
+        <text x={65} y={38} fontSize={10} fill={C.ink} textAnchor="middle">
+          少しマシかも
+        </text>
+        <text x={65} y={54} fontSize={10} fill={C.ink} textAnchor="middle">
+          …続けてみたい
         </text>
 
-        {/* 吹き出し */}
-        <g>
-          <path
-            d="M -30 -8 q 0 -18 18 -18 L 80 -26 q 18 0 18 18 L 98 22 q 0 18 -18 18 L 22 40 L 10 56 L 14 40 L 12 40 q -18 0 -18 -18 Z"
-            transform="translate(20 14)"
-            fill="#fff"
-            stroke="#e1cfb6"
-            strokeWidth={1.4}
-          />
-          <text x={68} y={28} fontSize={8.5} fill={C.ink} textAnchor="middle">
-            かゆみが
-          </text>
-          <text x={68} y={40} fontSize={8.5} fill={C.ink} textAnchor="middle">
-            少しマシかも
-          </text>
-          <text x={68} y={52} fontSize={8.5} fill={C.ink} textAnchor="middle">
-            …続けてみたい
-          </text>
-        </g>
+        {/* お客様（吹き出しの下、タイルの先） */}
+        <Person x={65} y={120} scale={1.2} hair="#5a3a2a" color="#e7c3c0" />
+        <text x={65} y={172} fontSize={10} fontWeight={700} fill={C.ink} textAnchor="middle">
+          鈴木様
+        </text>
       </g>
 
       <LabelChip x={104} y={246} text="田村さん側に状況が見える" fontSize={9} />

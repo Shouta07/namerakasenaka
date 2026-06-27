@@ -142,30 +142,27 @@ export function SceneCounseling({ className }: { className?: string }) {
         お客様
       </text>
 
-      {/* iPad（テーブル上、田村側） */}
-      <g transform="translate(150 160)">
-        <IPad x={0} y={0} w={60} h={42}>
+      {/* iPad（テーブル上、田村側・少し大きく） */}
+      <g transform="translate(146 150)">
+        <IPad x={0} y={0} w={70} h={50}>
           {/* カウンセリングフォーム想起 */}
-          <rect x={3} y={6} width={54} height={3} fill={ACCENT} />
-          <rect x={3} y={12} width={36} height={2} fill="#bfa988" />
-          <rect x={3} y={17} width={48} height={2} fill="#d6c2ab" />
-          <rect x={3} y={22} width={42} height={2} fill="#d6c2ab" />
-          <rect x={3} y={28} width={30} height={4} rx={1.5} fill={SOFT} />
+          <rect x={6} y={9} width={58} height={3.5} rx={1} fill={ACCENT} />
+          <rect x={6} y={17} width={40} height={2.4} rx={1} fill="#bfa988" />
+          <rect x={6} y={23} width={52} height={2.4} rx={1} fill="#d6c2ab" />
+          <rect x={6} y={29} width={46} height={2.4} rx={1} fill="#d6c2ab" />
+          <rect x={6} y={36} width={32} height={5} rx={2} fill={SOFT} />
         </IPad>
       </g>
 
-      {/* 吹き出し（お客様→悩み） */}
+      {/* 吹き出し（お客様→悩み・角丸 rect + しっぽ） */}
       <g>
-        <path
-          d="M 196 96 q 4 -22 30 -22 L 304 74 q 18 0 18 18 L 322 122 q 0 18 -18 18 L 236 140 L 220 158 L 224 140 L 220 140 q -22 0 -22 -18 Z"
-          fill="#fff"
-          stroke="#e1cfb6"
-          strokeWidth={1.4}
-        />
-        <text x={266} y={104} fontSize={9.5} fill={C.ink} textAnchor="middle">
+        <rect x={204} y={68} width={128} height={52} rx={14} fill="#fff" stroke="#e1cfb6" strokeWidth={1.4} />
+        <polygon points="244,120 250,136 262,120" fill="#fff" stroke="#e1cfb6" strokeWidth={1.4} />
+        <line x1={245} y1={120} x2={261} y2={120} stroke="#fff" strokeWidth={2} />
+        <text x={268} y={90} fontSize={9.5} fill={C.ink} textAnchor="middle">
           薬を塗っても
         </text>
-        <text x={266} y={118} fontSize={9.5} fill={C.ink} textAnchor="middle">
+        <text x={268} y={106} fontSize={9.5} fill={C.ink} textAnchor="middle">
           すぐ繰り返してしまって…
         </text>
       </g>
@@ -380,24 +377,42 @@ export function SceneDoOne({ className }: { className?: string }) {
         </Phone>
       </g>
 
-      {/* 朝の食卓 */}
-      <g transform="translate(180 96)">
-        {/* お皿 */}
-        <ellipse cx={70} cy={86} rx={68} ry={16} fill="#e9d8c0" />
-        <ellipse cx={70} cy={82} rx={60} ry={14} fill="#fff7eb" stroke="#e2cdb1" strokeWidth={1.2} />
-        {/* パンと卵 */}
-        <ellipse cx={48} cy={78} rx={14} ry={9} fill="#e7c089" stroke="#c79658" strokeWidth={0.8} />
-        <ellipse cx={86} cy={78} rx={10} ry={8} fill="#fff" stroke="#cbb79f" strokeWidth={0.8} />
-        <circle cx={86} cy={77} r={4} fill="#f1c34a" />
-        {/* カップ */}
-        <rect x={108} y={68} width={20} height={20} rx={4} fill="#fff" stroke="#cbb79f" strokeWidth={0.8} />
-        <ellipse cx={118} cy={70} rx={10} ry={3} fill="#8b6a4c" />
-        {/* 種マーク */}
-        <g transform="translate(38 16)">
-          <ellipse cx={0} cy={0} rx={14} ry={9} fill="#caa15f" stroke="#a9823f" strokeWidth={0.8} transform="rotate(-22)" />
-          <text x={0} y={3} fontSize={9} fontWeight={800} fill="#fff" textAnchor="middle">🌱</text>
-          <text x={0} y={22} fontSize={7} fontWeight={700} fill={ACCENT} textAnchor="middle">+1 種</text>
+      {/* 達成の演出: スマホ「できた！」→ 芽が育つ（連動を矢印で示す） */}
+      <g>
+        {/* 連動の流れ矢印（スマホ右 → 芽） */}
+        <g stroke="#5d9a6e" fill="#5d9a6e">
+          <path d="M 138 180 q 24 -10 44 -2" fill="none" strokeWidth={1.8} strokeDasharray="4 3" strokeLinecap="round" />
+          <polygon points="178,170 188,178 176,181" />
         </g>
+      </g>
+
+      {/* 芽が育つ鉢（地面のマウンド + 双葉） */}
+      <g transform="translate(196 120)">
+        {/* やわらかい光の輪 */}
+        <circle cx={42} cy={40} r={50} fill="#dcefe0" opacity={0.6} />
+        {/* 鉢 */}
+        <path d="M 24 70 L 60 70 L 56 92 L 28 92 Z" fill="#caa07a" stroke="#a9805c" strokeWidth={1.2} strokeLinejoin="round" />
+        <rect x={20} y={64} width={44} height={8} rx={3} fill="#d8b48f" stroke="#a9805c" strokeWidth={1.2} />
+        {/* 土 */}
+        <ellipse cx={42} cy={68} rx={18} ry={4} fill="#7c5a3e" />
+        {/* 茎 */}
+        <path d="M 42 68 q -1 -16 0 -28" fill="none" stroke="#5d9a6e" strokeWidth={2.4} strokeLinecap="round" />
+        {/* 双葉 */}
+        <path d="M 42 46 q -16 -6 -20 4 q 12 8 20 -4 Z" fill="#7bb88a" stroke="#5d9a6e" strokeWidth={1} />
+        <path d="M 42 42 q 16 -8 22 2 q -12 9 -22 -2 Z" fill="#8ec79a" stroke="#5d9a6e" strokeWidth={1} />
+        {/* きらめき */}
+        <g fill="#f0b429">
+          <path d="M 18 28 l 1.6 4 l 4 1.6 l -4 1.6 l -1.6 4 l -1.6 -4 l -4 -1.6 l 4 -1.6 Z" />
+          <path d="M 70 36 l 1.2 3 l 3 1.2 l -3 1.2 l -1.2 3 l -1.2 -3 l -3 -1.2 l 3 -1.2 Z" />
+        </g>
+      </g>
+
+      {/* +1 種 ピル */}
+      <g transform="translate(282 118)">
+        <rect x={0} y={0} width={56} height={22} rx={11} fill="#eaf3ea" stroke="#5d9a6e" strokeWidth={1.2} />
+        <text x={28} y={12} fontSize={10} fontWeight={800} fill="#3c6347" textAnchor="middle" dominantBaseline="central">
+          🌱 +1 種
+        </text>
       </g>
 
       <LabelChip x={86} y={244} text="負担ゼロの『ひとつだけ』" fontSize={9} />

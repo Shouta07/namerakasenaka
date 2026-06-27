@@ -154,7 +154,7 @@ const PLAN_A_STEPS = [
   {
     n: "01",
     title: "訪問して、想いを傾聴する",
-    body: "田村さんとクリニックの先生のもとへ伺い、「本当は何を届けたいのか」をそのまま聴きます。表面の要望ではなく、奥にある想いから。",
+    body: "田村さんと真弓先生のもとへ伺い、「本当は何を届けたいのか」をそのまま聴きます。表面の要望ではなく、奥にある想いから。",
   },
   {
     n: "02",
@@ -164,7 +164,7 @@ const PLAN_A_STEPS = [
   {
     n: "03",
     title: "要件に落とし、両社ですり合わせる",
-    body: "サロンの現場とクリニックの医学的な正しさ。ふたつの目線を要件書の上で突き合わせ、ズレを残さず合意します。",
+    body: "なめらかせなかの現場と真弓先生の医学的な正しさ。ふたつの目線を要件書の上で突き合わせ、ズレを残さず合意します。",
   },
   {
     n: "04",
@@ -188,7 +188,7 @@ const PLAN_B_LAYERS = [
   },
   {
     title: "知見とデータで、磨き続ける",
-    body: "先生の新しい学びを翻訳に反映し、実際のお客様の反応を見て毎月チューニング。仕組みが、時間とともに賢くなっていきます。",
+    body: "真弓先生の新しい学びを翻訳に反映し、実際のお客様の反応を見て毎月チューニング。仕組みが、時間とともに賢くなっていきます。",
   },
 ];
 
@@ -261,7 +261,7 @@ export default function PlansPage() {
               つくって、渡す
             </h3>
             <p className="mt-2 text-[15px] leading-relaxed text-stone-700">
-              クリニックとサロンの間に立ち、想いを傾聴し、要件に落とし、
+              真弓先生となめらかせなかの間に立ち、想いを傾聴し、要件に落とし、
               <strong className="text-stone-900">
                 「背中ニキビのメカニズムをわかりやすく解説する仕組み」
               </strong>
@@ -310,7 +310,7 @@ export default function PlansPage() {
             想いを、仕組みに翻訳する。
           </h2>
           <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-stone-600">
-            私たちは黒子です。クリニックとサロンの間に立ち、
+            私たちは黒子です。真弓先生となめらかせなかの間に立ち、
             お二人の想いを聴き、医学を現場の言葉に翻訳し、
             <strong className="text-stone-800">手に取れる成果物</strong>として置いていきます。
           </p>
@@ -457,7 +457,7 @@ export default function PlansPage() {
                 </p>
                 <ul className="mt-2 space-y-1.5 text-[14px] leading-relaxed text-stone-800">
                   {[
-                    "医学的な正確さの担保（先生との往復・監修）",
+                    "医学的な正確さの担保（真弓先生との往復・監修）",
                     "両社の知見のすり合わせと、翻訳の精度",
                     "お客様一人ひとりに合わせた出し分けの設計",
                     "現場の運用に乗せ、続く体験にする設計",
@@ -601,10 +601,10 @@ export default function PlansPage() {
                 使いみち絵巻を見る →
               </Link>
               <Link
-                href="/proposal"
+                href="/lessons-preview"
                 className="rounded-full border border-white/40 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/10"
               >
-                ご提案の全体像 →
+                納品物の実物を見る →
               </Link>
             </div>
           </div>

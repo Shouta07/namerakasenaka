@@ -110,7 +110,7 @@ const SCENES: Scene[] = [
     detail: [
       {
         heading: "翻訳辞書（v0.1）",
-        body: "監修クリニックの先生に「医療の言葉 → お客様にわかる言葉」の対応表をヒアリングで作ります。Phase 0 で 7 概念ぶん。",
+        body: "真弓先生に「医療の言葉 → お客様にわかる言葉」の対応表をヒアリングで作ります。Phase 0 で 7 概念ぶん。",
       },
       {
         heading: "図解",
@@ -373,7 +373,7 @@ export default function StoryPage() {
               emoji: "🌸",
             },
             {
-              who: "提携クリニック",
+              who: "真弓先生",
               role: "監修ドクター",
               what:
                 "話す・承認するだけ。AI と制作が「お客様の言葉」へ翻訳する。",
@@ -439,80 +439,23 @@ export default function StoryPage() {
         ))}
       </section>
 
-      {/* まとめ */}
-      <section className="mx-auto max-w-6xl px-5 sm:px-8 py-12">
-        <div className="rounded-3xl border border-stone-200 bg-white p-6 sm:p-10">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400">
-            SUMMARY — この絵巻のどこを今ご相談しているか
-          </p>
-          <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-stone-900">
-            お見積りの 2 案を、絵巻の上で読み解く
-          </h2>
-
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-5">
-              <div className="flex items-center gap-2">
-                <PhaseChip phase="P0" />
-                <span className="text-sm font-bold text-stone-900">
-                  ¥250,000
-                </span>
-              </div>
-              <p className="mt-3 text-[13px] leading-relaxed text-stone-700">
-                絵巻の{" "}
-                <strong className="text-stone-900">場面 1 と場面 2</strong> を、
-                Vercel にデプロイされた{" "}
-                <strong className="text-stone-900">動く画面モック</strong>{" "}
-                として手元に残します。 iPad で実際に触って、田村さんとクリニックで「ここはこう
-                でしょ」と決められる状態に。
-              </p>
-              <ul className="mt-3 text-[12.5px] text-stone-600 list-disc pl-5 space-y-1">
-                <li>カウンセリング画面 / 翻訳画面 の動くモック</li>
-                <li>要件定義書（A4 5〜10ページ）</li>
-                <li>翻訳辞書 v0.1（7 概念）</li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border-2 border-[#8c5a3c] bg-white p-5">
-              <div className="flex items-center gap-2">
-                <PhaseChip phase="POC" />
-                <span className="text-sm font-bold text-stone-900">
-                  ¥650,000
-                </span>
-                <span className="ml-auto text-[10px] font-bold text-[#8c5a3c]">
-                  おすすめ
-                </span>
-              </div>
-              <p className="mt-3 text-[13px] leading-relaxed text-stone-700">
-                絵巻の{" "}
-                <strong className="text-stone-900">場面 1 〜 6 のすべて</strong>{" "}
-                を、リーキーガット 1 コースぶんで{" "}
-                <strong className="text-stone-900">
-                  本当に動くアプリ
-                </strong>{" "}
-                に。 田村さんのお客様 1 名で、退店 → LINE → 翌日 → 1 週間 → 次回来店 を実機で通せます。
-              </p>
-              <ul className="mt-3 text-[12.5px] text-stone-600 list-disc pl-5 space-y-1">
-                <li>/share 本番 URL が稼働（LINE で配布できる）</li>
-                <li>「今日のひとつ」「種」「クイズ」の実装版</li>
-                <li>サロン側の経過サマリ画面（1 名ぶん）</li>
-                <li>iPad 配布 / PWA 対応</li>
-              </ul>
-            </div>
-          </div>
-
-          <p className="mt-6 text-[12px] text-stone-500">
-            ※ 場面 5 / 6 の「7 コース全部」「複数顧客の一覧」などは、本格展開フェーズで広げていく想定です（{" "}
-            <PhaseChip phase="FULL" size="sm" /> ）。
-          </p>
-        </div>
-      </section>
-
       {/* 関連リンク */}
       <section className="mx-auto max-w-6xl px-5 sm:px-8 pb-16">
         <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400">
           MORE — もっと触ってみる
         </p>
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link
+            href="/plans"
+            className="rounded-2xl border-2 border-[#8c5a3c] bg-white p-5 hover:shadow-sm transition"
+          >
+            <p className="text-sm font-bold text-stone-900">
+              2つの関わり方を見る →
+            </p>
+            <p className="mt-1.5 text-[12.5px] text-stone-600">
+              この絵巻は、伴走（プランB）の世界です。全体像はこちら。
+            </p>
+          </Link>
           <Link
             href="/"
             className="rounded-2xl border border-stone-200 bg-white p-5 hover:border-[#8c5a3c] hover:shadow-sm transition"
@@ -533,17 +476,6 @@ export default function StoryPage() {
             </p>
             <p className="mt-1.5 text-[12.5px] text-stone-600">
               場面 5 で読んでいる「あれ」を、すべての章で。
-            </p>
-          </Link>
-          <Link
-            href="/proposal"
-            className="rounded-2xl border border-stone-200 bg-white p-5 hover:border-[#8c5a3c] hover:shadow-sm transition"
-          >
-            <p className="text-sm font-bold text-stone-900">
-              ご提案ページ →
-            </p>
-            <p className="mt-1.5 text-[12.5px] text-stone-600">
-              三者の役割と、翻訳パイプラインの考え方。
             </p>
           </Link>
         </div>

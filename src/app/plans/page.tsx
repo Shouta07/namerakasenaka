@@ -97,6 +97,57 @@ function AccompanyLoop() {
   );
 }
 
+/* ── 氷山図（デモ ≠ 完成品） ──────────────────────────── */
+
+function Iceberg() {
+  return (
+    <svg viewBox="0 0 360 320" className="w-full h-auto" role="img" aria-label="氷山の図。水面上の小さなデモと、水面下の大きな本質的作業">
+      {/* 空 */}
+      <rect x={0} y={0} width={360} height={150} rx={0} fill="#eaf1f6" />
+      {/* 海 */}
+      <rect x={0} y={150} width={360} height={170} fill="#cfe0ec" />
+      <rect x={0} y={150} width={360} height={170} fill="#bcd3e3" opacity={0.5} />
+      {/* 水面ライン */}
+      <line x1={0} y1={150} x2={360} y2={150} stroke="#8fb4cf" strokeWidth={2} />
+      <text x={344} y={144} fontSize={9} fill="#5b7e96" textAnchor="end">水面</text>
+
+      {/* 氷山 上（小さい） */}
+      <path d="M 150 150 L 178 96 L 200 150 Z" fill="#ffffff" stroke="#d4e2ec" strokeWidth={1.4} />
+      <path d="M 178 96 L 200 150 L 186 150 Z" fill="#eef5fa" />
+
+      {/* 氷山 下（大きい） */}
+      <path
+        d="M 150 150 L 200 150 L 232 196 L 250 250 L 214 300 L 150 312 L 96 286 L 86 226 L 116 178 Z"
+        fill="#dceaf3"
+        stroke="#b7cfe0"
+        strokeWidth={1.4}
+        opacity={0.95}
+      />
+      <path d="M 150 150 L 200 150 L 214 178 L 150 188 L 120 170 Z" fill="#eef5fa" opacity={0.8} />
+
+      {/* ラベル 上 */}
+      <text x={262} y={104} fontSize={11} fontWeight={800} fill="#3f6c8a" textAnchor="start">
+        動くデモ
+      </text>
+      <text x={262} y={120} fontSize={9} fill="#5b7e96" textAnchor="start">
+        ＝ 見えている 約10%
+      </text>
+      <line x1={205} y1={112} x2={258} y2={108} stroke="#8fb4cf" strokeWidth={1} />
+
+      {/* ラベル 下 */}
+      <text x={178} y={228} fontSize={11} fontWeight={800} fill="#2f5673" textAnchor="middle">
+        本質的な作業
+      </text>
+      <text x={178} y={246} fontSize={9} fill="#3f6c8a" textAnchor="middle">
+        監修・すり合わせ・体験設計・運用
+      </text>
+      <text x={178} y={262} fontSize={9} fontWeight={700} fill="#2f5673" textAnchor="middle">
+        ＝ ここに価値と費用
+      </text>
+    </svg>
+  );
+}
+
 /* ── 本体 ───────────────────────────────────────────── */
 
 const PLAN_A_STEPS = [
@@ -370,38 +421,93 @@ export default function PlansPage() {
         </div>
       </section>
 
+      {/* デモ ≠ 完成品（価格の土台を守る） */}
+      <section className="border-y border-stone-200 bg-[#f4efe8]">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-16">
+          <Eyebrow>REALITY — 見えているのは、氷山の一角</Eyebrow>
+          <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-stone-900">
+            「動くデモ」と「完成品」は、違います。
+          </h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-stone-600">
+            すでにご覧いただいている画面は、
+            <strong className="text-stone-800">方向性を確かめるためのデモ</strong>です。
+            きれいに動いて見える部分は、実は全体のほんの一角。
+            <strong className="text-stone-800">本当に価値があり、費用をいただく部分は、水面の下</strong>
+            にあります。
+          </p>
+
+          <div className="mt-9 grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+            <div className="rounded-3xl border border-stone-200 bg-white p-4">
+              <Iceberg />
+            </div>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-stone-200 bg-white p-5">
+                <p className="text-[13px] font-bold text-stone-500">
+                  水面の上（見えている・つくりやすい）
+                </p>
+                <p className="mt-1.5 text-[14.5px] leading-relaxed text-stone-700">
+                  画面が動く・雰囲気が伝わる。ここは
+                  <strong className="text-stone-900">最新のAIとプロトタイピング</strong>
+                  で素早く形にできます。だから「もうできそう」に見えます。
+                </p>
+              </div>
+              <div className="rounded-2xl border-2 border-[#8c5a3c] bg-[#fdf7f3] p-5">
+                <p className="text-[13px] font-bold text-[#8c5a3c]">
+                  水面の下（見えない・ここに価値と費用）
+                </p>
+                <ul className="mt-2 space-y-1.5 text-[14px] leading-relaxed text-stone-800">
+                  {[
+                    "医学的な正確さの担保（先生との往復・監修）",
+                    "両社の知見のすり合わせと、翻訳の精度",
+                    "お客様一人ひとりに合わせた出し分けの設計",
+                    "現場の運用に乗せ、続く体験にする設計",
+                    "知見の更新を反映し続ける仕組み",
+                  ].map((t) => (
+                    <li key={t} className="flex gap-2">
+                      <span className="text-[#8c5a3c]">▾</span>
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <p className="text-[13.5px] leading-relaxed text-stone-600">
+                デモの完成度は、製品の完成度ではありません。
+                <strong className="text-stone-800">
+                  御社が「これだ」と感じる体験は、これからの作り込みで生まれます。
+                </strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* A→B 成長ストーリー */}
-      <section className="border-y border-stone-200 bg-white">
+      <section className="border-b border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-16">
           <Eyebrow>GROWTH — 焦らず、育てる</Eyebrow>
           <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-stone-900">
-            入口は A。手応えを確かめてから、B へ。
+            入口は A。そのまま、B へ。
           </h2>
           <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-stone-600">
             いきなり伴走契約を結ぶ必要はありません。
-            まず<strong className="text-stone-800">プランAで「動くもの」を小さくつくり</strong>、
-            お客様の反応という確かな手応えを得てから、
-            <strong className="text-stone-800">プランBの伴走へ</strong>。順番が、納得を生みます。
+            まず<strong className="text-stone-800">プランAで「動くもの」をつくり</strong>、
+            そこで終わらせず
+            <strong className="text-stone-800">プランBの伴走設計へ</strong>。
+            ひと続きで、なめらかせなかだけの体験に育てていきます。
           </p>
 
-          <div className="mt-9 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mt-9 grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
                 step: "STEP 1",
                 title: "A で、つくる",
-                body: "傾聴 → 要件 → メカニズム解説の仕組みを納品。まず形にする。",
+                body: "傾聴 → 要件 → メカニズム解説の仕組みを納品。まず確かな土台を形にする。",
                 tone: "amber",
               },
               {
                 step: "STEP 2",
-                title: "試して、確かめる",
-                body: "田村さんのお客様に実機でお試し。「これは効く」を一緒に体感。",
-                tone: "plain",
-              },
-              {
-                step: "STEP 3",
                 title: "B で、走り出す",
-                body: "体験設計と月次伴走へ。回り続ける状態を一緒に育てる。",
+                body: "体験設計と月次伴走へ。回り続ける状態を一緒に育て、指名される体験にする。",
                 tone: "brand",
               },
             ].map((s) => (

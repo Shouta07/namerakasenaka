@@ -1,4 +1,10 @@
 import Link from "next/link";
+import {
+  PillarGut,
+  PillarDiet,
+  PillarSkincare,
+  PillarExercise,
+} from "@/components/plans/pillar-illustrations";
 
 export const dynamic = "force-static";
 
@@ -189,6 +195,45 @@ const PLAN_B_LAYERS = [
   {
     title: "知見とデータで、磨き続ける",
     body: "真弓先生の新しい学びを翻訳に反映し、お客様の反応を見てチューニングできる仕組みに。時間とともに賢くなっていく土台をつくります。",
+  },
+];
+
+const PILLARS = [
+  {
+    key: "gut",
+    no: "1",
+    title: "医療連携（腸）",
+    body: "背中ニキビの根っこにある「腸」を、真弓先生の監修でわかりやすく。すべてのテーマの土台になります。",
+    tag: "軸 — まずはここから",
+    axis: true,
+    illustration: <PillarGut />,
+  },
+  {
+    key: "diet",
+    no: "2",
+    title: "食事",
+    body: "腸を整える食べ方を、毎日の「今日のひとつ」に。発酵・食物繊維など、無理なく続く一歩に翻訳します。",
+    tag: "腸の次に効きやすい",
+    axis: false,
+    illustration: <PillarDiet />,
+  },
+  {
+    key: "skincare",
+    no: "3",
+    title: "スキンケア",
+    body: "背中の肌を、刺激せずいたわる手順へ。内側（腸・食事）と外側のケアを、ちぐはぐにしない設計に。",
+    tag: "外側からのケア",
+    axis: false,
+    illustration: <PillarSkincare />,
+  },
+  {
+    key: "exercise",
+    no: "4",
+    title: "運動",
+    body: "血流・めぐりを促す、軽い運動の習慣。背中の環境を整える“もう一押し”として加えられます。",
+    tag: "めぐりを後押し",
+    axis: false,
+    illustration: <PillarExercise />,
   },
 ];
 
@@ -416,6 +461,93 @@ export default function PlansPage() {
             </p>
             <p className="mt-4 text-[13px] text-stone-500">
               ▶ システム実装・体験設計費の内訳は、お見積り資料（PowerPoint）でご説明します。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 選べる4テーマ（パーツ） */}
+      <section id="pillars" className="scroll-mt-6 border-t border-stone-200 bg-[#fbf8f3]">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-16">
+          <Eyebrow>MODULES — 選べる4つのテーマ</Eyebrow>
+          <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-stone-900">
+            どこから始めても、いい。テーマごとに、少しずつ。
+          </h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-stone-600">
+            背中ケアは
+            <strong className="text-stone-800">「腸（医療連携）」を軸</strong>に、
+            <strong className="text-stone-800">食事・スキンケア・運動</strong>へと広がります。
+            ぜんぶを一度に作る必要はありません。
+            <strong className="text-stone-800">
+              なめらかせなかが「ここから」と決めたテーマを1つずつ
+            </strong>
+            、効果を確かめながら組み込めます（＝パーツでのご提供）。
+          </p>
+
+          <div className="mt-9 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {PILLARS.map((p) => (
+              <div
+                key={p.key}
+                className={`rounded-3xl border bg-white p-4 ${
+                  p.axis ? "border-2 border-[#8c5a3c]" : "border-stone-200"
+                }`}
+              >
+                <div className="relative">
+                  {p.axis ? (
+                    <span className="absolute right-1 top-1 z-10 rounded-full bg-[#8c5a3c] px-2.5 py-1 text-[10px] font-bold text-white">
+                      軸 / おすすめの起点
+                    </span>
+                  ) : null}
+                  {p.illustration}
+                </div>
+                <div className="mt-3 px-1">
+                  <div className="flex items-center gap-2">
+                    <span className="grid h-6 w-6 place-items-center rounded-full bg-[#8c5a3c] text-[11px] font-bold text-white">
+                      {p.no}
+                    </span>
+                    <h3 className="text-base font-bold text-stone-900">
+                      {p.title}
+                    </h3>
+                  </div>
+                  <p className="mt-2 text-[13px] leading-relaxed text-stone-700">
+                    {p.body}
+                  </p>
+                  <p className="mt-3 text-[11px] font-semibold text-[#8c5a3c]">
+                    {p.tag}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* パーツの買い方 */}
+          <div className="mt-6 rounded-2xl border border-stone-200 bg-white p-6 sm:p-7">
+            <Eyebrow>HOW TO BUY — パーツでの進め方</Eyebrow>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                {
+                  t: "① 軸から始める",
+                  b: "まず「腸（医療連携）」を1テーマ。背中ケアの土台になる、いちばん効くところから。",
+                },
+                {
+                  t: "② 手応えを見て足す",
+                  b: "お客様の反応を見ながら、食事・スキンケア・運動を1つずつ追加。",
+                },
+                {
+                  t: "③ 必要なぶんだけ",
+                  b: "全部そろえなくてもいい。なめらかせなかのペースで、テーマを増やせます。",
+                },
+              ].map((s) => (
+                <div key={s.t} className="rounded-2xl bg-[#fbf8f3] p-4">
+                  <p className="text-sm font-bold text-stone-900">{s.t}</p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-stone-600">
+                    {s.b}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 text-[13px] text-stone-500">
+              ▶ プランA は「軸のテーマ」を1つ作る前提。テーマ追加ぶんの費用は、お見積り資料（PowerPoint）でご説明します。
             </p>
           </div>
         </div>

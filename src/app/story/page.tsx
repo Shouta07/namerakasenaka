@@ -482,8 +482,11 @@ export default function StoryPage() {
       </section>
 
       <footer className="border-t border-stone-200 bg-white">
-        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 text-[11px] text-stone-400">
-          © なめらかせなか × バイタリティデザイン合同会社 — 使いみち絵巻 v1
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex flex-wrap items-center gap-x-3 text-[11px] text-stone-400">
+          <span>© なめらかせなか × バイタリティデザイン合同会社 — 使いみち絵巻 v1</span>
+          <Link href="/hub" className="font-semibold text-[#8c5a3c] hover:underline">
+            すべての画面・資料 → /hub
+          </Link>
         </div>
       </footer>
     </main>

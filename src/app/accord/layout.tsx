@@ -20,8 +20,13 @@ export default function AccordLayout({
       <AccordNav />
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8">{children}</main>
       <footer className="mx-auto max-w-6xl px-5 pb-8 sm:px-8">
-        <p className="border-t border-stone-200 pt-4 text-[11px] text-stone-400">
-          Accord — バイタリティデザイン合同会社 ｜ 本画面はデモです（操作はこの端末にのみ保存されます）
+        <p className="flex flex-wrap items-center gap-x-3 border-t border-stone-200 pt-4 text-[11px] text-stone-400">
+          <span>
+            Accord — バイタリティデザイン合同会社 ｜ 本画面はデモです（操作はこの端末にのみ保存されます）
+          </span>
+          <a href="/hub" className="font-semibold text-brand-700 hover:underline">
+            すべての画面・資料 → /hub
+          </a>
         </p>
       </footer>
     </div>

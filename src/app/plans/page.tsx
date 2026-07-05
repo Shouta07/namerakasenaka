@@ -750,8 +750,11 @@ export default function PlansPage() {
       </section>
 
       <footer className="bg-[#faf8f4]">
-        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 text-[11px] text-stone-400">
-          © なめらかせなか × バイタリティデザイン合同会社 — 2つの関わり方 v1
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex flex-wrap items-center gap-x-3 text-[11px] text-stone-400">
+          <span>© なめらかせなか × バイタリティデザイン合同会社 — 2つの関わり方 v1</span>
+          <Link href="/hub" className="font-semibold text-[#8c5a3c] hover:underline">
+            すべての画面・資料 → /hub
+          </Link>
         </div>
       </footer>
     </main>

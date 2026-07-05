@@ -11,6 +11,7 @@ const PUBLIC_PATHS = [
   "/lessons-preview",
   "/story",
   "/plans",
+  "/accord",
   "/api/stripe/webhook",
   "/api/daily-checks",
 ];

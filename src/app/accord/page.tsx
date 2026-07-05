@@ -89,6 +89,65 @@ export default function AccordHomePage() {
           <ModulePanel />
         </div>
       </section>
+
+      {/* エコシステム — これまでの設計とつながる */}
+      <section>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400">
+          ECOSYSTEM — これまでの設計と、ひとつながり
+        </p>
+        <h2 className="mt-1 text-xl font-bold text-stone-900">
+          なめらかせなかで作った資産が、そのまま活きる。
+        </h2>
+        <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-stone-600">
+          Accord は独立したツールではなく、なめらかせなか向けに作ってきた
+          「体のほんとうの話」の設計思想の上に立つ汎用版です。
+          図解・レッスン・LINE共有・伴走ループ — これまでの資産は Accord の中でそのまま使えます。
+        </p>
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              href: "/",
+              title: "なめらかせなか CRM",
+              body: "1社目のケース。サロン運営の全機能デモ。",
+              emoji: "🤍",
+            },
+            {
+              href: "/story",
+              title: "使いみち絵巻",
+              body: "サロンの一日にどう入るか、6場面の物語。",
+              emoji: "📜",
+            },
+            {
+              href: "/lessons-preview",
+              title: "レッスン 7章の図解",
+              body: "カウンセリング後にお客様が読む学習コンテンツ。",
+              emoji: "📘",
+            },
+            {
+              href: "/plans",
+              title: "2つの関わり方",
+              body: "翻訳・納品（A）と伴走・体験設計（B）のご提案。",
+              emoji: "🤝",
+            },
+          ].map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="group rounded-2xl border border-stone-200 bg-white p-4 transition hover:border-brand-500 hover:shadow-sm"
+            >
+              <p className="text-xl" aria-hidden>
+                {l.emoji}
+              </p>
+              <p className="mt-1.5 text-[13.5px] font-bold text-stone-900 group-hover:text-brand-700">
+                {l.title} →
+              </p>
+              <p className="mt-1 text-[12px] leading-relaxed text-stone-600">
+                {l.body}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

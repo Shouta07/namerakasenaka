@@ -462,6 +462,12 @@ export default function PlansPage() {
             <p className="mt-4 text-[13px] text-stone-500">
               ▶ システム実装・体験設計費の内訳は、お見積り資料（PowerPoint）でご説明します。
             </p>
+            <Link
+              href="/accord"
+              className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#8c5a3c] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#754827]"
+            >
+              実装イメージを触ってみる — Accord デモ →
+            </Link>
           </div>
         </div>
       </section>

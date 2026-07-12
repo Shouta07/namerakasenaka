@@ -39,10 +39,10 @@ export const ACCORD_MODULES: AccordModule[] = [
   },
   {
     id: "copilot",
-    name: "経営コパイロット",
+    name: "接客と継続のコパイロット",
     short: "コパイロット",
     description:
-      "毎朝、数字の気づきと次の一手を提案。見るだけのダッシュボードで終わらせず、その場で実行できます。",
+      "成約・継続・練習の数字から、気づきと次の一手を毎朝提案。見るだけで終わらせず、その場で実行できます。",
     emoji: "🧠",
     href: "/accord/copilot",
   },

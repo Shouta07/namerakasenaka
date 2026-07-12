@@ -8,8 +8,17 @@
  * 役割。ここはトッピングの「定義」— 型安全・レビュー可能なコードとして持つ。
  */
 
-/** ピザの5階層。base=生地 / cheese=標準搭載 / topping=足し引き / content=買い切り具材 / service=人が乗る。 */
-export type ToppingTier = "base" | "cheese" | "topping" | "content" | "service";
+/**
+ * 階層。base=生地 / copilot=AI頭脳(v2) / cheese=標準搭載 /
+ * topping=足し引き / content=買い切り具材 / service=人が乗る。
+ */
+export type ToppingTier =
+  | "base"
+  | "copilot"
+  | "cheese"
+  | "topping"
+  | "content"
+  | "service";
 
 export type PlanId = "starter" | "standard" | "pro";
 

@@ -53,6 +53,21 @@ describe("toppings registry integrity", () => {
     expect(launchIds).toContain("roleplay");
   });
 
+  it("v2: copilot starts at standard, depends on dashboard, hidden from starter", () => {
+    const c = TOPPINGS.copilot;
+    expect(c.tier).toBe("copilot");
+    expect(c.dependsOn).toContain("dashboard");
+    expect(c.plans.starter.included).toBe(false);
+    expect(c.plans.standard.included).toBe(true);
+    expect(c.plans.pro.included).toBe(true);
+  });
+
+  it("v2: ai-minutes is metered; staff-kpi depends on dashboard; data-import on core", () => {
+    expect(TOPPINGS["ai-minutes"].meter?.metric).toBe("records");
+    expect(TOPPINGS["staff-kpi"].dependsOn).toContain("dashboard");
+    expect(TOPPINGS["data-import"].dependsOn).toContain("core");
+  });
+
   it("a topping included on a lower plan is included on higher plans (monotonic)", () => {
     for (const [id, def] of Object.entries(TOPPINGS)) {
       let seenIncluded = false;

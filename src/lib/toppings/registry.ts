@@ -28,6 +28,24 @@ export const TOPPINGS = {
     plans: { starter: INC, standard: INC, pro: INC },
   },
 
+  // ── AI頭脳（v2・経営コパイロット） ──────────────────────
+  copilot: {
+    name: "経営コパイロット",
+    short: "コパイロット",
+    description:
+      "全機能のデータから「今週は再診率が低下・フォロー対象42名」のような気づきと次の一手を提案し、その場で実行できる。",
+    emoji: "🧠",
+    tier: "copilot",
+    dependsOn: ["core", "dashboard"],
+    status: "launch",
+    nav: { href: "/accord/copilot", label: "コパイロット", order: 15 },
+    plans: {
+      starter: OUT,
+      standard: inc("unlimited", "週次ブリーフ"),
+      pro: inc("unlimited", "日次 + 提案実行"),
+    },
+  },
+
   // ── チーズ（標準搭載） ────────────────────────────────
   dashboard: {
     name: "成約ダッシュボード",
@@ -166,6 +184,51 @@ export const TOPPINGS = {
       starter: OUT,
       standard: inc(1, "1パック"),
       pro: inc("unlimited"),
+    },
+  },
+
+  "ai-minutes": {
+    name: "AI議事録",
+    short: "AI議事録",
+    description:
+      "カウンセリングの録音を構造化記録に変換し、5観点でフィードバック。ベテランの型を全員の資産に。",
+    emoji: "🎙",
+    tier: "topping",
+    dependsOn: ["core"],
+    status: "launch",
+    meter: { metric: "records", unit: "件/月" },
+    plans: {
+      starter: OUT,
+      standard: inc(30),
+      pro: inc(200, "フェアユース200件"),
+    },
+    addon: { jpy: 8000, cycle: "monthly", label: "単品追加 ¥8,000/月" },
+  },
+  "staff-kpi": {
+    name: "スタッフ別KPI",
+    short: "スタッフKPI",
+    description:
+      "スタッフごとの成約率・ヒアリング傾向を可視化。責めるためではなく、練習テーマを決める材料として。",
+    emoji: "🧑‍🤝‍🧑",
+    tier: "topping",
+    dependsOn: ["dashboard"],
+    status: "launch",
+    plans: { starter: OUT, standard: INC, pro: INC },
+    addon: { jpy: 5000, cycle: "monthly", label: "単品追加 ¥5,000/月" },
+  },
+  "data-import": {
+    name: "外部データ連携",
+    short: "データ連携",
+    description:
+      "予約・POS・広告データを取り込み（CSV→将来API）、コパイロットの分析精度を上げる燃料に。",
+    emoji: "🔌",
+    tier: "topping",
+    dependsOn: ["core"],
+    status: "launch",
+    plans: {
+      starter: OUT,
+      standard: inc("unlimited", "CSV取込"),
+      pro: inc("unlimited", "CSV + API(順次)"),
     },
   },
 

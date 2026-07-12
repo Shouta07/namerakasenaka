@@ -16,6 +16,7 @@ import {
 
 const TIER_LABEL: Record<ToppingDef["tier"], string> = {
   base: "生地（全プラン共通）",
+  copilot: "🧠 AI頭脳 — 経営コパイロット",
   cheese: "標準搭載",
   topping: "トッピング",
   content: "コンテンツパック",
@@ -24,6 +25,7 @@ const TIER_LABEL: Record<ToppingDef["tier"], string> = {
 
 const TIER_ORDER: ToppingDef["tier"][] = [
   "base",
+  "copilot",
   "cheese",
   "topping",
   "content",

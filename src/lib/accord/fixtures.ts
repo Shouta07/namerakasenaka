@@ -8,6 +8,7 @@
 
 export type AccordModuleId =
   | "counseling"
+  | "copilot"
   | "roleplay"
   | "dashboard"
   | "line"
@@ -35,6 +36,15 @@ export const ACCORD_MODULES: AccordModule[] = [
     emoji: "📋",
     core: true,
     href: "/accord/customers",
+  },
+  {
+    id: "copilot",
+    name: "経営コパイロット",
+    short: "コパイロット",
+    description:
+      "毎朝、数字の気づきと次の一手を提案。見るだけのダッシュボードで終わらせず、その場で実行できます。",
+    emoji: "🧠",
+    href: "/accord/copilot",
   },
   {
     id: "roleplay",
@@ -84,6 +94,7 @@ export const ACCORD_MODULES: AccordModule[] = [
 
 export const DEFAULT_MODULE_STATE: Record<AccordModuleId, boolean> = {
   counseling: true,
+  copilot: true,
   roleplay: true,
   dashboard: true,
   line: true,
@@ -375,6 +386,94 @@ export const ACCORD_CUSTOMERS: AccordCustomer[] = [
       },
     ],
   },
+];
+
+// ---------------------------------------------------------------
+// 経営コパイロット（v2）
+// ---------------------------------------------------------------
+
+export type CopilotSeverity = "attention" | "opportunity" | "info";
+
+export type CopilotInsight = {
+  id: string;
+  severity: CopilotSeverity;
+  title: string;
+  body: string;
+  /** 第1層（ルール）が検出した事実。数値つきで表示する。 */
+  evidence: string[];
+  action: {
+    label: string;
+    /** 実行先のトッピング（コパイロットは司令塔であることを可視化）。 */
+    via: string;
+    /** 遷移型アクションの場合のリンク先。 */
+    href?: string;
+  };
+  /** 実行後に表示する効果測定の文言（デモ用の想定値）。 */
+  doneEffect: string;
+};
+
+export const COPILOT_BRIEF: CopilotInsight[] = [
+  {
+    id: "revisit-drop",
+    severity: "attention",
+    title: "再診率が下がっています",
+    body:
+      "今週の再診率は 31%（先週 42%）。60日以上来店がなく、LINE同意のあるお客様が 42名います。",
+    evidence: [
+      "再診率: 42% → 31%（前週比 -11pt）",
+      "60日以上未来店 × LINE同意あり: 42名",
+      "うち施術3回以上の「戻りやすい」層: 17名",
+    ],
+    action: {
+      label: "42名へのLINE一括フォローを準備する",
+      via: "LINE経過共有",
+    },
+    doneEffect:
+      "フォロー文面を準備しました（送信は確認後）。参考: 前回6月の同様フォローでは 38名中9名が再来店予約につながりました。",
+  },
+  {
+    id: "staff-strength",
+    severity: "opportunity",
+    title: "田村さんの型に、勝ち筋があります",
+    body:
+      "田村さんの成約率は平均より 12pt 高く、ヒアリング時間はむしろ短い傾向。「先に不安を言語化してから提案する」型が効いている可能性があります。",
+    evidence: [
+      "成約率: 田村 83% / 店舗平均 61%",
+      "平均ヒアリング時間: 田村 28分 / 店舗平均 41分",
+      "価格の話を切り出す位置: 会話の後半 84%（平均 52%）",
+    ],
+    action: {
+      label: "この型を練習シナリオにして全員に配る",
+      via: "AI接客練習",
+      href: "/accord/roleplay",
+    },
+    doneEffect:
+      "練習シナリオ「先に不安を言語化する型」を作成キューに入れました。来月の伴走テーマ候補にも追加済みです。",
+  },
+  {
+    id: "cancel-cluster",
+    severity: "info",
+    title: "木曜夕方にキャンセルが集中しています",
+    body:
+      "直近4週の木曜 17時以降のキャンセル率は 18%（全体平均 7%）。リマインドを前日午前に前倒しすると改善する傾向があります。",
+    evidence: [
+      "木曜 17時以降のキャンセル率: 18%（12件/68件）",
+      "全体平均: 7%",
+      "リマインド前倒しの改善事例: 平均 -6pt",
+    ],
+    action: {
+      label: "木曜枠のリマインドを前日午前に変更する",
+      via: "継続フォロー",
+    },
+    doneEffect:
+      "木曜枠のリマインド送信を前日 10:00 に変更しました。4週間後に効果を再計測してお知らせします。",
+  },
+];
+
+/** 先週実行した提案の効果（ループが閉じることを見せるデモ）。 */
+export const COPILOT_LAST_WINS = [
+  "6/20 のLINE一括フォロー（38名）→ 9名が再来店予約（回収率 24%）",
+  "「価格に迷うお客様」練習を全員実施 → 比較検討型の成約率 41% → 55%",
 ];
 
 export const KIND_META: Record<

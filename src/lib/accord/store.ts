@@ -22,6 +22,13 @@ type AccordBlob = {
   roleplayResults: StoredRoleplayResult[];
   lineSends: StoredLineSend[];
   followNotes: StoredFollowNote[];
+  copilotDecisions: Record<string, StoredCopilotDecision>;
+};
+
+export type StoredCopilotDecision = {
+  insightId: string;
+  status: "done" | "dismissed";
+  at: string;
 };
 
 export type StoredRoleplayResult = {
@@ -51,6 +58,7 @@ const EMPTY: AccordBlob = {
   roleplayResults: [],
   lineSends: [],
   followNotes: [],
+  copilotDecisions: {},
 };
 
 function read(): AccordBlob {
@@ -64,6 +72,7 @@ function read(): AccordBlob {
       roleplayResults: parsed.roleplayResults ?? [],
       lineSends: parsed.lineSends ?? [],
       followNotes: parsed.followNotes ?? [],
+      copilotDecisions: parsed.copilotDecisions ?? {},
     };
   } catch {
     return EMPTY;
@@ -127,6 +136,24 @@ export function recordLineSend(customerId: string, label: string) {
     { id: makeId("ls"), customerId, label, at: new Date().toISOString() },
     ...blob.lineSends,
   ].slice(0, 100);
+  write(blob);
+}
+
+// ---------- copilot（v2） ----------
+
+export function getCopilotDecisions(): Record<string, StoredCopilotDecision> {
+  return read().copilotDecisions;
+}
+
+export function recordCopilotDecision(
+  insightId: string,
+  status: "done" | "dismissed",
+) {
+  const blob = read();
+  blob.copilotDecisions = {
+    ...blob.copilotDecisions,
+    [insightId]: { insightId, status, at: new Date().toISOString() },
+  };
   write(blob);
 }
 

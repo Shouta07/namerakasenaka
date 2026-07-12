@@ -12,6 +12,7 @@ const NAV = [
   { href: "/accord/roleplay", label: "接客練習", module: "roleplay" as AccordModuleId },
   { href: "/accord/dashboard", label: "ダッシュボード", module: "dashboard" as AccordModuleId },
   { href: "/accord/customers", label: "顧客フォロー", module: "followup" as AccordModuleId },
+  { href: "/accord/pricing", label: "料金", module: null },
 ];
 
 /**

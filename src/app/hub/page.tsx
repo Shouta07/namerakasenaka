@@ -144,6 +144,7 @@ const GROUPS: HubGroup[] = [
 ];
 
 const OFFLINE_DOCS = [
+  "Accord 事業モデル 3層モート×抽出フライホイール（repo: docs/accord/moat-and-flywheel.md）— 一番強い構造と成立条件",
   "Accord SaaS サービス設計・開発設計書（repo: docs/accord/saas-design.md）— MRR100万への事業/技術設計",
   "お見積り資料（なめらかせなか_2プラン提案_2026.pptx）— 金額・費用ロジック・体制・スケジュール",
   "営業プレイブック（make_playbook 10枚）— 商談の進め方（自分用）",

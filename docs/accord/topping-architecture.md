@@ -1,6 +1,11 @@
 # Accord トッピング・アーキテクチャ設計書
 
-**版**: v1.0（2026-07）
+**版**: v2.0（2026-07）
+
+> **v2 変更点**: 経営コパイロット化（saas-design v2 §2.4・§8B）に伴い、
+> 階層「🧠 AI頭脳」を新設し、トッピング4種を追加（§2.2b）:
+> `copilot` / `ai-minutes` / `staff-kpi` / `data-import`。
+> 予約・カルテは「作らない」を維持しつつ、`data-import` で**上に乗る**方針に発展。
 **目的**: 「機能をトッピングできる SaaS」として Accord をローンチするための、現状機能の棚卸しとモジュール設計
 **前提**: `docs/accord/saas-design.md`（事業・技術設計 v1.0）の実装詳細版。矛盾時は本書が優先
 
@@ -33,7 +38,7 @@
 | S8 | 学習レッスン（7章・クイズ・種/バッジ・図解SVG） | `lib/lessons/`, `components/lessons/`（illustrations 7本） | ◎ トッピング「学習コンテンツ」+ テーマパック |
 | S9 | 伴走ループ（今日のひとつ・自己ログ・リマインド） | `c/self-log`, `c/guide`, `lib/retention/` | ◎ トッピング「継続フォロー」 |
 | S10 | 食事記録 + AI下書き + 専門家承認フロー | `c/meals`, `n/queue`, `lib/ai/meal-feedback.ts` | △ 後期トッピング（監修者の調達が前提） |
-| S11 | 予約・カレンダー | `c/appointments`, `t/calendar`, `admin/calendar`, `lib/business-hours.ts` | ✕ **ローンチ対象外**（予約系SaaSと競合する位置取りになる。将来は外部予約連携で代替） |
+| S11 | 予約・カレンダー | `c/appointments`, `t/calendar`, `admin/calendar`, `lib/business-hours.ts` | ✕ 機能は作らない（競合位置）。**v2: `data-import` で予約・POS・広告データを取り込み、上に乗るAIレイヤーとして活かす** |
 | S12 | Q&A メッセージング（自動応答つき） | `c/qa`, `t/qa` | △ 後期（LINE連携があれば初期は不要） |
 | S13 | カウンセリング共有ビュー（iPadで一緒に見る） | `counseling/[caseId]` | ◎ コアの一部（初回カウンセリング画面） |
 
@@ -58,6 +63,8 @@
 ```
 🍕 生地（Base・外せない・全プラン共通）
     顧客台帳 / 初回カウンセリング記録 / タイムライン / メンバー・権限
+🧠 AI頭脳（Copilot・Standard以上の中核価値）〔v2 新設〕
+    経営コパイロット — 全トッピングのデータから気づきと次の一手を提案し、その場で実行させる司令塔
 🧀 チーズ（既定トッピング・プランに標準で載る）
     成約ダッシュボード / LINE経過共有
 🍄 トッピング（足し引き自由・課金単位）
@@ -95,6 +102,20 @@
 *Pro のフェアユース: 実績上限 300回/月（saas-design §8.3）
 
 **プラン価格は据え置き**（Starter ¥14,800 / Standard ¥29,800 / Pro ¥49,800）。トッピング表はプラン間の**アップグレード理由**と**単品 expansion** の2役を担う。
+
+### 2.2b v2 追加トッピング（経営コパイロット群）
+
+| ID | トッピング | 由来ペイン | 依存 | Starter | Standard | Pro | 単品追加 |
+|---|---|---|---|:---:|:---:|:---:|---|
+| `copilot` | 経営コパイロット（気づき+提案+実行） | ⑥経営管理 | core, dashboard | — | 週次ブリーフ | **日次 + 提案実行** | なし（アップグレード導線） |
+| `ai-minutes` | AI議事録（録音→構造化記録→フィードバック） | ②カウンセリング | core | — | 30件/月 | フェアユース200件 | ¥8,000/月 |
+| `staff-kpi` | スタッフ別KPI（成約率・ヒアリング傾向） | ③スタッフ | dashboard | — | ✅ | ✅ | ¥5,000/月 |
+| `data-import` | 外部データ連携（予約/POS/広告 CSV→将来API） | ④オペ・⑥経営 | core | — | CSV取込 | CSV + API(順次) | なし |
+
+- `copilot` を **Starter に出さない**のは意図的: Standard へ上がる最大の理由にする
+- `ai-minutes` の採点は roleplay の5観点ルーブリックを再利用（実装・学習コストを共有）
+- `staff-kpi` は「責めるためではなく練習テーマを決める材料」の文言をUIに常設（文化制約）
+- 依存の追加: copilot ← dashboard ／ staff-kpi ← dashboard ／ ai-minutes・data-import ← core
 
 ### 2.3 依存グラフ
 

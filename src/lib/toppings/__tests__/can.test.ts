@@ -14,10 +14,10 @@ describe("deriveEntitlements", () => {
     expect(ent["case-library"]).toBeUndefined();
   });
 
-  it("pro includes case-library and ai-guide", () => {
+  it("pro includes the launch toppings (mentoring) but not backlog (case-library)", () => {
     const ent = deriveEntitlements("pro");
-    expect(ent["case-library"]?.enabled).toBe(true);
-    expect(ent["ai-guide"]?.enabled).toBe(true);
+    expect(ent.mentoring?.enabled).toBe(true);
+    expect(ent["case-library"]).toBeUndefined();
   });
 
   it("starter excludes follow-loop", () => {

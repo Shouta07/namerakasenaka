@@ -21,7 +21,7 @@ export default function AccordPricingPage() {
         </h1>
         <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-stone-600">
           Accord は「生地（顧客台帳・カウンセリング記録）」の上に、機能をトッピングして使う SaaS です。
-          プランは人気のトッピングをまとめた3つの束。足りなければ単品で追加、店舗のフェーズに合わせて増減できます。
+          プランは必要なトッピングをまとめた3つの束。店舗のフェーズに合わせて、上のプランへ増やせます。
         </p>
       </header>
 
@@ -76,8 +76,8 @@ export default function AccordPricingPage() {
         <p className="text-[13px] font-bold text-stone-900">補足</p>
         <ul className="mt-2 space-y-1.5 text-[12.5px] leading-relaxed text-stone-600">
           <li>・14日間の無料トライアル（導入面談つき）。数字が出てから有償化を判断できます。</li>
+          <li>・料金は3プランのみ。まず必要な機能が揃った束から始められます。</li>
           <li>・初期セットアップ・体験設計は別建て（月額とは別レイヤー）。</li>
-          <li>・テーマパック（腸・食事・スキンケア・運動 等）は1テーマ ¥100,000 の買い切りで追加できます。</li>
           <li>・トッピングをオフにしてもデータは消えません（再開すれば元通り）。</li>
         </ul>
         <div className="mt-4 flex flex-wrap gap-3">

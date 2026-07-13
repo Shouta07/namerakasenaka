@@ -1,11 +1,21 @@
 # Accord トッピング・アーキテクチャ設計書
 
-**版**: v2.0（2026-07）
+**版**: v2.2（2026-07）
 
-> **v2 変更点**: 経営コパイロット化（saas-design v2 §2.4・§8B）に伴い、
-> 階層「🧠 AI頭脳」を新設し、トッピング4種を追加（§2.2b）:
-> `copilot` / `ai-minutes` / `staff-kpi` / `data-import`。
-> 予約・カルテは「作らない」を維持しつつ、`data-import` で**上に乗る**方針に発展。
+> **v2.2 変更点（cull＝最も良い形へ）**: ローンチを物語1周の最小構成に絞った。
+> - **ローンチ トッピング（10）**: core / copilot / dashboard / line-share / roleplay /
+>   photos / follow-loop / evidence / at-risk / mentoring。ヘッドラインは前7つ、
+>   evidence・at-risk は「継続」に内包、mentoring はサービス。
+> - **削除（別事業・レジストリから除去）**: ai-minutes（文字起こしは別プロダクト）/
+>   meals-review（栄養士ネットワークが要る別事業）/ staff-kpi（dashboard に統合）。
+> - **backlog（保持・料金表から除外・全プランOUT）**: data-import / lessons / theme-pack /
+>   ai-guide / case-library / multi-location / qa。3院ルール（moat §4-B）で昇格判定。
+> - **単品アドオン価格を廃止**（ローンチは3プラン束のみ販売）。
+> - **senaCRMを丸ごと相続しない**: モノレポ化時、トッピングになった部分（顧客・タイムライン・
+>   evidence・retention・回復ガイド）だけ抽出。予約カレンダー(S11)・食事/栄養士(S10)・QA(S12)は
+>   持ち込まない（前者は「作らない」既決、後2つは別事業）。
+>
+> _旧 v2.0: 経営コパイロット化に伴い階層「🧠 AI頭脳」を新設し4トッピング追加（§2.2b）。_
 **目的**: 「機能をトッピングできる SaaS」として Accord をローンチするための、現状機能の棚卸しとモジュール設計
 **前提**: `docs/accord/saas-design.md`（事業・技術設計 v1.0）の実装詳細版。矛盾時は本書が優先
 

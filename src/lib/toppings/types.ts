@@ -34,13 +34,6 @@ export type PlanInclusion =
   | { included: false }
   | { included: true; limit?: number | "unlimited"; note?: string };
 
-/** 単品追加（expansion）の価格。月額サブスク or 買い切りパック。 */
-export type ToppingAddon = {
-  jpy: number;
-  cycle: "monthly" | "once" | "per_unit";
-  label: string;
-};
-
 export type ToppingDef = {
   name: string;
   short: string;
@@ -49,16 +42,18 @@ export type ToppingDef = {
   tier: ToppingTier;
   /** 依存するトッピング（これらが有効でないと有効化できない）。 */
   dependsOn: string[];
-  /** ローンチ対象か、後期(M10+)か。後期は既定の料金表から除外される。 */
-  status: "launch" | "later";
+  /**
+   * launch = ローンチ対象（料金表に出る）／
+   * backlog = ロードマップに保持するが今は作らない・売らない（料金表から除外）。
+   * ※単品アドオン価格はローンチでは持たない（プラン束のみ販売。expansion は後日）。
+   */
+  status: "launch" | "backlog";
   /** 有効時にナビへ出す（無ければナビ非表示のバックグラウンド機能）。 */
   nav?: { href: string; label: string; order: number };
   /** プラン別の含まれ方。 */
   plans: Record<PlanId, PlanInclusion>;
   /** 従量メーター（残回数・残通数の判定に使う）。 */
   meter?: { metric: string; unit: string };
-  /** 単品での追加購入（プランに含まれない場合の expansion）。 */
-  addon?: ToppingAddon;
 };
 
 // ---- ランタイム判定（can）で使う型 --------------------------------

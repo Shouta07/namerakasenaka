@@ -53,7 +53,7 @@ describe("toppings registry integrity", () => {
     expect(launchIds).toContain("roleplay");
   });
 
-  it("v2: copilot starts at standard, depends on dashboard, hidden from starter", () => {
+  it("copilot starts at standard, depends on dashboard, hidden from starter", () => {
     const c = TOPPINGS.copilot;
     expect(c.tier).toBe("copilot");
     expect(c.dependsOn).toContain("dashboard");
@@ -62,10 +62,26 @@ describe("toppings registry integrity", () => {
     expect(c.plans.pro.included).toBe(true);
   });
 
-  it("v2: ai-minutes is metered; staff-kpi depends on dashboard; data-import on core", () => {
-    expect(TOPPINGS["ai-minutes"].meter?.metric).toBe("records");
-    expect(TOPPINGS["staff-kpi"].dependsOn).toContain("dashboard");
-    expect(TOPPINGS["data-import"].dependsOn).toContain("core");
+  it("cull v2.2: backlog toppings are not in the launch catalog and grant nothing", () => {
+    const launchIds = launchToppings().map(([id]) => id);
+    for (const id of ["case-library", "multi-location", "data-import", "lessons", "qa"]) {
+      expect(launchIds, `${id} must be excluded from launch`).not.toContain(id);
+      // backlog は全プラン OUT（実体が無いものを付与しない）
+      const def = TOPPINGS[id as keyof typeof TOPPINGS];
+      expect(def.plans.pro.included).toBe(false);
+    }
+  });
+
+  it("cull v2.2: deleted toppings are gone from the registry", () => {
+    expect("ai-minutes" in TOPPINGS).toBe(false);
+    expect("staff-kpi" in TOPPINGS).toBe(false);
+    expect("meals-review" in TOPPINGS).toBe(false);
+  });
+
+  it("cull v2.2: no launch topping carries a single-item addon price", () => {
+    for (const [, def] of launchToppings()) {
+      expect("addon" in def).toBe(false);
+    }
   });
 
   it("a topping included on a lower plan is included on higher plans (monotonic)", () => {

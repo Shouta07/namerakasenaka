@@ -86,7 +86,7 @@ export function ActivityFeed({
                 <span className="mt-0.5 block truncate text-[11px] text-stone-600">
                   {e.body}
                 </span>
-                <span className="mt-0.5 block text-[10px] text-stone-400">
+                <span className="mt-0.5 block text-[10px] text-stone-400" suppressHydrationWarning>
                   {relativeTimeJa(e.at)}
                 </span>
               </span>

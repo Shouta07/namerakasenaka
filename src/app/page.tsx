@@ -189,7 +189,16 @@ export default function HomePage() {
                             {t.lastMessage}
                           </span>
                         </span>
-                        <span className="text-[10px] text-stone-400">
+                        {/*
+                          相対時刻は「いま」から計算する。デモのフィクスチャは
+                          モジュール読み込み時の時刻を基準にするため、サーバーと
+                          ブラウザで基準がずれてハイドレーション不一致になる。
+                          表示のズレは無害なので、この要素だけ照合を免除する。
+                        */}
+                        <span
+                          className="text-[10px] text-stone-400"
+                          suppressHydrationWarning
+                        >
                           {relativeTimeJa(t.lastMessageAt)}
                         </span>
                       </Link>

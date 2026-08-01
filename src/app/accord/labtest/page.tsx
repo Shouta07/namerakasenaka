@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LabtestGame } from "@/components/accord/labtest-game";
 import {
   FOOD_CLASS_LABEL,
   FOOD_REACTIONS,
@@ -151,6 +152,27 @@ export default function AccordLabtestPage() {
           ))}
         </div>
       </Step>
+
+      {/* お客様側 — ゲーミフィケーション */}
+      <section>
+        <div className="flex items-baseline gap-3">
+          <span className="flex h-7 flex-none items-center justify-center rounded-full bg-stone-900 px-2.5 text-[10.5px] font-extrabold text-white">
+            お客様側
+          </span>
+          <h2 className="text-xl font-bold text-stone-900">
+            そのまま渡すと、数字は「点数」に見えてしまう
+          </h2>
+        </div>
+        <p className="mt-2 max-w-3xl text-[13.5px] leading-relaxed text-stone-600">
+          同じ検査結果を、お客様のスマホでは「肌をつくる材料が、どこまでそろったか」として見せます。
+          足りない＝ダメ、ではなく、集めている途中。
+          <strong className="text-stone-800">初回 / 3ヶ月後を切り替える</strong>と、
+          続けたぶんだけゲージが伸びるのが見えます。
+        </p>
+        <div className="mt-4">
+          <LabtestGame />
+        </div>
+      </section>
 
       {/* STEP 3 — 接客 */}
       <Step

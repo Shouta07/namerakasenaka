@@ -29,6 +29,8 @@ export type LabRow = {
   retest: number;
   /** 何を見ている項目か、ひと言で。 */
   note: string;
+  /** 適正へ向かう向き。raise=上げたい / lower=下げたい。ゲージの計算に使う。 */
+  direction: "raise" | "lower";
 };
 
 /**
@@ -110,6 +112,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 42,
     retest: 88,
     note: "からだに蓄えている鉄の量。基準内でも少なめのことが多い項目です。",
+    direction: "raise",
   },
   {
     id: "vitd",
@@ -123,6 +126,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 18,
     retest: 34,
     note: "日光と食事から作られ、皮ふのバリアや免疫と関わるとされています。",
+    direction: "raise",
   },
   {
     id: "zinc",
@@ -136,6 +140,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 68,
     retest: 86,
     note: "皮ふの入れ替わりに使われるミネラル。不足すると足りない側に傾きます。",
+    direction: "raise",
   },
   {
     id: "mg",
@@ -149,6 +154,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 2.1,
     retest: 2.4,
     note: "エネルギーを作る反応に関わるミネラル。ストレスや下痢で減りやすいとされます。",
+    direction: "raise",
   },
   {
     id: "alb",
@@ -162,6 +168,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 4.1,
     retest: 4.5,
     note: "タンパク質が足りているか・使えているかの目安。",
+    direction: "raise",
   },
   {
     id: "bun",
@@ -175,6 +182,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 9.8,
     retest: 13.4,
     note: "低めのときは、タンパク質の吸収が追いついていない可能性をみます。",
+    direction: "raise",
   },
   {
     id: "ast",
@@ -188,6 +196,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 24,
     retest: 22,
     note: "ALT との差が大きいとき、ビタミンB6 の不足が示唆されるとされています。",
+    direction: "lower",
   },
   {
     id: "alt",
@@ -201,6 +210,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 13,
     retest: 19,
     note: "AST より低いときは、B群の消費が増えている可能性をみます。",
+    direction: "raise",
   },
   {
     id: "homocysteine",
@@ -214,6 +224,7 @@ export const LAB_ROWS: LabRow[] = [
     first: 11.8,
     retest: 8.6,
     note: "ビタミンB6・B12・葉酸が足りているかの目安になるとされています。",
+    direction: "lower",
   },
   {
     id: "hba1c",
@@ -227,8 +238,234 @@ export const LAB_ROWS: LabRow[] = [
     first: 5.7,
     retest: 5.4,
     note: "過去1〜2ヶ月の血糖の平均。基準内でも上のほうだと甘いものの習慣がみえます。",
+    direction: "lower",
   },
 ];
+
+// ---------------------------------------------------------------
+// ゲーミフィケーション — 数字を「材料集め」に読みかえる
+//
+// 検査値は、そのままだと「良い/悪い」の判定表に見えてしまう。
+// ここでは「肌をつくる材料が、どこまでそろったか」というゲージに
+// 読みかえる。責められている感じを消し、次の一歩を選べるようにする。
+// ---------------------------------------------------------------
+
+/**
+ * 適正ラインまでの到達度（0〜100）。
+ * - raise: 上げたい項目は 適正下限に対する到達率
+ * - lower: 下げたい項目は 適正上限に対する超過ぶんを引いた率
+ * 適正範囲の中に入っていれば 100。
+ */
+export function gaugePercent(row: LabRow, value: number): number {
+  if (value >= row.optMin && value <= row.optMax) return 100;
+  const pct =
+    row.direction === "raise"
+      ? (value / row.optMin) * 100
+      : (row.optMax / value) * 100;
+  return Math.max(0, Math.min(100, Math.round(pct)));
+}
+
+/** 肌をつくる材料。検査項目をお客様の言葉のカテゴリにまとめる。 */
+export type Material = {
+  id: string;
+  label: string;
+  emoji: string;
+  /** この材料を代表する検査項目。 */
+  rowId: string;
+  /** そろうと何ができるか。 */
+  role: string;
+};
+
+export const MATERIALS: Material[] = [
+  { id: "iron", label: "鉄", emoji: "🩸", rowId: "ferritin", role: "酸素と材料を運ぶ" },
+  { id: "vitd", label: "ビタミンD", emoji: "☀️", rowId: "vitd", role: "肌の守りをつくる" },
+  { id: "zinc", label: "亜鉛", emoji: "🧱", rowId: "zinc", role: "新しい皮ふをつくる" },
+  { id: "protein", label: "タンパク質", emoji: "🍖", rowId: "alb", role: "肌そのものの材料" },
+  { id: "mg", label: "マグネシウム", emoji: "⚡", rowId: "mg", role: "つくる力を動かす" },
+];
+
+export function materialRow(m: Material): LabRow {
+  const row = LAB_ROWS.find((r) => r.id === m.rowId);
+  if (!row) throw new Error(`unknown rowId: ${m.rowId}`);
+  return row;
+}
+
+/**
+ * 材料がそろった度。
+ *
+ * レベルは平均%ではなく「適正に届いた材料の数」で決める。
+ * 平均だと、どれも中途半端なのに高いレベルが出てしまい、
+ * 「そろった」と言えないものを言えることにしてしまうため。
+ */
+export function materialsLevel(values: "first" | "retest"): {
+  level: number;
+  gathered: number;
+  total: number;
+  /** 各材料の到達率の平均（参考値）。 */
+  percent: number;
+  title: string;
+} {
+  const pcts = MATERIALS.map((m) => {
+    const row = materialRow(m);
+    return gaugePercent(row, row[values]);
+  });
+  const gathered = pcts.filter((p) => p >= 100).length;
+  const percent = Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length);
+  const level = Math.min(5, gathered + 1);
+  return { level, gathered, total: MATERIALS.length, percent, title: LEVEL_TITLE[level] };
+}
+
+export const LEVEL_TITLE: Record<number, string> = {
+  1: "材料をあつめはじめた",
+  2: "土台づくりの時期",
+  3: "材料がそろってきた",
+  4: "入れ替わりの時期",
+  5: "整えを保つ時期",
+};
+
+/** 続けたことに対して渡すバッジ。数字の良し悪しでは配らない。 */
+export type Badge = {
+  id: string;
+  emoji: string;
+  label: string;
+  how: string;
+  earned: boolean;
+};
+
+export const BADGES: Badge[] = [
+  {
+    id: "b-start",
+    emoji: "🩸",
+    label: "はじめの一歩",
+    how: "検査を受けて、自分の数字を知った",
+    earned: true,
+  },
+  {
+    id: "b-guide",
+    emoji: "📖",
+    label: "翻訳を読んだ",
+    how: "検査結果の解説をひととおり読んだ",
+    earned: true,
+  },
+  {
+    id: "b-7days",
+    emoji: "🔥",
+    label: "7日つづいた",
+    how: "「今日のひとつ」を7日つづけた",
+    earned: true,
+  },
+  {
+    id: "b-rotation",
+    emoji: "🔄",
+    label: "4日ローテーション完走",
+    how: "献立の4日サイクルを1周した",
+    earned: true,
+  },
+  {
+    id: "b-photo",
+    emoji: "📷",
+    label: "経過4回",
+    how: "経過写真を4回のこした",
+    earned: true,
+  },
+  {
+    id: "b-half",
+    emoji: "🎉",
+    label: "折り返し",
+    how: "コースの半分まで来た",
+    earned: true,
+  },
+  {
+    id: "b-retest",
+    emoji: "🔁",
+    label: "再検査までたどりついた",
+    how: "3ヶ月後の再検査を受けた",
+    earned: true,
+  },
+  {
+    id: "b-level4",
+    emoji: "🏅",
+    label: "入れ替わりの時期へ",
+    how: "材料がそろった度が Lv.4 になった",
+    earned: false,
+  },
+  {
+    id: "b-sixmonth",
+    emoji: "🌳",
+    label: "6ヶ月つづいた",
+    how: "コースを最後まで続けた",
+    earned: false,
+  },
+];
+
+/** クエストマップ。12週間を5つのステージにまとめて現在地を示す。 */
+export type Stage = {
+  id: string;
+  label: string;
+  weeks: string;
+  emoji: string;
+  body: string;
+};
+
+export const STAGES: Stage[] = [
+  {
+    id: "s1",
+    label: "自分の数字を知る",
+    weeks: "Week 0–1",
+    emoji: "🩸",
+    body: "検査を受けて、いま何が足りていないかを言葉で受け取る。",
+  },
+  {
+    id: "s2",
+    label: "材料をあつめる",
+    weeks: "Week 2–5",
+    emoji: "🧺",
+    body: "食事と生活で、足りない材料を毎日すこしずつ足していく。",
+  },
+  {
+    id: "s3",
+    label: "折り返しを確かめる",
+    weeks: "Week 6",
+    emoji: "📷",
+    body: "写真と実感メモを並べて、変化を自分の目で確かめる。",
+  },
+  {
+    id: "s4",
+    label: "入れ替わりを待つ",
+    weeks: "Week 7–11",
+    emoji: "🌱",
+    body: "材料がそろった状態を保つ。ここがいちばん止めたくなる時期。",
+  },
+  {
+    id: "s5",
+    label: "答え合わせをする",
+    weeks: "Week 12",
+    emoji: "🔁",
+    body: "同じ検査をもう一度受けて、続けたことの結果を数字で見る。",
+  },
+];
+
+/** いまいるステージ（デモは再検査到達＝5段目）。 */
+export const CURRENT_STAGE_INDEX = 4;
+
+/** 週ごとの継続ログ。伴走が続いているかを一目で見せるヒートマップ用。 */
+export const STREAK_WEEKS: { week: number; done: number }[] = [
+  { week: 1, done: 7 },
+  { week: 2, done: 6 },
+  { week: 3, done: 7 },
+  { week: 4, done: 4 },
+  { week: 5, done: 5 },
+  { week: 6, done: 7 },
+  { week: 7, done: 3 },
+  { week: 8, done: 6 },
+  { week: 9, done: 7 },
+  { week: 10, done: 5 },
+  { week: 11, done: 6 },
+  { week: 12, done: 7 },
+];
+
+export const STREAK_NOTE =
+  "できなかった週があっても、色が薄くなるだけで、消えることはありません。7割つづけばじゅうぶんです。";
 
 /** 検査結果を「お客様のことば」に翻訳した1行。ai-guide の中核データ。 */
 export type LabTranslation = {

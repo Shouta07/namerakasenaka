@@ -1,15 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { containsBannedWord } from "@/lib/compliance/banned-words";
 import {
+  BADGES,
+  CURRENT_STAGE_INDEX,
   FOOD_REACTIONS,
   JOURNEY,
   LABTEST_DISCLAIMER,
   LAB_ROWS,
   LAB_TRANSLATIONS,
+  LEVEL_TITLE,
+  MATERIALS,
   RETEST_TALK,
   ROTATION_PLAN,
+  STAGES,
+  STREAK_NOTE,
+  STREAK_WEEKS,
+  gaugePercent,
   judgeLab,
   labChange,
+  materialRow,
+  materialsLevel,
 } from "../labtest-fixtures";
 
 describe("labChange — 継続提案で言い違えてはいけない区別", () => {
@@ -23,6 +33,7 @@ describe("labChange — 継続提案で言い違えてはいけない区別", ()
     optMin: 20,
     optMax: 30,
     note: "",
+    direction: "raise" as const,
   };
 
   it("適正外から適正に入ったら entered", () => {
@@ -111,11 +122,91 @@ describe("血液検査フィクスチャの整合性", () => {
   });
 });
 
+describe("ゲーミフィケーション — 材料ゲージとレベル", () => {
+  it("適正範囲の中なら 100%", () => {
+    const r = LAB_ROWS.find((x) => x.id === "ferritin")!;
+    expect(gaugePercent(r, 120)).toBe(100);
+    expect(gaugePercent(r, r.optMin)).toBe(100);
+  });
+
+  it("上げたい項目は適正下限への到達率になる", () => {
+    const r = LAB_ROWS.find((x) => x.id === "ferritin")!; // optMin 80
+    expect(gaugePercent(r, 40)).toBe(50);
+    expect(gaugePercent(r, 20)).toBe(25);
+  });
+
+  it("下げたい項目は超過ぶんだけ下がる", () => {
+    const r = LAB_ROWS.find((x) => x.id === "hba1c")!; // optMax 5.5
+    expect(gaugePercent(r, 5.5)).toBe(100);
+    expect(gaugePercent(r, 11)).toBe(50);
+  });
+
+  it("0〜100 に収まり、負の値やゼロ割で壊れない", () => {
+    for (const r of LAB_ROWS) {
+      for (const v of [0.0001, r.first, r.retest, r.refMax * 10]) {
+        const p = gaugePercent(r, v);
+        expect(p).toBeGreaterThanOrEqual(0);
+        expect(p).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+
+  it("材料はすべて実在する検査項目を指す", () => {
+    for (const m of MATERIALS) {
+      expect(() => materialRow(m)).not.toThrow();
+    }
+  });
+
+  it("3ヶ月後はレベルが上がる — 続けた意味が見える形になっている", () => {
+    const a = materialsLevel("first");
+    const b = materialsLevel("retest");
+    expect(b.percent).toBeGreaterThan(a.percent);
+    expect(b.level).toBeGreaterThan(a.level);
+    expect(b.level).toBeLessThanOrEqual(5);
+    expect(a.level).toBeGreaterThanOrEqual(1);
+  });
+
+  it("レベルは平均%ではなく、適正に届いた材料の数で決まる", () => {
+    const a = materialsLevel("first");
+    const b = materialsLevel("retest");
+    // 初回はどれも適正に届いていない → Lv.1 から始まる物語になっている
+    expect(a.gathered).toBe(0);
+    expect(a.level).toBe(1);
+    expect(b.level).toBe(b.gathered + 1);
+    expect(b.gathered).toBeLessThanOrEqual(b.total);
+    // 平均は高くても、そろっていなければレベルは上がらない
+    expect(a.percent).toBeGreaterThan(50);
+  });
+
+  it("バッジは続けたことに対して配る — 未獲得も残しておく", () => {
+    expect(BADGES.filter((b) => b.earned).length).toBeGreaterThan(0);
+    expect(BADGES.some((b) => !b.earned)).toBe(true);
+  });
+
+  it("現在地はステージの範囲内", () => {
+    expect(CURRENT_STAGE_INDEX).toBeGreaterThanOrEqual(0);
+    expect(CURRENT_STAGE_INDEX).toBeLessThan(STAGES.length);
+  });
+
+  it("継続ログは12週ぶんで、1週7日を超えない", () => {
+    expect(STREAK_WEEKS).toHaveLength(12);
+    for (const w of STREAK_WEEKS) {
+      expect(w.done).toBeGreaterThanOrEqual(0);
+      expect(w.done).toBeLessThanOrEqual(7);
+    }
+  });
+});
+
 describe("薬機法・医療広告の禁止語（§8.2）", () => {
   const texts = [
     ...LAB_ROWS.map((r) => r.note),
     ...LAB_TRANSLATIONS.flatMap((t) => [t.finding, t.meaning, t.action, t.skinLink]),
     ...JOURNEY.map((s) => s.body),
+    ...MATERIALS.map((m) => m.role),
+    ...Object.values(LEVEL_TITLE),
+    ...BADGES.flatMap((b) => [b.label, b.how]),
+    ...STAGES.flatMap((s) => [s.label, s.body]),
+    STREAK_NOTE,
     RETEST_TALK.headline,
     ...RETEST_TALK.points,
     RETEST_TALK.note,

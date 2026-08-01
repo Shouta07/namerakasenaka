@@ -2,16 +2,11 @@
 
 import { Sparkles } from "lucide-react";
 import {
-  localDateString,
   useDailyChecksFor,
   useGuideCustomerByClientId,
-  useGuideMessagesFor,
   useHealthRecordFor,
 } from "@/lib/guide/source";
-import { upsertStoredDailyCheck } from "@/lib/demo/store";
 import { safeParseRecoveryGuideJson } from "@/lib/guide/schema";
-import { isDemoMode } from "@/lib/demo";
-import type { DailyCheckSubmit } from "./daily-check-card";
 import { MyLabCard } from "./my-lab-card";
 import { GuideContent } from "./guide-content";
 
@@ -25,7 +20,6 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
   const customer = useGuideCustomerByClientId(clientId);
   const healthRecord = useHealthRecordFor(customer?.id ?? null);
   const checks = useDailyChecksFor(customer?.id ?? null);
-  const companionMessages = useGuideMessagesFor(customer?.id ?? null);
 
   const guide = healthRecord?.aiSummaryJson
     ? safeParseRecoveryGuideJson(healthRecord.aiSummaryJson)
@@ -45,24 +39,7 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
     );
   }
 
-  const today = localDateString();
-  const todayCheck = checks.find((c) => c.date === today) ?? null;
 
-  async function handleCheckSubmit(input: DailyCheckSubmit): Promise<void> {
-    if (!customer) return;
-    // TODO(phase-1): 本番では Supabase（daily_checks）へ保存する。
-    // 現在はデモストアのみ — /share/[token] と同じ namespace を共有。
-    if (!isDemoMode()) return;
-    upsertStoredDailyCheck({
-      guideCustomerId: customer.id,
-      date: input.date,
-      actionDone: input.actionDone,
-      actionLevel: input.actionLevel,
-      skinCondition: input.skinCondition,
-      bodyCondition: input.bodyCondition,
-      memo: input.memo,
-    });
-  }
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5">
@@ -70,11 +47,7 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
       <MyLabCard />
       <GuideContent
         guide={guide}
-        today={today}
-        todayCheck={todayCheck}
         checks={checks}
-        onCheckSubmit={handleCheckSubmit}
-        companionMessages={companionMessages}
         guideCustomerId={customer.id}
       />
       <p className="px-2 pb-2 text-center text-xs leading-relaxed text-stone-400">

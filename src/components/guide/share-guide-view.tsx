@@ -1,20 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { Leaf, Sparkles } from "lucide-react";
 import {
-  localDateString,
   useDailyChecksFor,
   useGuideCustomerByToken,
-  useGuideMessagesFor,
   useHealthRecordFor,
-  type DailyCheckRecord,
 } from "@/lib/guide/source";
-import { upsertStoredDailyCheck, newId } from "@/lib/demo/store";
 import { safeParseRecoveryGuideJson } from "@/lib/guide/schema";
-import { isDemoMode } from "@/lib/demo";
 import { demoOrganization } from "@/lib/demo/fixtures";
-import type { DailyCheckSubmit } from "./daily-check-card";
 import { Eyebrow, GuideContent, SoftCard } from "./guide-content";
 
 /**
@@ -27,11 +20,8 @@ export function ShareGuideView({ token }: { token: string }) {
   const customer = useGuideCustomerByToken(token);
   const healthRecord = useHealthRecordFor(customer?.id ?? null);
   const demoChecks = useDailyChecksFor(customer?.id ?? null);
-  const companionMessages = useGuideMessagesFor(customer?.id ?? null);
-  const [remoteChecks, setRemoteChecks] = useState<DailyCheckRecord[]>([]);
 
-  const demo = isDemoMode();
-  const checks = demo ? demoChecks : mergeChecks(demoChecks, remoteChecks);
+  const checks = demoChecks;
 
   if (!customer) {
     return (
@@ -51,51 +41,7 @@ export function ShareGuideView({ token }: { token: string }) {
     ? safeParseRecoveryGuideJson(healthRecord.aiSummaryJson)
     : null;
 
-  const today = localDateString();
-  const todayCheck = checks.find((c) => c.date === today) ?? null;
 
-  async function handleCheckSubmit(input: DailyCheckSubmit): Promise<void> {
-    if (!customer) return;
-    if (demo) {
-      upsertStoredDailyCheck({
-        guideCustomerId: customer.id,
-        date: input.date,
-        actionDone: input.actionDone,
-        actionLevel: input.actionLevel,
-        skinCondition: input.skinCondition,
-        bodyCondition: input.bodyCondition,
-        memo: input.memo,
-      });
-      return;
-    }
-    const res = await fetch("/api/daily-checks", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        token,
-        date: input.date,
-        actionDone: input.actionDone,
-        skinCondition: input.skinCondition,
-        bodyCondition: input.bodyCondition,
-        memo: input.memo,
-      }),
-    });
-    if (!res.ok) throw new Error("save_failed");
-    setRemoteChecks((cur) => [
-      ...cur.filter((c) => c.date !== input.date),
-      {
-        id: newId(),
-        guideCustomerId: customer.id,
-        date: input.date,
-        actionDone: input.actionDone,
-        actionLevel: input.actionLevel,
-        skinCondition: input.skinCondition,
-        bodyCondition: input.bodyCondition,
-        memo: input.memo,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-  }
 
   return (
     <Shell>
@@ -119,12 +65,7 @@ export function ShareGuideView({ token }: { token: string }) {
         <>
           <GuideContent
             guide={guide}
-            today={today}
-            todayCheck={todayCheck}
             checks={checks}
-            onCheckSubmit={handleCheckSubmit}
-            companionMessages={companionMessages}
-            shareToken={token}
             guideCustomerId={customer.id}
           />
 
@@ -164,11 +105,3 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function mergeChecks(
-  base: DailyCheckRecord[],
-  overrides: DailyCheckRecord[],
-): DailyCheckRecord[] {
-  const byDate = new Map(base.map((c) => [c.date, c]));
-  for (const o of overrides) byDate.set(o.date, o);
-  return Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
-}

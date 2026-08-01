@@ -1,15 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { demoOrganization } from "@/lib/demo/fixtures";
 import type { RecoveryGuideJson } from "@/lib/guide/schema";
-import type { DailyCheckRecord, GuideMessageRecord } from "@/lib/guide/source";
+import type { DailyCheckRecord } from "@/lib/guide/source";
 import { LessonsCard } from "@/components/lessons/lessons-card";
-import { DailyCheckCard, type DailyCheckSubmit } from "./daily-check-card";
 import { ChangeRecordCard } from "./change-record-card";
-import { CompanionMessagesCard } from "./companion-messages-card";
 import { ResultMappingCard } from "./result-mapping-card";
-import { DAILY_CHECK_ANCHOR_ID, TodaysOneThing } from "./todays-one-thing";
 
 /**
  * 回復ガイド本体のセクション群。
@@ -20,27 +16,11 @@ import { DAILY_CHECK_ANCHOR_ID, TodaysOneThing } from "./todays-one-thing";
  */
 export function GuideContent({
   guide,
-  today,
-  todayCheck,
   checks,
-  onCheckSubmit,
-  selfLogHref,
-  companionMessages,
-  shareToken,
   guideCustomerId,
 }: {
   guide: RecoveryGuideJson;
-  /** YYYY-MM-DD — 今日のチェックの粒度。 */
-  today: string;
-  todayCheck: DailyCheckRecord | null;
   checks: DailyCheckRecord[];
-  onCheckSubmit: (input: DailyCheckSubmit) => Promise<void>;
-  /** /c/guide ではセルフログへの導線を出す（共有ページでは出さない）。 */
-  selfLogHref?: string;
-  /** 伴走ループ — サロンからのお返事メッセージ。空配列でも空状態を描く。 */
-  companionMessages?: GuideMessageRecord[];
-  /** /share/[token] からの呼び出しのみ — 既読化 API の認証に渡す。 */
-  shareToken?: string;
   /** 🌱 腸のおはなし — 学習進捗のキー。null/未指定ならレッスンセクションを描かない。 */
   guideCustomerId?: string | null;
 }) {
@@ -55,42 +35,6 @@ export function GuideContent({
         <Eyebrow>今日のまとめ</Eyebrow>
         <Paragraphs text={guide.today_summary} lead />
       </SoftCard>
-
-      {/* 1.5 きょうのひとつ — 今なにをすればいいかをひとつだけ */}
-      <TodaysOneThing
-        actions={guide.weekly_actions}
-        today={today}
-        todayCheck={todayCheck}
-      />
-
-      {/* 6. 今日のチェック */}
-      <SoftCard id={DAILY_CHECK_ANCHOR_ID}>
-        <Eyebrow>今日のチェック</Eyebrow>
-        <DailyCheckCard
-          today={today}
-          existing={todayCheck}
-          checks={checks}
-          onSubmit={onCheckSubmit}
-        />
-        {selfLogHref ? (
-          <p className="mt-4 text-right">
-            <Link
-              href={selfLogHref}
-              className="text-sm font-medium text-[#587f63] underline underline-offset-2 hover:text-[#3c6347]"
-            >
-              セルフログを記録 →
-            </Link>
-          </p>
-        ) : null}
-      </SoftCard>
-
-      {/* 7.5 サロンからのお返事 — 伴走ループの顧客側エンドポイント */}
-      {companionMessages ? (
-        <CompanionMessagesCard
-          messages={companionMessages}
-          shareToken={shareToken}
-        />
-      ) : null}
 
       <details className="group">
         <summary className="inline-flex min-h-11 cursor-pointer list-none items-center px-1 text-base font-medium text-[#587f63]">
@@ -216,7 +160,7 @@ export function GuideContent({
 
       {/* 7. 変化の記録 */}
       <SoftCard>
-        <Eyebrow>変化の記録</Eyebrow>
+        <Eyebrow>LINEでいただいた記録</Eyebrow>
         <ChangeRecordCard checks={checks} guideCustomerId={guideCustomerId ?? null} />
       </SoftCard>
 

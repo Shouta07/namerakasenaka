@@ -3,7 +3,6 @@ import {
   CalendarClock,
   GitCompare,
   Heart,
-  Leaf,
   Sparkles,
 } from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
@@ -15,9 +14,9 @@ import {
   demoTherapistCheer,
 } from "@/lib/demo/fixtures";
 import { HypothesisCard } from "@/components/guide/hypothesis-card";
-import { UnreadCompanionBanner } from "@/components/guide/unread-banner";
 import { PhotoTimeline, type TimelinePhoto } from "@/components/progress/photo-timeline";
 import { BeforeAfter } from "@/components/progress/before-after";
+import { LineRecordCard } from "@/components/guide/line-record-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -245,8 +244,6 @@ function DemoClientProgress() {
       </section>
 
       {/* 伴走ループ — サロンから未読のお返事があるときだけ表示 */}
-      <UnreadCompanionBanner clientId={demoClient.id} />
-
       {/* 状態仮説カード — 回復ガイドがある顧客にだけ表示（なければ静かにスキップ） */}
       <HypothesisCard clientId={demoClient.id} />
 
@@ -276,20 +273,6 @@ function DemoClientProgress() {
         </Card>
       ) : null}
 
-      {/* 今日のひとつ — 次の一歩をいつも1つだけ置いておく */}
-      <section className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4">
-        <Leaf className="h-5 w-5 flex-none text-emerald-600" />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-stone-900">今日のひとつ</p>
-          <p className="mt-0.5 text-xs leading-relaxed text-stone-600">
-            次の来店までの間も、小さなケアをひとつずつ。今日ぶんの「ひとつ」が回復ガイドに届いています。
-          </p>
-        </div>
-        <Link href="/c/guide" className="flex-none">
-          <Button>見にいく →</Button>
-        </Link>
-      </section>
-
       <BeforeAfter />
 
       <Link
@@ -299,6 +282,8 @@ function DemoClientProgress() {
         <GitCompare className="h-4 w-4" />
         背中ケアの記録をすべて見る →
       </Link>
+
+      <LineRecordCard />
 
       <footer className="pb-2 pt-4 text-center text-[11px] text-stone-400">
         Powered by Accord — 美容・ウェルネス店舗の現場CXを創る

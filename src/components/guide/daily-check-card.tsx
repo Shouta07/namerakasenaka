@@ -85,7 +85,7 @@ export function DailyCheckCard({
         merged.push({ date: today, actionDone });
         const { currentStreak } = computeCheckStats(merged);
         if (MILESTONE_STREAKS.has(currentStreak)) {
-          toast.success(`🌱 ${currentStreak}日連続で記録できました！`, {
+          toast.success(`🌱 ${currentStreak}日つづきました！`, {
             duration: 6000,
           });
         }
@@ -103,10 +103,10 @@ export function DailyCheckCard({
       <div className="space-y-3">
         {justSaved ? (
           <p className="rounded-2xl bg-[#eaf3ea] px-4 py-3 text-base font-medium text-[#3c6347]">
-            今日も記録できました 🌱
+            受け取りました 🌱
           </p>
         ) : (
-          <p className="text-base text-[#3c6347]">今日の分は記録済みです 🌱</p>
+          <p className="text-base text-[#3c6347]">今日の分は届いています 🌱</p>
         )}
         <div className="space-y-1.5 rounded-2xl bg-[#f6f9f6] px-4 py-3 text-base leading-relaxed text-stone-700">
           <p>
@@ -129,7 +129,7 @@ export function DailyCheckCard({
           onClick={() => setEditing(true)}
           className="text-sm text-[#587f63] underline underline-offset-2"
         >
-          今日の記録を直す
+          直す
         </button>
       </div>
     );
@@ -158,6 +158,18 @@ export function DailyCheckCard({
         </div>
       </div>
 
+      {/*
+        肌の調子・体調・メモは、答えなくても送れる。
+        毎日入力させる設計は続かない — 聞くのは「できたか」の1つだけにする。
+      */}
+      <details className="group">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-base text-[#587f63]">
+          もう少し伝える（任意）
+          <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+            ▾
+          </span>
+        </summary>
+        <div className="mt-3 space-y-5">
       <FaceScale label="肌の調子" value={skin} onChange={setSkin} />
       <FaceScale label="体調" value={body} onChange={setBody} />
 
@@ -174,6 +186,8 @@ export function DailyCheckCard({
           className="w-full rounded-2xl border border-stone-200 bg-white p-3 text-base leading-relaxed focus:border-[#7da589] focus:outline-none focus:ring-2 focus:ring-[#cfe3cf]"
         />
       </div>
+        </div>
+      </details>
 
       <button
         type="button"
@@ -184,7 +198,7 @@ export function DailyCheckCard({
           !action || saving ? "bg-[#a9c4b1]" : "bg-[#5d8a6c] hover:bg-[#4f7a5e]",
         )}
       >
-        {saving ? "記録しています…" : "今日の分を記録する"}
+        {saving ? "送っています…" : "これで送る"}
       </button>
       {editing ? (
         <button
@@ -196,7 +210,7 @@ export function DailyCheckCard({
         </button>
       ) : null}
       <p className="text-center text-sm text-stone-400">
-        おやすみの日があっても大丈夫。記録するだけで十分です。
+        答えるのは上の1つだけで十分です。おやすみの日があっても大丈夫。
       </p>
     </div>
   );

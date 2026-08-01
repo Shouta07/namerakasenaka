@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { markStoredGuideMessageRead } from "@/lib/demo/store";
 import { isDemoMode } from "@/lib/demo";
 import { demoOrganization } from "@/lib/demo/fixtures";
@@ -28,10 +28,16 @@ export function CompanionMessagesCard({
   shareToken?: string;
 }) {
   const demo = isDemoMode();
+  // 既読化を試したIDを覚えておく。ストアに無いIDは何度呼んでも既読にならず、
+  // 呼ぶたびにストア更新イベントで再レンダーが走って止まらなくなる。
+  const attempted = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const unread = messages.filter((m) => m.readAt === null);
+    const unread = messages.filter(
+      (m) => m.readAt === null && !attempted.current.has(m.id),
+    );
     if (unread.length === 0) return;
+    for (const m of unread) attempted.current.add(m.id);
     if (demo) {
       for (const m of unread) markStoredGuideMessageRead(m.id);
       return;

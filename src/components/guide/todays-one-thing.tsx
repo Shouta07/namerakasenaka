@@ -85,7 +85,7 @@ export function TodaysOneThing({
           }
           className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#5d8a6c] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.99] hover:bg-[#4f7a5d]"
         >
-          できたら記録する ↓
+          できたら教えてください ↓
         </button>
       </div>
     </section>

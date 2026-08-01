@@ -291,7 +291,7 @@ function DemoClientProgress() {
           </p>
         </div>
         <Link href="/c/guide" className="flex-none">
-          <Button size="sm">見にいく →</Button>
+          <Button>見にいく →</Button>
         </Link>
       </section>
 
@@ -302,8 +302,8 @@ function DemoClientProgress() {
             進捗フォトタイムライン
           </h2>
           <Link href="/c/progress/compare">
-            <Button size="sm" variant="secondary">
-              <GitCompare className="h-3.5 w-3.5" />
+            <Button variant="secondary">
+              <GitCompare className="h-4 w-4" />
               比較する
             </Button>
           </Link>
@@ -324,7 +324,7 @@ function DemoClientProgress() {
       >
         <Utensils className="h-4 w-4 flex-none text-brand-700" />
         <span className="flex-1 text-sm font-semibold text-stone-900">
-          食事のフィードバック
+          食事へのコメント
         </span>
         <span className="text-xs text-stone-400">
           {new Date(latestMeal.loggedAt).toLocaleDateString("ja-JP", {

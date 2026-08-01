@@ -46,6 +46,10 @@ export function GuideContent({
 }) {
   return (
     <>
+      {/*
+        毎日ひらく画面。既定で見えるのは「今日のこと」だけにする。
+        読み物と振り返りは、読みたいときに開く。
+      */}
       {/* 1. 今日のまとめ */}
       <SoftCard accent>
         <Eyebrow>今日のまとめ</Eyebrow>
@@ -59,11 +63,43 @@ export function GuideContent({
         todayCheck={todayCheck}
       />
 
-      {/* 1.7 🌱 腸のおはなし — 学習レッスン（顧客IDがある時だけ） */}
-      {guideCustomerId ? (
-        <LessonsCard guideCustomerId={guideCustomerId} />
+      {/* 6. 今日のチェック */}
+      <SoftCard id={DAILY_CHECK_ANCHOR_ID}>
+        <Eyebrow>今日のチェック</Eyebrow>
+        <DailyCheckCard
+          today={today}
+          existing={todayCheck}
+          checks={checks}
+          onSubmit={onCheckSubmit}
+        />
+        {selfLogHref ? (
+          <p className="mt-4 text-right">
+            <Link
+              href={selfLogHref}
+              className="text-sm font-medium text-[#587f63] underline underline-offset-2 hover:text-[#3c6347]"
+            >
+              セルフログを記録 →
+            </Link>
+          </p>
+        ) : null}
+      </SoftCard>
+
+      {/* 7.5 サロンからのお返事 — 伴走ループの顧客側エンドポイント */}
+      {companionMessages ? (
+        <CompanionMessagesCard
+          messages={companionMessages}
+          shareToken={shareToken}
+        />
       ) : null}
 
+      <details className="group">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center px-1 text-base font-medium text-[#587f63]">
+          からだのこと（いま起きていること・食材）
+          <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+            ▾
+          </span>
+        </summary>
+        <div className="mt-3 space-y-5">
       {/* 2. あなたの身体で起きていること */}
       <SoftCard>
         <Eyebrow>あなたの身体で起きていること</Eyebrow>
@@ -98,6 +134,12 @@ export function GuideContent({
       {guide.result_mappings && guide.result_mappings.length > 0 ? (
         <ResultMappingCard mappings={guide.result_mappings} />
       ) : null}
+
+      {/* 1.7 🌱 腸のおはなし — 学習レッスン（顧客IDがある時だけ） */}
+      {guideCustomerId ? (
+        <LessonsCard guideCustomerId={guideCustomerId} />
+      ) : null}
+
 
       {/* 3. 背中ニキビとの関係 */}
       <SoftCard>
@@ -138,6 +180,17 @@ export function GuideContent({
         </div>
       </SoftCard>
 
+        </div>
+      </details>
+
+      <details className="group">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center px-1 text-base font-medium text-[#587f63]">
+          今週とこれまで（やること・変化・次回の話）
+          <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+            ▾
+          </span>
+        </summary>
+        <div className="mt-3 space-y-5">
       {/* 5. 今週やること — THE standout */}
       <section className="rounded-3xl border-2 border-[#cfe3cf] bg-gradient-to-b from-[#f3f8f3] to-white p-5 shadow-sm sm:p-6">
         <Eyebrow>今週やること</Eyebrow>
@@ -161,40 +214,11 @@ export function GuideContent({
         </ol>
       </section>
 
-      {/* 6. 今日のチェック */}
-      <SoftCard id={DAILY_CHECK_ANCHOR_ID}>
-        <Eyebrow>今日のチェック</Eyebrow>
-        <DailyCheckCard
-          today={today}
-          existing={todayCheck}
-          checks={checks}
-          onSubmit={onCheckSubmit}
-        />
-        {selfLogHref ? (
-          <p className="mt-4 text-right">
-            <Link
-              href={selfLogHref}
-              className="text-sm font-medium text-[#587f63] underline underline-offset-2 hover:text-[#3c6347]"
-            >
-              セルフログを記録 →
-            </Link>
-          </p>
-        ) : null}
-      </SoftCard>
-
       {/* 7. 変化の記録 */}
       <SoftCard>
         <Eyebrow>変化の記録</Eyebrow>
         <ChangeRecordCard checks={checks} guideCustomerId={guideCustomerId ?? null} />
       </SoftCard>
-
-      {/* 7.5 サロンからのお返事 — 伴走ループの顧客側エンドポイント */}
-      {companionMessages ? (
-        <CompanionMessagesCard
-          messages={companionMessages}
-          shareToken={shareToken}
-        />
-      ) : null}
 
       {/* 8. 次回カウンセリング */}
       <SoftCard>
@@ -214,6 +238,9 @@ export function GuideContent({
         <Eyebrow>今月の方針</Eyebrow>
         <Paragraphs text={guide.monthly_policy} />
       </SoftCard>
+
+        </div>
+      </details>
 
       {/* 10. 励ましのメッセージ */}
       <div className="rounded-3xl bg-[#eaf3ea] p-5 sm:p-6">

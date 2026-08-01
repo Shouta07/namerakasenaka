@@ -32,7 +32,7 @@ export function HypothesisCard({ clientId }: { clientId: string }) {
       <p className="mt-1.5 text-sm leading-relaxed text-stone-700">{excerpt}</p>
       <Link
         href="/c/guide"
-        className="mt-2 inline-block text-sm font-medium text-[#3c6347] underline underline-offset-2 hover:text-[#587f63]"
+        className="inline-flex min-h-11 items-center mt-2 inline-block text-sm font-medium text-[#3c6347] underline underline-offset-2 hover:text-[#587f63]"
       >
         くわしく見る →
       </Link>

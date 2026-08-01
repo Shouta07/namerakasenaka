@@ -105,15 +105,30 @@ export function RoleNav({ items, title }: { items: NavItem[]; title: string }) {
  *
  * Limit to 5 items per role; the layout overflows otherwise.
  */
-export function MobileBottomNav({ items }: { items: NavItem[] }) {
+export function MobileBottomNav({
+  items,
+  /**
+   * スマホ専用の画面（お客様側）で使う。端末幅の枠にぴったり収め、
+   * 画面が大きくても隠さない — PC用のナビに切り替わらないようにする。
+   */
+  scoped = false,
+}: {
+  items: NavItem[];
+  scoped?: boolean;
+}) {
   const pathname = usePathname();
   return (
     <nav
       aria-label="メインナビゲーション"
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-stone-200 bg-white/95 backdrop-blur md:hidden"
+      className={cn(
+        "z-40 border-t border-stone-200 bg-white/95 backdrop-blur",
+        scoped
+          ? "sticky bottom-0 mt-auto"
+          : "fixed bottom-0 left-0 right-0 md:hidden",
+      )}
       style={{ paddingBottom: "max(var(--safe-bottom), 6px)" }}
     >
-      <ul className="mx-auto flex max-w-md items-stretch">
+      <ul className={cn("mx-auto flex items-stretch", scoped ? "w-full" : "max-w-md")}>
         {items.slice(0, 5).map((item) => {
           const active = isActive(pathname, item.href);
           const Icon = resolveIcon(item.icon);

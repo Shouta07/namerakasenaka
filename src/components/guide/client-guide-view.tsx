@@ -72,7 +72,6 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
         todayCheck={todayCheck}
         checks={checks}
         onCheckSubmit={handleCheckSubmit}
-        selfLogHref="/c/self-log"
         companionMessages={companionMessages}
         guideCustomerId={customer.id}
       />

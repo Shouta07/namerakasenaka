@@ -54,7 +54,7 @@ export default async function ClientMealsPage() {
   if (!enabled) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold">食事ログ</h1>
+        <h1 className="text-xl font-semibold">食事へのコメント</h1>
         <Card>
           <CardContent>
             <p className="text-sm text-stone-600">
@@ -99,14 +99,17 @@ export default async function ClientMealsPage() {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">食事ログ</h1>
+        <h1 className="text-xl font-semibold">食事へのコメント</h1>
         <Link href="/c/meals/new">
-          <Button>記録する</Button>
+          <Button variant="secondary">写真を送る（任意）</Button>
         </Link>
       </header>
       <div className="space-y-2">
         {rows.length === 0 ? (
-          <p className="text-sm text-stone-500">まだ記録はありません。</p>
+          <p className="text-sm leading-relaxed text-stone-500">
+            まだコメントは届いていません。食事の記録は必須ではありません
+            — 気が向いたときに写真を1枚送っていただければ、管理栄養士が見て返します。
+          </p>
         ) : (
           rows.map((m) => {
             const myComments = comments.filter((c) => c.meal_log_id === m.id);

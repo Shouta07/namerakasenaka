@@ -10,7 +10,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { MealType, PhotoType } from "@/types/domain";
 import type { RecoveryGuideJson } from "@/lib/guide/schema";
 
@@ -885,9 +885,14 @@ export function upsertStoredDailyCheck(
 
 export function useStoredGuideMessages(guideCustomerId: string): GuideMessage[] {
   const all = useStore("guideMessages");
-  return all
-    .filter((m) => m.guideCustomerId === guideCustomerId)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  // 毎レンダーで新しい配列を返すと、これに依存する useEffect が回り続ける。
+  return useMemo(
+    () =>
+      all
+        .filter((m) => m.guideCustomerId === guideCustomerId)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [all, guideCustomerId],
+  );
 }
 
 export function addStoredGuideMessage(

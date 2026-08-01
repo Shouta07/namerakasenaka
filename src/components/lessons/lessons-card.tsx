@@ -1,4 +1,4 @@
-"use client";
+"use clieninline-flex min-h-11 items-center t";
 
 import { useState } from "react";
 import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
@@ -166,7 +166,7 @@ export function LessonsCard({ guideCustomerId }: { guideCustomerId: string }) {
         <button
           type="button"
           onClick={() => setListOpen(true)}
-          className="inline-flex items-center gap-1 text-sm font-medium text-[#587f63] underline underline-offset-2"
+          className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[#587f63] underline underline-offset-2"
         >
           <BookOpen className="h-4 w-4" aria-hidden />
           すべてのレッスン →

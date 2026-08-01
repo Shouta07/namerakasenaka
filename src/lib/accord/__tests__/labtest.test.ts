@@ -25,6 +25,7 @@ import {
   labChange,
   materialRow,
   materialsLevel,
+  radarLevel,
   badgeEarned,
   radarRow,
   routeFor,
@@ -319,5 +320,28 @@ describe("薬機法・医療広告の禁止語（§8.2）", () => {
   it("免責が「医療上の助言ではない」ことを明示している", () => {
     expect(LABTEST_DISCLAIMER).toContain("医療上の助言ではありません");
     expect(LABTEST_DISCLAIMER).toContain("架空");
+  });
+});
+
+describe("お客様側のレーダー（6軸で数えるレベル）", () => {
+  it("6軸ぶんを数える — 材料5つ版とは母数が違う", () => {
+    expect(radarLevel("first").total).toBe(RADAR_AXES.length);
+    expect(radarLevel("retest").total).toBe(6);
+  });
+
+  it("再検査でレベルが上がる。ただし届いた割合ぶんだけ（盛らない）", () => {
+    const a = radarLevel("first");
+    const b = radarLevel("retest");
+    expect(b.gathered).toBeGreaterThan(a.gathered);
+    expect(b.level).toBeGreaterThan(a.level);
+    expect(b.level).toBeLessThanOrEqual(5);
+    // 全部そろっていないのに最高レベルにはしない
+    expect(b.gathered).toBeLessThan(b.total);
+    expect(b.level).toBeLessThan(5);
+  });
+
+  it("材料5つ版とレベルの数え方が同じ（適正に届いた数 + 1）", () => {
+    const m = materialsLevel("retest");
+    expect(m.level).toBe(m.gathered + 1);
   });
 });

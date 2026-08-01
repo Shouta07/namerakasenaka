@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LabRadar } from "@/components/charts/lab-radar";
 import {
   CAUSE_LAYER_META,
   CAUSE_MAP_NOTE,
@@ -23,33 +24,7 @@ import {
  * 直接ラベルを併用し、色だけに頼らせない。数値は上の表にも出ている。
  */
 
-// ラベルが viewBox の外に出ないよう、半径に対して余白を広くとる。
-const SIZE = 340;
-const CX = SIZE / 2;
-const CY = SIZE / 2;
-const R = 100;
-const LABEL_RATIO = 1.26;
-// 斜めの軸ラベルは左右に長く出るため、viewBox を横に広げて逃がす。
-const VB_X = -34;
-const VB_W = SIZE + 68;
 const LAYERS: CauseLayer[] = ["life", "body", "sign", "skin"];
-
-function point(i: number, total: number, ratio: number) {
-  const angle = (Math.PI * 2 * i) / total - Math.PI / 2;
-  return {
-    x: CX + Math.cos(angle) * R * ratio,
-    y: CY + Math.sin(angle) * R * ratio,
-  };
-}
-
-function polygon(values: number[]): string {
-  return values
-    .map((v, i) => {
-      const p = point(i, values.length, v / 100);
-      return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-    })
-    .join(" ");
-}
 
 export function LabtestRadar({ view }: { view: LabView }) {
   const [selected, setSelected] = useState(RADAR_AXES[0].id);
@@ -80,133 +55,13 @@ export function LabtestRadar({ view }: { view: LabView }) {
             外側が「適正の目安に届いた状態」。中心に近いほど足りていません。
           </p>
 
-          <svg
-            viewBox={`${VB_X} 0 ${VB_W} ${SIZE}`}
-            className="mx-auto mt-1 w-full max-w-[340px]"
-            role="img"
-            aria-label={`6つの力のレーダーチャート。${RADAR_AXES.map(
-              (a, i) => `${a.label} ${currentValues[i]}%`,
-            ).join("、")}`}
-          >
-            {/* グリッド — 1px・ソリッド・控えめ */}
-            {[0.25, 0.5, 0.75, 1].map((g) => (
-              <polygon
-                key={g}
-                points={polygon(RADAR_AXES.map(() => g * 100))}
-                fill="none"
-                stroke="#e7e5e4"
-                strokeWidth={1}
-              />
-            ))}
-            {RADAR_AXES.map((a, i) => {
-              const p = point(i, RADAR_AXES.length, 1);
-              return (
-                <line
-                  key={a.id}
-                  x1={CX}
-                  y1={CY}
-                  x2={p.x}
-                  y2={p.y}
-                  stroke="#e7e5e4"
-                  strokeWidth={1}
-                />
-              );
-            })}
-
-            {/* 初回（薄い・破線）— 塗りは重ねない。2枚重ねると濁って読めなくなる */}
-            {showBoth ? (
-              <polygon
-                points={polygon(firstValues)}
-                fill="none"
-                stroke="#c89679"
-                strokeWidth={2}
-                strokeDasharray="4 3"
-                strokeLinejoin="round"
-              />
-            ) : null}
-
-            {/* いまの時点（濃い・実線） */}
-            <polygon
-              points={polygon(currentValues)}
-              fill="#8c5a3c"
-              fillOpacity={0.1}
-              stroke="#8c5a3c"
-              strokeWidth={2}
-              strokeLinejoin="round"
-            />
-
-            {/* 頂点 — 8px以上・サーフェス色の2pxリング */}
-            {RADAR_AXES.map((a, i) => {
-              const p = point(i, RADAR_AXES.length, currentValues[i] / 100);
-              const r = radarRow(a);
-              const on = a.id === selected;
-              return (
-                <g key={a.id}>
-                  <circle
-                    cx={p.x}
-                    cy={p.y}
-                    r={on ? 6 : 4.5}
-                    fill="#8c5a3c"
-                    stroke="#ffffff"
-                    strokeWidth={2}
-                  />
-                  {/* 当たり判定はマークより大きく */}
-                  <circle
-                    cx={p.x}
-                    cy={p.y}
-                    r={14}
-                    fill="transparent"
-                    className="cursor-pointer"
-                    onClick={() => setSelected(a.id)}
-                  >
-                    <title>{`${a.label}：${currentValues[i]}%（${r.name} ${r[view]}${r.unit}）`}</title>
-                  </circle>
-                  {/* 直接ラベルは選択中の1点だけ。全点に数字を置くと読まれない */}
-                  {on ? (
-                    <text
-                      x={p.x}
-                      y={p.y - 12}
-                      textAnchor="middle"
-                      fontSize={11}
-                      fontWeight={800}
-                      fill="#1c1917"
-                      stroke="#ffffff"
-                      strokeWidth={3}
-                      paintOrder="stroke"
-                    >
-                      {currentValues[i]}%
-                    </text>
-                  ) : null}
-                </g>
-              );
-            })}
-
-            {/* 軸ラベル — テキストはテキスト色のまま */}
-            {RADAR_AXES.map((a, i) => {
-              const p = point(i, RADAR_AXES.length, LABEL_RATIO);
-              const on = a.id === selected;
-              // 左右の軸はラベルが外にはみ出すので、端を基準に寄せる。
-              const dx = p.x - CX;
-              const anchor =
-                Math.abs(dx) < 8 ? "middle" : dx > 0 ? "start" : "end";
-              return (
-                <text
-                  key={a.id}
-                  x={p.x}
-                  y={p.y}
-                  textAnchor={anchor}
-                  dominantBaseline="middle"
-                  className="cursor-pointer"
-                  fontSize={on ? 12 : 11}
-                  fontWeight={on ? 800 : 600}
-                  fill={on ? "#1c1917" : "#78716c"}
-                  onClick={() => setSelected(a.id)}
-                >
-                  {a.label}
-                </text>
-              );
-            })}
-          </svg>
+          <LabRadar
+            labels={RADAR_AXES.map((a) => a.label)}
+            values={currentValues}
+            compare={showBoth ? firstValues : undefined}
+            selectedIndex={RADAR_AXES.findIndex((a) => a.id === selected)}
+            onSelect={(i) => setSelected(RADAR_AXES[i].id)}
+          />
 
           {/* 凡例 — 2系列あるときは必ず出す */}
           {showBoth ? (

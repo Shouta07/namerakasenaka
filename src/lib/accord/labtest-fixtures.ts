@@ -473,22 +473,45 @@ export function materialRow(m: Material): LabRow {
  * 平均だと、どれも中途半端なのに高いレベルが出てしまい、
  * 「そろった」と言えないものを言えることにしてしまうため。
  */
-export function materialsLevel(values: "first" | "retest"): {
+export type LevelResult = {
   level: number;
   gathered: number;
   total: number;
-  /** 各材料の到達率の平均（参考値）。 */
+  /** 到達率の平均（参考値）。 */
   percent: number;
   title: string;
-} {
+};
+
+/** 到達率の配列からレベルを出す。数え方は「適正に届いた数」で統一する。 */
+function levelFromPercents(pcts: number[]): LevelResult {
+  const gathered = pcts.filter((p) => p >= 100).length;
+  const percent = Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length);
+  const level = Math.min(5, gathered + 1);
+  return { level, gathered, total: pcts.length, percent, title: LEVEL_TITLE[level] };
+}
+
+/**
+ * レーダーの6軸で数えたレベル。お客様の画面はこちらを使う。
+ *
+ * 材料5つ版と違い、母数が6なので「届いた数+1」だと実態より高く出る
+ * （4/6でいきなり最高レベルになってしまう）。割合で5段階に均す。
+ */
+export function radarLevel(values: LabView): LevelResult {
+  const pcts = RADAR_AXES.map((a) => {
+    const row = radarRow(a);
+    return gaugePercent(row, row[values]);
+  });
+  const base = levelFromPercents(pcts);
+  const level = Math.max(1, Math.min(5, Math.round((base.gathered / pcts.length) * 5)));
+  return { ...base, level, title: LEVEL_TITLE[level] };
+}
+
+export function materialsLevel(values: "first" | "retest"): LevelResult {
   const pcts = MATERIALS.map((m) => {
     const row = materialRow(m);
     return gaugePercent(row, row[values]);
   });
-  const gathered = pcts.filter((p) => p >= 100).length;
-  const percent = Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length);
-  const level = Math.min(5, gathered + 1);
-  return { level, gathered, total: MATERIALS.length, percent, title: LEVEL_TITLE[level] };
+  return levelFromPercents(pcts);
 }
 
 export const LEVEL_TITLE: Record<number, string> = {

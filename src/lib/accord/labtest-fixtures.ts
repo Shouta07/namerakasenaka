@@ -302,6 +302,12 @@ export type RadarAxis = {
   what: string;
   /** 足りないと何が起きうるか（断定しない）。 */
   ifLow: string;
+  /** 背中の肌との関わり。 */
+  skinLink: string;
+  /** 今日からできること。 */
+  action: string;
+  /** 重要度（1〜3）。全部が同じ重さではないことを示す。 */
+  importance: 1 | 2 | 3;
 };
 
 export const RADAR_AXES: RadarAxis[] = [
@@ -312,6 +318,10 @@ export const RADAR_AXES: RadarAxis[] = [
     what: "酸素と栄養を、つくる現場まで届ける力です（フェリチン＝鉄の蓄え）。",
     ifLow:
       "材料はあっても現場に届きにくく、入れ替わりがゆっくりになる可能性があります。",
+    skinLink: "肌の入れ替わりに時間がかかり、跡が残っている感じが続きやすくなります。",
+    action:
+      "赤身の魚・肉を週2回、ビタミンCの多い野菜や果物と一緒に。コーヒー・緑茶は食事の前後30分をあけてみましょう。",
+    importance: 3,
   },
   {
     id: "guard",
@@ -319,6 +329,9 @@ export const RADAR_AXES: RadarAxis[] = [
     rowId: "vitd",
     what: "外からの刺激に対する肌の守りに関わるとされる力です（ビタミンD）。",
     ifLow: "ちょっとした刺激でゆらぎやすい状態と関わることがあります。",
+    skinLink: "季節の変わり目に、背中がゆらぎやすくなることがあります。",
+    action: "日中15分、外を歩く時間を1日1回。鮭・さば・きのこを週に数回とり入れてみましょう。",
+    importance: 3,
   },
   {
     id: "rebuild",
@@ -326,6 +339,10 @@ export const RADAR_AXES: RadarAxis[] = [
     rowId: "zinc",
     what: "古い皮ふを新しい皮ふに入れ替えるときに使われる力です（亜鉛）。",
     ifLow: "毛穴のつまりが残りやすく、同じ場所がくり返しやすくなります。",
+    skinLink: "同じ場所のくり返しに、いちばん関わりやすい項目です。",
+    action:
+      "牡蠣・牛の赤身・卵・ナッツを意識して。加工食品と甘い飲みものを、まず週の半分に減らしてみましょう。",
+    importance: 3,
   },
   {
     id: "material",
@@ -333,6 +350,9 @@ export const RADAR_AXES: RadarAxis[] = [
     rowId: "alb",
     what: "肌・髪・筋肉のもとになるタンパク質が足りているかです（アルブミン）。",
     ifLow: "つくる材料が不足し、変化が出るまでに時間がかかります。",
+    skinLink: "材料が届かないと、施術を受けても変化が出るまで時間がかかります。",
+    action: "1食に手のひら1枚分のタンパク質を。ひと口30回を目安によく噛んでみましょう。",
+    importance: 2,
   },
   {
     id: "power",
@@ -340,6 +360,9 @@ export const RADAR_AXES: RadarAxis[] = [
     rowId: "mg",
     what: "つくる作業のエネルギーを生む反応に関わる力です（マグネシウム）。",
     ifLow: "疲れやすさや、体のこわばりと関わることがあるとされています。",
+    skinLink: "回復のペースが落ちる時期と重なりやすい項目です。",
+    action: "海藻・ナッツ・豆類を1日1品。湯船につかる日を週2回つくってみましょう。",
+    importance: 1,
   },
   {
     id: "calm",
@@ -347,6 +370,9 @@ export const RADAR_AXES: RadarAxis[] = [
     rowId: "hba1c",
     what: "血糖の波の小ささです（HbA1c＝過去1〜2ヶ月の平均）。",
     ifLow: "皮脂の出方や炎症の起こりやすさと関わることがあるとされています。",
+    skinLink: "皮脂が出やすい時期と重なると、つまりが増えることがあります。",
+    action: "甘い飲みものを水やお茶に。間食は食事の直後にまとめてみましょう。",
+    importance: 2,
   },
 ];
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LabRadar } from "@/components/charts/lab-radar";
+import { LabValueBar } from "@/components/charts/lab-value-bar";
 import {
   CAUSE_LAYER_META,
   CAUSE_MAP_NOTE,
@@ -121,13 +122,40 @@ export function LabtestRadar({ view }: { view: LabView }) {
               <h4 className="text-[16px] font-extrabold text-stone-900">
                 {axis.label}
               </h4>
-              <span className="text-[12px] text-stone-500">
-                {row.name} {row[view]}
+              <span className="text-[12px] text-stone-500">{row.name}</span>
+              <span className="ml-auto flex items-center gap-0.5" aria-label={`重要度 ${axis.importance}`}>
+                {[1, 2, 3].map((i) => (
+                  <span
+                    key={i}
+                    aria-hidden
+                    className={`text-[11px] ${i <= axis.importance ? "text-brand-700" : "text-stone-300"}`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </span>
+            </div>
+
+            {/* 元データ — 実測値と、基準・目安のどこにいるか */}
+            <div className="mt-2 flex items-end gap-2">
+              <span className="text-[26px] font-extrabold leading-none tabular-nums text-stone-900">
+                {row[view]}
+              </span>
+              <span className="pb-0.5 text-[12px] font-semibold text-stone-500">
                 {row.unit}
               </span>
-              <span className="ml-auto text-[13px] font-bold tabular-nums text-brand-700">
-                {gaugePercent(row, row[view])}%
+              <span className="ml-auto pb-0.5 text-[12px] tabular-nums text-stone-500">
+                基準 {row.refMin}〜{row.refMax} ／ 到達 {gaugePercent(row, row[view])}%
               </span>
+            </div>
+            <div className="mt-2">
+              <LabValueBar
+                row={row}
+                value={row[view]}
+                previous={view === "retest" ? row.first : undefined}
+                accent="#8c5a3c"
+                band="#fbeadf"
+              />
             </div>
 
             <dl className="mt-3 space-y-2.5">
@@ -145,6 +173,14 @@ export function LabtestRadar({ view }: { view: LabView }) {
                 </dt>
                 <dd className="mt-0.5 text-[13px] leading-relaxed text-stone-700">
                   {axis.ifLow}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-bold text-stone-500">
+                  背中の肌との関わり
+                </dt>
+                <dd className="mt-0.5 text-[13px] leading-relaxed text-stone-700">
+                  {axis.skinLink}
                 </dd>
               </div>
               <div>

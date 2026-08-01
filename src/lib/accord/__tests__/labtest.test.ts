@@ -249,6 +249,20 @@ describe("レーダーと「なぜ」の地図", () => {
     }
   });
 
+  it("軸をひらいたときに出す情報が、すべて揃っている", () => {
+    for (const a of RADAR_AXES) {
+      // 元データ（実測値・単位・基準・目安）はもとの検査項目から引く
+      const row = radarRow(a);
+      expect(row.unit.length).toBeGreaterThan(0);
+      expect(row.refMin).toBeLessThan(row.refMax);
+      // 指標の意味・肌との関わり・できること・重要度
+      expect(a.what.length).toBeGreaterThan(10);
+      expect(a.skinLink.length).toBeGreaterThan(10);
+      expect(a.action.length).toBeGreaterThan(10);
+      expect([1, 2, 3]).toContain(a.importance);
+    }
+  });
+
   it("すべての軸に、肌までの1本道がある", () => {
     for (const a of RADAR_AXES) {
       const r = routeFor(a.id);
@@ -299,7 +313,7 @@ describe("薬機法・医療広告の禁止語（§8.2）", () => {
     ...Object.values(LEVEL_TITLE),
     ...BADGES.flatMap((b) => [b.label, b.how]),
     ...STAGES.flatMap((s) => [s.label, s.body]),
-    ...RADAR_AXES.flatMap((a) => [a.label, a.what, a.ifLow]),
+    ...RADAR_AXES.flatMap((a) => [a.label, a.what, a.ifLow, a.skinLink, a.action]),
     ...CAUSE_NODES.map((n) => n.label),
     ...CAUSE_ROUTES.map((r) => r.story),
     CAUSE_MAP_NOTE,

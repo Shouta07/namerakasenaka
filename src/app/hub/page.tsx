@@ -94,12 +94,7 @@ const GROUPS: HubGroup[] = [
         body: "タグ・年代で検索できる自社症例データベース。",
         emoji: "🗂",
       },
-      {
-        href: "/n/queue",
-        title: "栄養士レビュー",
-        body: "AI下書き→専門家承認のワークフロー。",
-        emoji: "🥗",
-      },
+      
       {
         href: "/admin/evidence",
         title: "エビデンスエンジン",

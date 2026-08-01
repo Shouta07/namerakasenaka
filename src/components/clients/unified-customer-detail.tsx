@@ -20,9 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { CameraCapture } from "@/components/progress/camera-capture";
-import { InteractiveQaThread, type SeedMessage } from "@/components/qa/interactive-thread";
 import { SalonNoteComposer } from "@/components/salon/note-composer";
-import { CommentComposer } from "@/components/meals/comment-composer";
 import { DateSlotPicker, combineDateTimeToIso } from "@/components/appointments/date-slot-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -85,14 +83,9 @@ export type UnifiedCustomerDetailProps = {
   client: DemoClient;
   /** Fixture-sourced photos for this client. */
   fixturePhotos: DemoProgressPhoto[];
-  /** Fixture-sourced meals for this client (with nutritionist + salon comments). */
-  fixtureMeals: DemoMealLog[];
   /** Fixture-sourced treatment records. */
   fixtureRecords: DemoTreatmentRecord[];
   /** Q&A seed (one thread per client). */
-  qaSeed: SeedMessage[];
-  /** Conversation id used by InteractiveQaThread. */
-  qaConversationId: string;
   /** Whose viewpoint — gates the "edit treatment record" affordance. */
   viewerRole: ViewerRole;
   /** Display name for the current viewer (used as note authorName). */
@@ -103,30 +96,23 @@ type TabKey =
   | "overview"
   | "evidence"
   | "photos"
-  | "meals"
   | "self_log"
   | "treatments"
-  | "qa"
   | "notes";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "overview", label: "概要" },
   { key: "evidence", label: "エビデンス" },
   { key: "photos", label: "写真" },
-  { key: "meals", label: "食事" },
   { key: "self_log", label: "セルフログ" },
   { key: "treatments", label: "施術記録" },
-  { key: "qa", label: "Q&A" },
   { key: "notes", label: "メモ" },
 ];
 
 export function UnifiedCustomerDetail({
   client,
   fixturePhotos,
-  fixtureMeals,
   fixtureRecords,
-  qaSeed,
-  qaConversationId,
   viewerRole,
   viewerName,
 }: UnifiedCustomerDetailProps) {
@@ -138,7 +124,6 @@ export function UnifiedCustomerDetail({
   const [notePromptOpen, setNotePromptOpen] = useState(false);
 
   const storedPhotos = useStoredProgressPhotos(client.id);
-  const storedMeals = useStoredMealLogs(client.id);
   const storedRecords = useStoredTreatmentRecords(client.id);
   const storedSelfLogs = useStoredSelfLogs(client.id);
   const storedNotes = useStoredSalonNotesForClient(client.id);
@@ -207,28 +192,6 @@ export function UnifiedCustomerDetail({
     }));
     return [...fxs, ...mine].sort((a, b) => b.takenAt.localeCompare(a.takenAt));
   }, [fixturePhotos, storedPhotos]);
-
-  const meals: TimelineMeal[] = useMemo(() => {
-    const fxs: TimelineMeal[] = fixtureMeals.map((m) => ({
-      id: m.id,
-      mealType: m.mealType,
-      memo: m.memo,
-      loggedAt: m.loggedAt,
-      photoUrl: m.photoUrl,
-      nutritionistComment: m.feedback.approvedText,
-      salonComment: m.feedback.salonComment,
-    }));
-    const mine: TimelineMeal[] = storedMeals.map((m) => ({
-      id: m.id,
-      mealType: m.mealType,
-      memo: m.memo,
-      loggedAt: m.loggedAt,
-      photoUrl: m.photoUrl,
-      nutritionistComment: null,
-      salonComment: null,
-    }));
-    return [...fxs, ...mine].sort((a, b) => b.loggedAt.localeCompare(a.loggedAt));
-  }, [fixtureMeals, storedMeals]);
 
   const records: TimelineRecord[] = useMemo(() => {
     const fxs: TimelineRecord[] = fixtureRecords.map((r) => ({
@@ -358,20 +321,13 @@ export function UnifiedCustomerDetail({
         takenAt: p.takenAt,
       })),
     ];
-    const qaRet: RetentionQaMessage[] = allMessages
-      .filter((m) => m.conversationId === qaConversationId)
-      .map((m) => ({
-        id: m.id,
-        conversationId: m.conversationId,
-        createdAt: m.createdAt,
-        isMine: m.isMine,
-      }));
+    // Q&A は廃止（やりとりは LINE）。離脱リスクの判定材料からも外す。
+    const qaRet: RetentionQaMessage[] = [];
     return assessClientRisk({
       client: {
         id: client.id,
         displayName: client.displayName,
-        qaConversationId,
-        sessionsCompleted: client.sessionsCompleted,
+              sessionsCompleted: client.sessionsCompleted,
         sessionsTotal: client.sessionsTotal,
       },
       appointments,
@@ -386,8 +342,7 @@ export function UnifiedCustomerDetail({
     client.sessionsCompleted,
     client.sessionsTotal,
     fixturePhotos,
-    qaConversationId,
-    storedAppts,
+      storedAppts,
     storedPhotos,
     storedSelfLogs,
   ]);
@@ -414,7 +369,6 @@ export function UnifiedCustomerDetail({
         {active === "overview" ? (
           <OverviewTab
             photos={photos}
-            meals={meals}
             records={records}
             selfLogs={selfLogs}
             notes={storedNotes}
@@ -435,9 +389,6 @@ export function UnifiedCustomerDetail({
             onLaunch={() => setPhotoSheetOpen(true)}
           />
         ) : null}
-        {active === "meals" ? (
-          <MealsTab clientId={client.id} meals={meals} />
-        ) : null}
         {active === "self_log" ? (
           <SelfLogTab
             clientId={client.id}
@@ -451,13 +402,6 @@ export function UnifiedCustomerDetail({
             records={records}
             viewerRole={viewerRole}
             onAdd={() => setRecordSheetOpen(true)}
-          />
-        ) : null}
-        {active === "qa" ? (
-          <QaTab
-            qaConversationId={qaConversationId}
-            qaSeed={qaSeed}
-            viewerRole={viewerRole}
           />
         ) : null}
         {active === "notes" ? (
@@ -778,7 +722,6 @@ type OverviewItem = {
 
 function OverviewTab({
   photos,
-  meals,
   records,
   selfLogs,
   notes,
@@ -786,7 +729,6 @@ function OverviewTab({
   onJump,
 }: {
   photos: { id: string; takenAt: string; caption: string | null }[];
-  meals: { id: string; loggedAt: string; mealType: MealType; memo: string | null }[];
   records: { id: string; performedAt: string; menu: string }[];
   selfLogs: { id: string; createdAt: string; itchScore: number; rednessScore: number }[];
   notes: { id: string; createdAt: string; targetType: string; body: string }[];
@@ -800,13 +742,6 @@ function OverviewTab({
       label: "進捗写真",
       detail: p.caption ?? "写真を追加",
       jumpTo: "photos" as TabKey,
-    })),
-    ...meals.map((m) => ({
-      ts: m.loggedAt,
-      kind: "meal" as const,
-      label: `食事 (${MEAL_TYPE_LABEL[m.mealType]})`,
-      detail: m.memo ?? "—",
-      jumpTo: "meals" as TabKey,
     })),
     ...records.map((r) => ({
       ts: r.performedAt,
@@ -952,83 +887,6 @@ function PhotosTab({
 }
 
 // ---------- Tabs: Meals ----------
-
-function MealsTab({
-  clientId,
-  meals,
-}: {
-  clientId: string;
-  meals: {
-    id: string;
-    mealType: MealType;
-    memo: string | null;
-    loggedAt: string;
-    photoUrl?: string | null;
-    nutritionistComment?: string | null;
-    salonComment?: { therapistName: string; body: string; postedAt: string } | null;
-  }[];
-}) {
-  if (meals.length === 0) {
-    return (
-      <p className="rounded-lg border border-dashed border-stone-300 p-6 text-center text-sm text-stone-500">
-        食事ログはまだありません。
-      </p>
-    );
-  }
-  return (
-    <ul className="space-y-3">
-      {meals.map((m) => (
-        <li key={m.id}>
-          <Card>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <Badge tone="brand">{MEAL_TYPE_LABEL[m.mealType]}</Badge>
-                <span className="text-xs text-stone-500">
-                  {new Date(m.loggedAt).toLocaleString("ja-JP")}
-                </span>
-              </div>
-              {m.memo ? (
-                <p className="mt-2 text-sm text-stone-700">{m.memo}</p>
-              ) : null}
-              {m.nutritionistComment ? (
-                <div className="mt-3 rounded-md bg-emerald-50/60 px-3 py-2 text-xs text-emerald-900">
-                  <p className="font-semibold">栄養士コメント</p>
-                  <p className="mt-1 whitespace-pre-wrap">
-                    {m.nutritionistComment}
-                  </p>
-                </div>
-              ) : null}
-              {m.salonComment ? (
-                <div className="mt-2 rounded-md bg-stone-50 px-3 py-2 text-xs">
-                  <p className="font-medium text-stone-700">
-                    {m.salonComment.therapistName}
-                    <span className="ml-2 text-stone-400">
-                      {new Date(m.salonComment.postedAt).toLocaleString("ja-JP")}
-                    </span>
-                  </p>
-                  <p className="mt-1 text-stone-700">{m.salonComment.body}</p>
-                </div>
-              ) : null}
-              <StoredMealComments mealLogId={m.id} />
-              <div className="mt-3">
-                <p className="text-xs font-semibold text-stone-500">
-                  食事ログへのサロンコメント
-                </p>
-                <CommentComposer mealLogId={m.id} />
-              </div>
-              <SalonNoteComposer
-                clientId={clientId}
-                targetType="meal_log"
-                targetId={m.id}
-                heading="サロン内部メモ"
-              />
-            </CardContent>
-          </Card>
-        </li>
-      ))}
-    </ul>
-  );
-}
 
 function StoredMealComments({ mealLogId }: { mealLogId: string }) {
   const stored = useStoredSalonComments(mealLogId);
@@ -1205,32 +1063,6 @@ function TreatmentsTab({
 }
 
 // ---------- Tabs: Q&A ----------
-
-function QaTab({
-  qaConversationId,
-  qaSeed,
-  viewerRole,
-}: {
-  qaConversationId: string;
-  qaSeed: SeedMessage[];
-  viewerRole: ViewerRole;
-}) {
-  return (
-    <div className="flex min-h-[400px] flex-col">
-      <p className="mb-2 rounded-md bg-stone-50 px-3 py-2 text-[11px] text-stone-600">
-        顧客には「サロンより」と表示されます。
-      </p>
-      <InteractiveQaThread
-        conversationId={qaConversationId}
-        seed={qaSeed}
-        viewerLabel={viewerRole === "salon_admin" ? "サロン管理者" : "セラピスト"}
-        senderLabel="サロンより"
-      />
-    </div>
-  );
-}
-
-// ---------- Tabs: Notes ----------
 
 function NotesTab({
   notes,

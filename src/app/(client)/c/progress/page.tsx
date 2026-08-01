@@ -5,14 +5,12 @@ import {
   Heart,
   Leaf,
   Sparkles,
-  Utensils,
 } from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import {
   demoAppointments,
   demoClient,
-  demoMealLogs,
   demoProgressPhotos,
   demoTherapistCheer,
 } from "@/lib/demo/fixtures";
@@ -149,8 +147,6 @@ function DemoClientProgress() {
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))
     .find((a) => new Date(a.scheduledAt).getTime() > Date.now()) ??
     demoAppointments.find((a) => a.clientId === demoClient.id);
-
-  const latestMeal = demoMealLogs[0];
 
   // 歩みの物語 — 日数・折り返し・自己実感の推移をデモデータから組み立てる。
   const journeyDays = Math.max(
@@ -302,24 +298,6 @@ function DemoClientProgress() {
       >
         <GitCompare className="h-4 w-4" />
         これまでの経過をすべて見る →
-      </Link>
-
-      {/* 食事のフィードバックは /c/meals が本体。ここでは入口だけ置く。 */}
-      <Link
-        href="/c/meals"
-        className="flex min-h-11 items-center gap-3 rounded-2xl border border-stone-200 bg-white p-4"
-      >
-        <Utensils className="h-4 w-4 flex-none text-brand-700" />
-        <span className="flex-1 text-sm font-semibold text-stone-900">
-          食事へのコメント
-        </span>
-        <span className="text-xs text-stone-400">
-          {new Date(latestMeal.loggedAt).toLocaleDateString("ja-JP", {
-            month: "numeric",
-            day: "numeric",
-          })}
-          に届いています →
-        </span>
       </Link>
 
       <footer className="pb-2 pt-4 text-center text-[11px] text-stone-400">

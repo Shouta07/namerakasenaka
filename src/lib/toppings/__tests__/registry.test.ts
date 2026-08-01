@@ -49,8 +49,17 @@ describe("toppings registry integrity", () => {
   it("later-status toppings are excluded from the launch matrix", () => {
     const launchIds = launchToppings().map(([id]) => id);
     expect(launchIds).not.toContain("meals-review");
-    expect(launchIds).not.toContain("qa");
+    expect(launchIds).not.toContain("case-library");
     expect(launchIds).toContain("roleplay");
+  });
+
+  it("学習コンテンツは切り出して売る — content ティアの launch", () => {
+    const l = TOPPINGS.lessons;
+    expect(l.status).toBe("launch");
+    expect(l.tier).toBe("content");
+    expect(l.name).toContain("学習");
+    // LINE で配るものなので、共有の土台に依存する
+    expect(l.dependsOn).toContain("line-share");
   });
 
   it("copilot starts at standard, depends on dashboard, hidden from starter", () => {
@@ -73,7 +82,7 @@ describe("toppings registry integrity", () => {
 
   it("cull v2.2: backlog toppings are not in the launch catalog and grant nothing", () => {
     const launchIds = launchToppings().map(([id]) => id);
-    for (const id of ["case-library", "multi-location", "data-import", "lessons", "qa"]) {
+    for (const id of ["case-library", "multi-location", "data-import"]) {
       expect(launchIds, `${id} must be excluded from launch`).not.toContain(id);
       // backlog は全プラン OUT（実体が無いものを付与しない）
       const def = TOPPINGS[id as keyof typeof TOPPINGS];

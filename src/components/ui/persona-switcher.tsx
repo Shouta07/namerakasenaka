@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Briefcase, ChevronDown, Salad, Stethoscope, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-export type PersonaKey = "salon" | "therapist" | "client" | "nutritionist";
+export type PersonaKey = "salon" | "therapist" | "client";
 
 type Persona = {
   key: PersonaKey;
@@ -19,7 +19,6 @@ const PERSONAS: Persona[] = [
   { key: "salon", label: "経営者", short: "経営", href: "/", iconKey: "briefcase" },
   { key: "therapist", label: "セラピスト", short: "施術", href: "/t/today", iconKey: "stethoscope" },
   { key: "client", label: "顧客", short: "顧客", href: "/c/progress", iconKey: "user" },
-  { key: "nutritionist", label: "栄養士", short: "栄養", href: "/n/queue", iconKey: "salad" },
 ];
 
 const STORAGE_KEY = "senacare-active-persona";
@@ -46,7 +45,7 @@ export function PersonaSwitcher({ active }: { active: PersonaKey }) {
   useEffect(() => {
     try {
       const v = window.localStorage.getItem(STORAGE_KEY);
-      if (v === "salon" || v === "therapist" || v === "client" || v === "nutritionist") {
+      if (v === "salon" || v === "therapist" || v === "client") {
         setStored(v);
       }
     } catch {

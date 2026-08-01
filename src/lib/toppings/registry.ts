@@ -194,16 +194,22 @@ export const TOPPINGS = {
     status: "backlog",
     plans: NONE,
   },
+  // 医学の話を、やさしい学習コンテンツと動画にする。
+  // 検査の翻訳とは別に切り出して売る（制作物なので content ティア）。
   lessons: {
-    name: "学習コンテンツ配信",
-    short: "レッスン",
+    name: "医学の話をやさしく（学習・動画）",
+    short: "学習コンテンツ",
     description:
-      "章立てのレッスン・クイズ・種/バッジ。ローンチは recovery-guide とコメントで代替し、コンテンツ事業は後日。",
+      "むずかしい医学の話を、章立ての読みものと短い動画にして LINE で届けます。テーマ単位の制作で、既存のお客様にも配れます。",
     emoji: "📘",
-    tier: "topping",
+    tier: "content",
     dependsOn: ["line-share"],
-    status: "backlog",
-    plans: NONE,
+    status: "launch",
+    plans: {
+      starter: OUT,
+      standard: OUT,
+      pro: INC,
+    },
   },
   "theme-pack": {
     name: "テーマパック",

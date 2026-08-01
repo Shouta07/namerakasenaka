@@ -8,17 +8,18 @@ import { demoOrganization } from "@/lib/demo/fixtures";
 /**
  * お客様の画面は、スマホ（iPhone / Android）だけを想定する。
  *
+ * やりとりは LINE で行うため、アプリの中に相談窓口は持たない。
+ *
  * PCで開くことは想定しない。だからサイドバーは持たず、幅は端末サイズで止め、
  * 操作は下のバーと親指の届く範囲だけで完結させる。
  * 大きい画面では、端末の形のまま中央に置く（PC用に間延びさせない）。
  *
- * タブは3つ。お客様に「記録する場所」を持たせない —
+ * タブは2つ。お客様に「記録する場所」を持たせない —
  * 記録はサロンがやり、お客様は受け取るだけでいい。
  */
 const items: NavItem[] = [
   { href: "/c/progress", label: "今日", icon: "sparkles" },
   { href: "/c/guide", label: "からだ", icon: "camera" },
-  { href: "/c/qa", label: "相談", icon: "message-circle" },
 ];
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {

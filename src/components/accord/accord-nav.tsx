@@ -7,13 +7,18 @@ import { cn } from "@/lib/utils/cn";
 import { getModuleState } from "@/lib/accord/store";
 import type { AccordModuleId } from "@/lib/accord/fixtures";
 
+/**
+ * ナビは4つまで。
+ *
+ * 毎日ひらくのは「お客様」だけ。「上達」は月1回、「検査翻訳」は商談と初回のとき。
+ * 練習・数字・コパイロットを別々のタブに出すと、毎日の動線がぼやける —
+ * それらは「上達」の中にまとめ、ナビからは外した。
+ */
 const NAV = [
   { href: "/accord", label: "概要", module: null },
+  { href: "/accord/customers", label: "お客様", module: "followup" as AccordModuleId },
   { href: "/accord/labtest", label: "検査翻訳", module: "labtest" as AccordModuleId },
-  { href: "/accord/copilot", label: "コパイロット", module: "copilot" as AccordModuleId },
-  { href: "/accord/roleplay", label: "接客練習", module: "roleplay" as AccordModuleId },
-  { href: "/accord/dashboard", label: "ダッシュボード", module: "dashboard" as AccordModuleId },
-  { href: "/accord/customers", label: "顧客フォロー", module: "followup" as AccordModuleId },
+  { href: "/accord/copilot", label: "上達", module: "copilot" as AccordModuleId },
   { href: "/accord/pricing", label: "料金", module: null },
 ];
 

@@ -17,7 +17,16 @@ import {
 
 const NS_KEY = "accord-demo-v1";
 
+/**
+ * 表示するデータの母集団。
+ * - full   … 導入後しばらく経った店舗（デモの既定）
+ * - dayone … 契約直後、まだ1件も無い店舗
+ * 初日の画面は、SaaSでいちばん解約に近い瞬間なので、いつでも見られるようにする。
+ */
+export type AccordDataset = "full" | "dayone";
+
 type AccordBlob = {
+  dataset: AccordDataset;
   modules: Record<AccordModuleId, boolean>;
   roleplayResults: StoredRoleplayResult[];
   lineSends: StoredLineSend[];
@@ -54,6 +63,7 @@ export type StoredFollowNote = {
 };
 
 const EMPTY: AccordBlob = {
+  dataset: "full",
   modules: { ...DEFAULT_MODULE_STATE },
   roleplayResults: [],
   lineSends: [],
@@ -68,6 +78,7 @@ function read(): AccordBlob {
     if (!raw) return EMPTY;
     const parsed = JSON.parse(raw) as Partial<AccordBlob>;
     return {
+      dataset: parsed.dataset === "dayone" ? "dayone" : "full",
       modules: { ...DEFAULT_MODULE_STATE, ...(parsed.modules ?? {}) },
       roleplayResults: parsed.roleplayResults ?? [],
       lineSends: parsed.lineSends ?? [],
@@ -87,6 +98,18 @@ function write(blob: AccordBlob) {
 
 function makeId(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+// ---------- dataset（データあり / 初日） ----------
+
+export function getDataset(): AccordDataset {
+  return read().dataset;
+}
+
+export function setDataset(dataset: AccordDataset) {
+  const blob = read();
+  blob.dataset = dataset;
+  write(blob);
 }
 
 // ---------- modules ----------
@@ -130,12 +153,26 @@ export function getLineSends(customerId?: string): StoredLineSend[] {
   return customerId ? all.filter((s) => s.customerId === customerId) : all;
 }
 
-export function recordLineSend(customerId: string, label: string) {
+export function recordLineSend(
+  customerId: string,
+  label: string,
+): StoredLineSend {
   const blob = read();
-  blob.lineSends = [
-    { id: makeId("ls"), customerId, label, at: new Date().toISOString() },
-    ...blob.lineSends,
-  ].slice(0, 100);
+  const send: StoredLineSend = {
+    id: makeId("ls"),
+    customerId,
+    label,
+    at: new Date().toISOString(),
+  };
+  blob.lineSends = [send, ...blob.lineSends].slice(0, 100);
+  write(blob);
+  return send;
+}
+
+/** 取り消し。押し間違いを戻せないと、毎日使う道具として信用されない。 */
+export function removeLineSend(id: string) {
+  const blob = read();
+  blob.lineSends = blob.lineSends.filter((s) => s.id !== id);
   write(blob);
 }
 
@@ -163,11 +200,25 @@ export function getFollowNotes(customerId: string): StoredFollowNote[] {
   return read().followNotes.filter((n) => n.customerId === customerId);
 }
 
-export function addFollowNote(customerId: string, body: string) {
+export function addFollowNote(
+  customerId: string,
+  body: string,
+): StoredFollowNote {
   const blob = read();
-  blob.followNotes = [
-    { id: makeId("fn"), customerId, body, at: new Date().toISOString() },
-    ...blob.followNotes,
-  ].slice(0, 200);
+  const note: StoredFollowNote = {
+    id: makeId("fn"),
+    customerId,
+    body,
+    at: new Date().toISOString(),
+  };
+  blob.followNotes = [note, ...blob.followNotes].slice(0, 200);
+  write(blob);
+  return note;
+}
+
+/** 取り消し。 */
+export function removeFollowNote(id: string) {
+  const blob = read();
+  blob.followNotes = blob.followNotes.filter((n) => n.id !== id);
   write(blob);
 }

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ModuleGate } from "@/components/accord/module-panel";
+import { DayOneGate } from "@/components/accord/day-one";
+import { EmptyState } from "@/components/ui/empty-state";
 import { FunnelChart, StaffChart, TrendChart } from "@/components/accord/charts";
 import {
   FUNNEL_THIS_MONTH,
@@ -26,6 +28,19 @@ export default function AccordDashboardPage() {
             どこで離れているかが、見える。
           </h1>
         </header>
+
+        <DayOneGate
+          empty={
+            <EmptyState
+              emoji="📊"
+              title="まだ数字はありません。それでいいです"
+              body="カウンセリングを記録していくと、初回予約から成約までのどこで離れているかが見えてきます。最初の1ヶ月は、記録を残すことだけに集中してください。"
+              action={{ href: "/accord/customers", label: "顧客フォローを見る" }}
+              secondary={{ href: "/accord/roleplay", label: "接客練習をはじめる" }}
+            />
+          }
+        >
+          <div className="space-y-6">
 
         {/* KPI タイル */}
         <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -58,7 +73,7 @@ export default function AccordDashboardPage() {
               {KPI.practiceSessionsThisMonth}
               <span className="ml-1 text-sm font-semibold text-stone-400">回</span>
             </p>
-            <Link href="/accord/roleplay" className="mt-0.5 block text-[11px] font-semibold text-brand-700 hover:underline">
+            <Link href="/accord/roleplay" className="inline-flex min-h-11 items-center text-[11px] font-semibold text-brand-700 hover:underline">
               練習する →
             </Link>
           </div>
@@ -118,13 +133,15 @@ export default function AccordDashboardPage() {
               </p>
               <Link
                 href="/accord/roleplay/price-hesitation"
-                className="mt-1.5 inline-block text-[12px] font-semibold text-brand-700 hover:underline"
+                className="inline-flex min-h-11 items-center text-[12px] font-semibold text-brand-700 hover:underline"
               >
                 このテーマの練習シナリオへ →
               </Link>
             </div>
           </div>
         </section>
+          </div>
+        </DayOneGate>
       </div>
     </ModuleGate>
   );

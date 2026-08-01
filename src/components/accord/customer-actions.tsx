@@ -9,6 +9,8 @@ import {
   getFollowNotes,
   getLineSends,
   recordLineSend,
+  removeFollowNote,
+  removeLineSend,
   type StoredFollowNote,
   type StoredLineSend,
 } from "@/lib/accord/store";
@@ -38,16 +40,33 @@ export function CustomerActions({ customer }: { customer: AccordCustomer }) {
   }, [customer.id]);
 
   function sendLine(label: string) {
-    recordLineSend(customer.id, label);
-    toast.success(`${customer.name} 様の LINE に「${label}」を送信しました（デモ）`);
+    const send = recordLineSend(customer.id, label);
+    toast.success(`${customer.name} 様の LINE に「${label}」を送信しました（デモ）`, {
+      action: {
+        label: "取り消す",
+        onClick: () => {
+          removeLineSend(send.id);
+          toast("送信を取り消しました");
+        },
+      },
+    });
   }
 
   function saveNote() {
     const body = noteInput.trim();
     if (!body) return;
-    addFollowNote(customer.id, body);
+    const note = addFollowNote(customer.id, body);
     setNoteInput("");
-    toast("フォローメモを記録しました");
+    toast.success("フォローメモを記録しました", {
+      action: {
+        label: "取り消す",
+        onClick: () => {
+          removeFollowNote(note.id);
+          setNoteInput(body);
+          toast("メモを取り消しました");
+        },
+      },
+    });
   }
 
   return (
@@ -76,7 +95,7 @@ export function CustomerActions({ customer }: { customer: AccordCustomer }) {
                     key={label}
                     type="button"
                     onClick={() => sendLine(label)}
-                    className="rounded-full border border-brand-100 bg-brand-50 px-3.5 py-1.5 text-[12px] font-semibold text-brand-700 hover:bg-brand-100"
+                    className="min-h-11 rounded-full border border-brand-100 bg-brand-50 px-4 text-[12px] font-semibold text-brand-700 hover:bg-brand-100"
                   >
                     {label} を送る
                   </button>
@@ -118,7 +137,7 @@ export function CustomerActions({ customer }: { customer: AccordCustomer }) {
             type="button"
             onClick={saveNote}
             disabled={!noteInput.trim()}
-            className="rounded-xl bg-brand-700 px-4 text-[13px] font-bold text-white disabled:opacity-40"
+            className="min-h-11 rounded-xl bg-brand-700 px-4 text-[13px] font-bold text-white disabled:opacity-40"
           >
             記録
           </button>

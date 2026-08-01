@@ -249,7 +249,7 @@ export function LabtestRadar({ view }: { view: LabView }) {
                   key={a.id}
                   type="button"
                   onClick={() => setSelected(a.id)}
-                  className={`rounded-full px-3 py-1.5 text-[12px] font-bold transition ${
+                  className={`min-h-11 rounded-full px-4 text-[12px] font-bold transition ${
                     on
                       ? "bg-brand-700 text-white"
                       : "bg-stone-100 text-stone-600 hover:bg-brand-50 hover:text-brand-700"

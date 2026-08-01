@@ -10,6 +10,8 @@
 }
 
 :root {
+  /* Accord ヘッダの高さ。スティッキーな要素はこれを基準に貼りつく。 */
+  --accord-nav-h: 68px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -36,6 +38,47 @@ body {
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * キーボード操作の可視化。
+ * マウスでは出さず、Tab で来たときだけブランド色のリングを出す。
+ * 現場は指で触るが、事務作業はキーボードで回すスタッフがいる。
+ */
+:focus-visible {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* 動きに弱い方への配慮。演出は止め、状態の変化だけを残す。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 横スクロールできることを、端のフェードで知らせる。 */
+.scroll-fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 12px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 12px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
 }
 
 button,

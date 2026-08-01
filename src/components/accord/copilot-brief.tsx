@@ -166,7 +166,7 @@ function InsightCard({
       <button
         type="button"
         onClick={() => setShowEvidence((v) => !v)}
-        className="mt-2.5 text-[12px] font-semibold text-brand-700 hover:underline"
+        className="mt-1.5 inline-flex min-h-11 items-center text-[12px] font-semibold text-brand-700 hover:underline"
       >
         {showEvidence ? "根拠をとじる ▲" : "根拠の数字を見る ▼"}
       </button>
@@ -193,7 +193,7 @@ function InsightCard({
             <Link
               href={insight.action.href}
               onClick={() => recordCopilotDecision(insight.id, "done")}
-              className="rounded-full bg-brand-700 px-4 py-2 text-[13px] font-bold text-white transition hover:bg-brand-500"
+              className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-4 text-[13px] font-bold text-white transition hover:bg-brand-500"
             >
               {insight.action.label} →
             </Link>
@@ -201,7 +201,7 @@ function InsightCard({
             <button
               type="button"
               onClick={act}
-              className="rounded-full bg-brand-700 px-4 py-2 text-[13px] font-bold text-white transition hover:bg-brand-500"
+              className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-4 text-[13px] font-bold text-white transition hover:bg-brand-500"
             >
               {insight.action.label}
             </button>
@@ -210,7 +210,7 @@ function InsightCard({
           <button
             type="button"
             onClick={dismiss}
-            className="ml-auto text-[12px] font-semibold text-stone-400 hover:text-stone-600"
+            className="ml-auto inline-flex min-h-11 items-center px-2 text-[12px] font-semibold text-stone-400 hover:text-stone-600"
           >
             今回は見送る
           </button>

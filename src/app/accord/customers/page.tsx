@@ -1,15 +1,9 @@
-import Link from "next/link";
 import { ModuleGate } from "@/components/accord/module-panel";
-import { ACCORD_CUSTOMERS } from "@/lib/accord/fixtures";
-import { cn } from "@/lib/utils/cn";
+import { CustomerList } from "@/components/accord/customer-list";
+import { DayOneGate } from "@/components/accord/day-one";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata = { title: "顧客フォロー" };
-
-const STATUS_STYLE: Record<string, string> = {
-  契約中: "bg-emerald-50 text-emerald-700",
-  提案中: "bg-amber-50 text-amber-700",
-  体験予約: "bg-stone-100 text-stone-600",
-};
 
 export default function AccordCustomersPage() {
   return (
@@ -28,41 +22,19 @@ export default function AccordCustomersPage() {
           </p>
         </header>
 
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {ACCORD_CUSTOMERS.map((c) => (
-            <Link
-              key={c.id}
-              href={`/accord/customers/${c.id}`}
-              className="group flex flex-col rounded-2xl border border-stone-200 bg-white p-5 transition hover:border-brand-500 hover:shadow-sm"
-            >
-              <div className="flex items-center justify-between">
-                <p className="text-[15.5px] font-bold text-stone-900">
-                  {c.name} <span className="text-[12px] font-medium text-stone-400">（{c.age}）</span>
-                </p>
-                <span
-                  className={cn(
-                    "rounded-full px-2.5 py-0.5 text-[11px] font-bold",
-                    STATUS_STYLE[c.status],
-                  )}
-                >
-                  {c.status}
-                </span>
-              </div>
-              <p className="mt-0.5 text-[12px] text-stone-500">{c.statusNote}</p>
-              <p className="mt-3 flex-1 text-[13px] leading-relaxed text-stone-600">
-                {c.concern}
-              </p>
-              <div className="mt-3 border-t border-stone-100 pt-2.5">
-                <p className="text-[11px] font-bold text-brand-700">次のアクション</p>
-                <p className="mt-0.5 text-[12.5px] text-stone-700">{c.nextAction}</p>
-              </div>
-              <div className="mt-2.5 flex items-center justify-between text-[11px] text-stone-400">
-                <span>担当：{c.assignedTo}</span>
-                <span>{c.lineConsent ? "💬 LINE同意あり" : "LINE未同意"}</span>
-              </div>
-            </Link>
-          ))}
-        </section>
+        <DayOneGate
+          empty={
+            <EmptyState
+              emoji="🌱"
+              title="最初のお客様を、ここに迎えます"
+              body="カウンセリングを1件記録すると、この一覧に並びます。まずは接客練習で流れを確かめてから、当日の記録を残していきましょう。"
+              action={{ href: "/accord/roleplay", label: "接客練習で流れを確かめる" }}
+              secondary={{ href: "/accord/labtest", label: "検査の見せ方を見る" }}
+            />
+          }
+        >
+          <CustomerList />
+        </DayOneGate>
       </div>
     </ModuleGate>
   );

@@ -35,7 +35,7 @@ export function AccordNav() {
   return (
     <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-3 sm:px-8">
-        <Link href="/accord" className="flex items-baseline gap-2">
+        <Link href="/accord" className="flex min-h-11 items-baseline gap-2 self-center py-1">
           <span className="text-lg font-extrabold tracking-tight text-stone-900">
             Accord
           </span>
@@ -44,7 +44,11 @@ export function AccordNav() {
           </span>
         </Link>
 
-        <nav className="ml-auto flex items-center gap-1 overflow-x-auto">
+        {/* 端のフェードで、横に続きがあることを知らせる（モバイルでは必ずはみ出す） */}
+        <nav
+          aria-label="Accord のメニュー"
+          className="scroll-fade-x ml-auto flex items-center gap-1 overflow-x-auto"
+        >
           {NAV.filter((n) => !n.module || !modules || modules[n.module]).map(
             (n) => {
               const active =
@@ -55,8 +59,9 @@ export function AccordNav() {
                 <Link
                   key={n.href}
                   href={n.href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
-                    "whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors",
+                    "flex min-h-11 items-center whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold transition-colors",
                     active
                       ? "bg-brand-700 text-white"
                       : "text-stone-600 hover:bg-brand-50 hover:text-brand-700",

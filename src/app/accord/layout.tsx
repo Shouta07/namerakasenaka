@@ -24,7 +24,10 @@ export default function AccordLayout({
           <span>
             Accord — バイタリティデザイン合同会社 ｜ 本画面はデモです（操作はこの端末にのみ保存されます）
           </span>
-          <a href="/hub" className="font-semibold text-brand-700 hover:underline">
+          <a
+            href="/hub"
+            className="inline-flex min-h-11 items-center font-semibold text-brand-700 hover:underline"
+          >
             すべての画面・資料 → /hub
           </a>
         </p>

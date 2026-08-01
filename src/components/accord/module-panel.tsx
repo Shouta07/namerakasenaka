@@ -59,7 +59,9 @@ export function ModulePanel() {
                   aria-label={`${m.name} を${enabled ? "オフ" : "オン"}にする`}
                   onClick={() => toggle(m.id, m.short, !enabled)}
                   className={cn(
+                    // 見た目は24pxのまま、当たり判定だけ44px相当に広げる。
                     "relative h-6 w-11 flex-none rounded-full transition-colors",
+                    "after:absolute after:-inset-2.5 after:content-['']",
                     enabled ? "bg-brand-700" : "bg-stone-300",
                   )}
                 >
@@ -78,7 +80,7 @@ export function ModulePanel() {
             {m.href && enabled ? (
               <Link
                 href={m.href}
-                className="mt-3 text-[12px] font-semibold text-brand-700 hover:underline"
+                className="mt-1 inline-flex min-h-11 items-center text-[12px] font-semibold text-brand-700 hover:underline"
               >
                 開く →
               </Link>
@@ -131,13 +133,13 @@ export function ModuleGate({
             setModuleEnabled(module, true);
             toast.success(`「${meta?.short}」をオンにしました`);
           }}
-          className="rounded-full bg-brand-700 px-5 py-2 text-sm font-bold text-white hover:bg-brand-500"
+          className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-500"
         >
           今すぐオンにする
         </button>
         <Link
           href="/accord"
-          className="rounded-full border border-stone-300 px-5 py-2 text-sm font-bold text-stone-600 hover:border-brand-500"
+          className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-5 text-sm font-bold text-stone-600 hover:border-brand-500"
         >
           概要へ戻る
         </Link>

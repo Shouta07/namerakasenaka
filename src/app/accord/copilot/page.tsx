@@ -1,5 +1,7 @@
 import { ModuleGate } from "@/components/accord/module-panel";
 import { CopilotBrief } from "@/components/accord/copilot-brief";
+import { DayOneGate } from "@/components/accord/day-one";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata = { title: "接客と継続のコパイロット" };
 
@@ -24,7 +26,19 @@ export default function AccordCopilotPage() {
             毎朝「気づき」と「次の一手」を届けます。提案はその場で実行でき、効果は翌週のブリーフで報告されます。
           </p>
         </header>
-        <CopilotBrief />
+        <DayOneGate
+          empty={
+            <EmptyState
+              emoji="🌤"
+              title="最初のブリーフは、2週間後に届きます"
+              body="コパイロットは、カウンセリングと練習の記録がたまるほど当たるようになります。まずは記録を1週間ぶん残してみてください。それまでは、こちらから使いはじめるのがおすすめです。"
+              action={{ href: "/accord/roleplay", label: "接客練習をはじめる" }}
+              secondary={{ href: "/accord/labtest", label: "検査の翻訳を見る" }}
+            />
+          }
+        >
+          <CopilotBrief />
+        </DayOneGate>
       </div>
     </ModuleGate>
   );

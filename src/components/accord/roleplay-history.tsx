@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ROLEPLAY_SCENARIOS } from "@/lib/accord/fixtures";
 import { getRoleplayResults, type StoredRoleplayResult } from "@/lib/accord/store";
+import { EmptyState } from "@/components/ui/empty-state";
 
 /** この端末での練習履歴（デモ永続化）。 */
 export function RoleplayHistory() {
@@ -15,7 +16,17 @@ export function RoleplayHistory() {
     return () => window.removeEventListener("accord-store", sync);
   }, []);
 
-  if (!results || results.length === 0) return null;
+  // 取得前は何も出さない（ちらつき防止）。0件は「まだ」を伝える。
+  if (!results) return null;
+  if (results.length === 0) {
+    return (
+      <EmptyState
+        emoji="🎭"
+        title="練習の記録は、ここに残ります"
+        body="1回やってみると、5つの観点でのふり返りと点数が残ります。うまくできなくて大丈夫です。何度でもやり直せる相手なので、失敗しておく場所として使ってください。"
+      />
+    );
+  }
 
   return (
     <section className="rounded-2xl border border-stone-200 bg-white p-5">

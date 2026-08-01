@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ModulePanel } from "@/components/accord/module-panel";
+import { DatasetSwitch } from "@/components/accord/day-one";
 
 /**
  * Accord 概要 — サービスの3本柱と、機能モジュールの増減。
@@ -73,6 +74,19 @@ export default function AccordHomePage() {
             <p className="mt-1.5 text-[13px] leading-relaxed text-stone-600">{c.body}</p>
           </div>
         ))}
+      </section>
+
+      {/* 初日の見え方 */}
+      <section className="rounded-2xl border border-stone-200 bg-white p-5">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400">
+          DAY ONE — 導入初日の画面
+        </p>
+        <h2 className="mt-1 text-[15px] font-bold text-stone-900">
+          データが1件も無いところから始まります。
+        </h2>
+        <div className="mt-3">
+          <DatasetSwitch />
+        </div>
       </section>
 
       {/* モジュール管理 */}

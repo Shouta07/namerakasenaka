@@ -77,7 +77,7 @@ export function LabtestDemo() {
       </section>
 
       {/* 画面全体の時点切り替え — ここを押すと下がまるごと変わる */}
-      <div className="sticky top-[57px] z-10 -mx-5 border-y border-stone-200 bg-white/95 px-5 py-3 backdrop-blur sm:-mx-8 sm:px-8">
+      <div className="sticky top-[var(--accord-nav-h)] z-10 -mx-5 border-y border-stone-200 bg-white/95 px-5 py-3 backdrop-blur sm:-mx-8 sm:px-8">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <div
             className="flex rounded-full border border-stone-200 bg-stone-50 p-0.5"
@@ -94,7 +94,7 @@ export function LabtestDemo() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setView(v)}
-                  className={`rounded-full px-5 py-2 text-[13px] font-bold transition ${
+                  className={`min-h-11 rounded-full px-5 text-[13px] font-bold transition ${
                     active
                       ? "bg-brand-700 text-white shadow-sm"
                       : "text-stone-500 hover:text-brand-700"
@@ -426,19 +426,19 @@ export function LabtestDemo() {
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href="/accord"
-            className="rounded-full border border-stone-300 px-4 py-2 text-[13px] font-bold text-stone-700 hover:border-brand-500"
+            className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4 text-[13px] font-bold text-stone-700 hover:border-brand-500"
           >
             ← 概要に戻る
           </Link>
           <Link
             href="/c/progress"
-            className="rounded-full border border-stone-300 px-4 py-2 text-[13px] font-bold text-stone-700 hover:border-brand-500"
+            className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4 text-[13px] font-bold text-stone-700 hover:border-brand-500"
           >
             お客様側の画面を見る →
           </Link>
           <Link
             href="/accord/pricing"
-            className="rounded-full bg-brand-700 px-4 py-2 text-[13px] font-bold text-white hover:bg-brand-500"
+            className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-4 text-[13px] font-bold text-white hover:bg-brand-500"
           >
             料金を見る →
           </Link>

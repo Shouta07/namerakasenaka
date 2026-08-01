@@ -5,7 +5,7 @@ import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
 import { Eyebrow, SoftCard } from "@/components/guide/guide-content";
 import { useLessonProgressFor } from "@/lib/lessons/source";
 import {
-  EXCIA_DOCTOR_LABEL,
+  CLINIC_DOCTOR_LABEL,
   LESSONS,
   LESSON_TOTAL,
   type Lesson,
@@ -66,7 +66,7 @@ export function LessonsCard({ guideCustomerId }: { guideCustomerId: string }) {
     <SoftCard id={LESSONS_ANCHOR_ID}>
       <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-emerald-700">
         <Sparkles className="h-3.5 w-3.5" aria-hidden />
-        {EXCIA_DOCTOR_LABEL}
+        {CLINIC_DOCTOR_LABEL}
       </div>
       <Eyebrow>腸のおはなし — 全7回</Eyebrow>
 

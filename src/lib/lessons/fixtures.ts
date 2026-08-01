@@ -1,7 +1,7 @@
 /**
  * 🌱 「腸のおはなし」 — 全7回のやさしい学習レッスン。
  *
- * エクシアクリニック先生 監修の医学トピックを「小学6年生レベル」のことばに
+ * 提携クリニックの医師監修の医学トピックを「小学6年生レベル」のことばに
  * 翻訳した、Duolingo風（ただし押しつけない）の学びカード。
  *
  * 設計原則（§17 と §8.2 + §17 追加禁止表現を遵守）:
@@ -15,10 +15,10 @@
  */
 
 /** ガイド全体の監修クレジット（チップ・カード見出し共通）。 */
-// TODO: replace EXCIA_DOCTOR_LABEL with the doctor's real name when confirmed.
-export const EXCIA_DOCTOR_LABEL = "エクシアクリニック先生 監修";
+/** 監修の表示。実在の医療機関名・医師名は、掲載許諾が取れるまで出さない。 */
+export const CLINIC_DOCTOR_LABEL = "提携クリニック 医師監修";
 /** Legacy alias — same string, kept so older imports keep working. */
-export const LESSON_AUTHOR_LABEL = EXCIA_DOCTOR_LABEL;
+export const LESSON_AUTHOR_LABEL = CLINIC_DOCTOR_LABEL;
 
 export type LessonCard = {
   heading: string;

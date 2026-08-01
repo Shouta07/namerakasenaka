@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import {
-  EXCIA_DOCTOR_LABEL,
+  CLINIC_DOCTOR_LABEL,
   LESSON_TOTAL,
   type Lesson,
 } from "@/lib/lessons/fixtures";
@@ -86,7 +86,7 @@ export function LessonSheet({
         <header className="space-y-1">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-emerald-700">
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            {EXCIA_DOCTOR_LABEL}
+            {CLINIC_DOCTOR_LABEL}
           </div>
           <p className="text-xs text-stone-500">
             Lesson {lesson.order} / {LESSON_TOTAL}

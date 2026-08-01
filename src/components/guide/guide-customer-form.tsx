@@ -123,7 +123,7 @@ export function GuideCustomerForm() {
       <Card>
         <CardContent className="space-y-3">
           <h2 className="text-sm font-semibold text-stone-900">クリニック情報</h2>
-          <Field label="検査結果メモ" eyebrow="エクシアクリニックより">
+          <Field label="検査結果メモ" eyebrow="提携クリニックより">
             <Textarea
               {...register("testResultMemo")}
               rows={5}

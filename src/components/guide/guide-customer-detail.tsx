@@ -189,7 +189,7 @@ export function GuideCustomerDetail({ guideCustomerId }: { guideCustomerId: stri
             <div className="space-y-3">
               <EditField
                 label="検査結果メモ"
-                eyebrow="エクシアクリニックより"
+                eyebrow="提携クリニックより"
                 value={draft.testResultMemo}
                 onChange={(v) => setDraft({ ...draft, testResultMemo: v })}
               />
@@ -234,7 +234,7 @@ export function GuideCustomerDetail({ guideCustomerId }: { guideCustomerId: stri
             <dl className="space-y-3">
               <ReadField
                 label="検査結果メモ"
-                eyebrow="エクシアクリニックより"
+                eyebrow="提携クリニックより"
                 value={record?.testResultMemo}
               />
               <ReadField label="医師コメント" value={record?.doctorComment} />

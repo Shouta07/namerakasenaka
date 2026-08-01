@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   LESSONS,
   LESSON_TOTAL,
-  EXCIA_DOCTOR_LABEL,
+  CLINIC_DOCTOR_LABEL,
   LESSON_AUTHOR_LABEL,
 } from "@/lib/lessons/fixtures";
 import {
@@ -48,8 +48,10 @@ describe("lesson fixtures — shape & 監修クレジット", () => {
   });
 
   it("doctor credit label is exported under both names", () => {
-    expect(EXCIA_DOCTOR_LABEL).toContain("エクシアクリニック");
-    expect(LESSON_AUTHOR_LABEL).toBe(EXCIA_DOCTOR_LABEL);
+    // 実在の医療機関名・医師名は出さない（掲載許諾が取れていないため）。
+    expect(CLINIC_DOCTOR_LABEL).not.toMatch(/エクシア|真弓/);
+    expect(CLINIC_DOCTOR_LABEL).toContain("監修");
+    expect(LESSON_AUTHOR_LABEL).toBe(CLINIC_DOCTOR_LABEL);
   });
 
   it("every quiz has 3 options and a valid correctIndex", () => {

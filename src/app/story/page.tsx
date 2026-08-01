@@ -110,7 +110,7 @@ const SCENES: Scene[] = [
     detail: [
       {
         heading: "翻訳辞書（v0.1）",
-        body: "真弓先生に「医療の言葉 → お客様にわかる言葉」の対応表をヒアリングで作ります。Phase 0 で 7 概念ぶん。",
+        body: "監修医に「医療の言葉 → お客様にわかる言葉」の対応表をヒアリングで作ります。Phase 0 で 7 概念ぶん。",
       },
       {
         heading: "図解",
@@ -373,7 +373,7 @@ export default function StoryPage() {
               emoji: "🌸",
             },
             {
-              who: "真弓先生",
+              who: "監修医",
               role: "監修ドクター",
               what:
                 "話す・承認するだけ。AI と制作が「お客様の言葉」へ翻訳する。",

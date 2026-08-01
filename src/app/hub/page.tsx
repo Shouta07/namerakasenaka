@@ -46,7 +46,7 @@ const GROUPS: HubGroup[] = [
       {
         href: "/lessons-preview",
         title: "レッスン7章の図解",
-        body: "真弓先生監修の学習コンテンツ。納品物の実物として見せる。",
+        body: "医師監修の学習コンテンツ。納品物の実物として見せる。",
         emoji: "📘",
       },
     ],

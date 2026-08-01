@@ -284,6 +284,182 @@ export const MATERIALS: Material[] = [
   { id: "mg", label: "マグネシウム", emoji: "⚡", rowId: "mg", role: "つくる力を動かす" },
 ];
 
+// ---------------------------------------------------------------
+// レーダーチャート — 6つの「力」で全体像を1枚にする
+//
+// 検査項目名のままでは、どれが何の話か分からない。
+// お客様に伝わる「力」の名前に翻訳したうえで、適正ラインへの
+// 到達率（gaugePercent）でそろえて1枚に重ねる。
+// ---------------------------------------------------------------
+
+export type RadarAxis = {
+  id: string;
+  /** お客様に見せる名前。 */
+  label: string;
+  /** もとの検査項目。 */
+  rowId: string;
+  /** 何をする力か。 */
+  what: string;
+  /** 足りないと何が起きうるか（断定しない）。 */
+  ifLow: string;
+};
+
+export const RADAR_AXES: RadarAxis[] = [
+  {
+    id: "carry",
+    label: "運ぶ力",
+    rowId: "ferritin",
+    what: "酸素と栄養を、つくる現場まで届ける力です（フェリチン＝鉄の蓄え）。",
+    ifLow:
+      "材料はあっても現場に届きにくく、入れ替わりがゆっくりになる可能性があります。",
+  },
+  {
+    id: "guard",
+    label: "守る力",
+    rowId: "vitd",
+    what: "外からの刺激に対する肌の守りに関わるとされる力です（ビタミンD）。",
+    ifLow: "ちょっとした刺激でゆらぎやすい状態と関わることがあります。",
+  },
+  {
+    id: "rebuild",
+    label: "つくり直す力",
+    rowId: "zinc",
+    what: "古い皮ふを新しい皮ふに入れ替えるときに使われる力です（亜鉛）。",
+    ifLow: "毛穴のつまりが残りやすく、同じ場所がくり返しやすくなります。",
+  },
+  {
+    id: "material",
+    label: "材料そのもの",
+    rowId: "alb",
+    what: "肌・髪・筋肉のもとになるタンパク質が足りているかです（アルブミン）。",
+    ifLow: "つくる材料が不足し、変化が出るまでに時間がかかります。",
+  },
+  {
+    id: "power",
+    label: "動かす力",
+    rowId: "mg",
+    what: "つくる作業のエネルギーを生む反応に関わる力です（マグネシウム）。",
+    ifLow: "疲れやすさや、体のこわばりと関わることがあるとされています。",
+  },
+  {
+    id: "calm",
+    label: "乱さない力",
+    rowId: "hba1c",
+    what: "血糖の波の小ささです（HbA1c＝過去1〜2ヶ月の平均）。",
+    ifLow: "皮脂の出方や炎症の起こりやすさと関わることがあるとされています。",
+  },
+];
+
+export function radarRow(axis: RadarAxis): LabRow {
+  const row = LAB_ROWS.find((r) => r.id === axis.rowId);
+  if (!row) throw new Error(`unknown rowId: ${axis.rowId}`);
+  return row;
+}
+
+// ---------------------------------------------------------------
+// 「なぜ、そうなっているのか」の地図
+//
+// 検査値は結果であって原因ではない。くらしの中の要因 → からだで
+// 起きていること → 検査に出るサイン → 背中の肌、の4層でつなぐ。
+// 1本の道をたどれる形にして、責める説明ではなく仕組みの説明にする。
+// ---------------------------------------------------------------
+
+export type CauseLayer = "life" | "body" | "sign" | "skin";
+
+export const CAUSE_LAYER_META: Record<
+  CauseLayer,
+  { label: string; hint: string }
+> = {
+  life: { label: "くらしの中のこと", hint: "変えられるところ" },
+  body: { label: "からだで起きていること", hint: "見えないところ" },
+  sign: { label: "検査に出たサイン", hint: "数字で見えるところ" },
+  skin: { label: "背中の肌に出ること", hint: "気になっているところ" },
+};
+
+export type CauseNode = { id: string; layer: CauseLayer; label: string };
+
+export const CAUSE_NODES: CauseNode[] = [
+  // くらし
+  { id: "l-chew", layer: "life", label: "早食い・よく噛めていない" },
+  { id: "l-protein", layer: "life", label: "タンパク質の量が少ない" },
+  { id: "l-sun", layer: "life", label: "日に当たる時間が短い" },
+  { id: "l-sugar", layer: "life", label: "甘い飲みもの・間食が多い" },
+  { id: "l-stress", layer: "life", label: "ストレス・睡眠不足" },
+  // からだ
+  { id: "b-absorb", layer: "body", label: "消化・吸収が追いついていない" },
+  { id: "b-material", layer: "body", label: "つくる材料が足りていない" },
+  { id: "b-guard", layer: "body", label: "肌の守りが下がっている" },
+  { id: "b-energy", layer: "body", label: "つくるエネルギーが出にくい" },
+  { id: "b-inflam", layer: "body", label: "炎症が起きやすい状態" },
+  // 検査サイン
+  { id: "s-bun", layer: "sign", label: "BUN・アルブミンが低め" },
+  { id: "s-ferritin", layer: "sign", label: "フェリチンが低め" },
+  { id: "s-zinc", layer: "sign", label: "亜鉛が低め" },
+  { id: "s-vitd", layer: "sign", label: "ビタミンDが低め" },
+  { id: "s-mg", layer: "sign", label: "マグネシウムが低め" },
+  { id: "s-hba1c", layer: "sign", label: "HbA1cが高め" },
+  // 肌
+  { id: "k-repeat", layer: "skin", label: "同じ場所がくり返す" },
+  { id: "k-mark", layer: "skin", label: "跡が残りやすい" },
+  { id: "k-sway", layer: "skin", label: "刺激でゆらぎやすい" },
+];
+
+/** レーダーの各軸から、肌までの1本道。地図の上で光らせる経路。 */
+export type CauseRoute = {
+  axisId: string;
+  path: string[];
+  /** この道をどう説明するか。 */
+  story: string;
+};
+
+export const CAUSE_ROUTES: CauseRoute[] = [
+  {
+    axisId: "carry",
+    path: ["l-chew", "b-absorb", "s-ferritin", "k-mark"],
+    story:
+      "よく噛めていないと吸収が追いつかず、鉄の蓄えが増えにくくなります。運ぶ力が落ちると、つくり直しに時間がかかり、跡が残っている感じが続きやすくなります。",
+  },
+  {
+    axisId: "guard",
+    path: ["l-sun", "b-guard", "s-vitd", "k-sway"],
+    story:
+      "日に当たる時間が短いとビタミンDが下がりやすく、肌の守りに関わるとされています。守りが下がると、少しの刺激でもゆらぎやすくなります。",
+  },
+  {
+    axisId: "rebuild",
+    path: ["l-protein", "b-material", "s-zinc", "k-repeat"],
+    story:
+      "タンパク質と一緒に亜鉛も不足しやすく、皮ふの入れ替わりが進みにくくなります。入れ替わりが止まると、同じ場所がくり返しやすくなります。",
+  },
+  {
+    axisId: "material",
+    path: ["l-protein", "b-absorb", "s-bun", "k-mark"],
+    story:
+      "食べた量ではなく、吸収できた量が足りていない可能性があります。材料そのものが届かないと、変化が出るまでに時間がかかります。",
+  },
+  {
+    axisId: "power",
+    path: ["l-stress", "b-energy", "s-mg", "k-repeat"],
+    story:
+      "ストレスが続くとマグネシウムが減りやすいとされ、つくる作業のエネルギーが出にくくなります。回復のペースが落ちる時期と重なります。",
+  },
+  {
+    axisId: "calm",
+    path: ["l-sugar", "b-inflam", "s-hba1c", "k-repeat"],
+    story:
+      "甘いものの習慣は血糖の波を大きくし、炎症の起きやすさと関わることがあるとされています。落ち着きにくい時期と重なりやすい道です。",
+  },
+];
+
+export function routeFor(axisId: string): CauseRoute {
+  const r = CAUSE_ROUTES.find((x) => x.axisId === axisId);
+  if (!r) throw new Error(`no route for axis: ${axisId}`);
+  return r;
+}
+
+export const CAUSE_MAP_NOTE =
+  "この地図は、原因を決めつけるためのものではありません。関わりが考えられる道すじを並べ、どこから手をつけるかを一緒に選ぶための材料です。";
+
 export function materialRow(m: Material): LabRow {
   const row = LAB_ROWS.find((r) => r.id === m.rowId);
   if (!row) throw new Error(`unknown rowId: ${m.rowId}`);

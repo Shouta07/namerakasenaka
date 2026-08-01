@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { containsBannedWord } from "@/lib/compliance/banned-words";
 import {
   BADGES,
+  CAUSE_NODES,
+  CAUSE_ROUTES,
+  CAUSE_MAP_NOTE,
+  RADAR_AXES,
   CURRENT_STAGE_INDEX,
   LAB_TRANSLATIONS_RETEST,
   FOOD_REACTIONS,
@@ -22,6 +26,8 @@ import {
   materialRow,
   materialsLevel,
   badgeEarned,
+  radarRow,
+  routeFor,
   stageIndexFor,
   translationsFor,
 } from "../labtest-fixtures";
@@ -226,6 +232,62 @@ describe("ゲーミフィケーション — 材料ゲージとレベル", () =>
   });
 });
 
+describe("レーダーと「なぜ」の地図", () => {
+  it("6軸すべてが実在する検査項目を指す", () => {
+    expect(RADAR_AXES).toHaveLength(6);
+    for (const a of RADAR_AXES) {
+      expect(() => radarRow(a)).not.toThrow();
+    }
+  });
+
+  it("軸のラベルは検査項目名ではなく、お客様のことばに翻訳されている", () => {
+    const rawNames = LAB_ROWS.map((r) => r.name);
+    for (const a of RADAR_AXES) {
+      expect(rawNames, `${a.label} が検査項目名のまま`).not.toContain(a.label);
+      expect(a.label.length).toBeLessThanOrEqual(8);
+    }
+  });
+
+  it("すべての軸に、肌までの1本道がある", () => {
+    for (const a of RADAR_AXES) {
+      const r = routeFor(a.id);
+      expect(r.path).toHaveLength(4);
+    }
+  });
+
+  it("道は くらし → からだ → 検査 → 肌 の順に4層をまたぐ", () => {
+    const layerOf = new Map(CAUSE_NODES.map((n) => [n.id, n.layer]));
+    for (const r of CAUSE_ROUTES) {
+      expect(r.path.map((id) => layerOf.get(id))).toEqual([
+        "life",
+        "body",
+        "sign",
+        "skin",
+      ]);
+    }
+  });
+
+  it("道が参照するノードはすべて地図の上に存在する", () => {
+    const ids = new Set(CAUSE_NODES.map((n) => n.id));
+    for (const r of CAUSE_ROUTES) {
+      for (const id of r.path) {
+        expect(ids, `${r.axisId} が未知のノード ${id} を指す`).toContain(id);
+      }
+    }
+  });
+
+  it("レーダーの値は0〜100に収まる（描画がはみ出さない）", () => {
+    for (const a of RADAR_AXES) {
+      const r = radarRow(a);
+      for (const v of [r.first, r.retest]) {
+        const p = gaugePercent(r, v);
+        expect(p).toBeGreaterThanOrEqual(0);
+        expect(p).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+});
+
 describe("薬機法・医療広告の禁止語（§8.2）", () => {
   const texts = [
     ...LAB_ROWS.map((r) => r.note),
@@ -236,6 +298,10 @@ describe("薬機法・医療広告の禁止語（§8.2）", () => {
     ...Object.values(LEVEL_TITLE),
     ...BADGES.flatMap((b) => [b.label, b.how]),
     ...STAGES.flatMap((s) => [s.label, s.body]),
+    ...RADAR_AXES.flatMap((a) => [a.label, a.what, a.ifLow]),
+    ...CAUSE_NODES.map((n) => n.label),
+    ...CAUSE_ROUTES.map((r) => r.story),
+    CAUSE_MAP_NOTE,
     STREAK_NOTE,
     RETEST_TALK.headline,
     ...RETEST_TALK.points,

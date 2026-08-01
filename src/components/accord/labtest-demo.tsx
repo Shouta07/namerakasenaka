@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LabtestGame } from "@/components/accord/labtest-game";
+import { LabtestRadar } from "@/components/accord/labtest-radar";
 import {
   FOOD_CLASS_LABEL,
   FOOD_REACTIONS,
@@ -192,11 +193,13 @@ export function LabtestDemo() {
         title="翻訳する"
         lead={
           view === "first"
-            ? "検査でわかったこと → からだで起きていること → 今日からできること。この3列に落ちてはじめて、お客様は自分の話として聞けます。AIが下書きし、サロンが確認してから出します。"
-            : "再検査も、同じ3列で翻訳し直します。枠は変えず中身だけが更新されるので、前回どこにいたか・今どこにいるかが並べて読めます。"
+            ? "まず6つの「力」に翻訳して全体像を1枚にし、選んだ力については「なぜそうなっているのか」を地図でたどります。そのうえで、検査でわかったこと → からだで起きていること → 今日からできること の3列に落とします。AIが下書きし、サロンが確認してから出します。"
+            : "再検査も同じ形で翻訳し直します。レーダーは初回の形を破線で残すので、どこがどれだけ伸びたかがそのまま見えます。"
         }
       >
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <LabtestRadar view={view} />
+
+        <div className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">
           {translationsFor(view).map((t) => (
             <article
               key={t.id}

@@ -10,7 +10,7 @@ export const demoOrganization = {
 
 export const demoClient = {
   id: "demo-client",
-  display_name: "田村 洋子",
+  display_name: "田中 太郎",
   skin_type: "敏感肌",
   primary_therapist_name: "佐藤 美咲",
   course_name: "背中ケア6ヶ月コース",

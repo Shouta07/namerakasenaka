@@ -60,8 +60,8 @@ export type DemoClient = {
 
 export const demoClient: DemoClient = {
   id: "client-yamada",
-  displayName: "田村 洋子",
-  furigana: "たむら ようこ",
+  displayName: "田中 太郎",
+  furigana: "たなか たろう",
   ageRange: "30代",
   skinType: "敏感肌・乾燥傾向",
   courseName: "背中ケア 6 ヶ月コース",
@@ -89,8 +89,8 @@ export const demoClientRoster: DemoClient[] = [
   },
   {
     id: "client-tanaka",
-    displayName: "田中 由美",
-    furigana: "たなか ゆみ",
+    displayName: "井上 由美",
+    furigana: "いのうえ ゆみ",
     ageRange: "20代",
     skinType: "脂性肌",
     courseName: "背中ケア 6 ヶ月コース",
@@ -382,7 +382,7 @@ export const demoAppointments: DemoAppointment[] = [
   {
     id: "appt-today-1",
     clientId: "client-tanaka",
-    clientName: "田中 由美",
+    clientName: "井上 由美",
     therapistName: "高橋 葵",
     scheduledAt: daysAgoIso(0, 10, 0),
     durationMinutes: 90,
@@ -453,7 +453,7 @@ export const demoAppointments: DemoAppointment[] = [
   {
     id: "appt-future-2",
     clientId: "client-tanaka",
-    clientName: "田中 由美",
+    clientName: "井上 由美",
     therapistName: "高橋 葵",
     scheduledAt: daysAheadIso(3, 13, 0),
     durationMinutes: 90,
@@ -514,7 +514,7 @@ export const demoAppointments: DemoAppointment[] = [
   {
     id: "appt-past-2",
     clientId: "client-tanaka",
-    clientName: "田中 由美",
+    clientName: "井上 由美",
     therapistName: "高橋 葵",
     scheduledAt: daysAgoIso(10, 13),
     durationMinutes: 90,
@@ -725,7 +725,7 @@ export const demoPendingDrafts: DemoPendingDraft[] = [
   },
   {
     id: "draft-2",
-    clientName: "田中 由美",
+    clientName: "井上 由美",
     loggedAt: hoursAgoIso(4),
     mealType: "lunch",
     memo: "鶏むね肉のグリル、キヌアサラダ、トマトスープ。",
@@ -750,7 +750,7 @@ export const demoPendingDrafts: DemoPendingDraft[] = [
 /** One example draft that has already been approved — shows audit trail. */
 export const demoApprovedExample = {
   id: "approved-1",
-  clientName: "田村 洋子",
+  clientName: "田中 太郎",
   approvedAt: hoursAgoIso(1),
   approvedBy: NUTRITIONIST_NAME,
   licenseNumber: NUTRITIONIST_LICENSE,
@@ -997,7 +997,7 @@ export const demoActivityFeed: DemoActivityEntry[] = [
     kind: "photo",
     actor: "佐藤 美咲",
     actorRole: "therapist",
-    body: "田村 洋子 様の進捗写真を撮影",
+    body: "田中 太郎 様の進捗写真を撮影",
     at: minutesAgoIso(2),
     href: "/admin/clients/client-yamada",
   },
@@ -1015,14 +1015,14 @@ export const demoActivityFeed: DemoActivityEntry[] = [
     kind: "nutritionist_approval",
     actor: "栄養士 木村",
     actorRole: "neutral",
-    body: "田中 由美 様の食事フィードバックを承認",
+    body: "井上 由美 様の食事フィードバックを承認",
     at: minutesAgoIso(30),
     href: "/admin/clients/client-tanaka",
   },
   {
     id: "act-4",
     kind: "appointment",
-    actor: "田村 洋子",
+    actor: "田中 太郎",
     actorRole: "customer",
     body: "次回予約を確定",
     at: hoursAgoIso(1),

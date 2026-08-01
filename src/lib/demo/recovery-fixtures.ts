@@ -52,7 +52,7 @@ export const TAMURA_GUIDE_CUSTOMER_ID = "guide-tamura-demo";
 export const TAMURA_SHARE_TOKEN = "tamura-demo-2026";
 
 /**
- * 田村洋子さんのプリ生成ガイド。
+ * 田中太郎さんのプリ生成ガイド。
  * ANTHROPIC_API_KEY 未設定時の generateRecoveryGuide のデモ出力にも使う。
  */
 export const TAMURA_SAMPLE_GUIDE: RecoveryGuideJson = {
@@ -149,7 +149,7 @@ export const DEMO_GUIDE_CUSTOMERS: DemoGuideCustomer[] = [
     // デモのログイン顧客（client-yamada）に紐付け、/c/guide からも
     // 同じガイド・同じデイリーチェックを参照できるようにする（§17）。
     clientId: "client-yamada",
-    name: "田村 洋子",
+    name: "田中 太郎",
     age: 42,
     concern: "背中ニキビ、肌荒れ、食事制限が続くか不安",
     shareToken: TAMURA_SHARE_TOKEN,
@@ -298,7 +298,7 @@ export type DemoGuideMessage = {
 };
 
 /**
- * 伴走ループ — サロンから田村さんへのお返事メッセージ（§17 自分を責めさせない）。
+ * 伴走ループ — サロンから田中さんへのお返事メッセージ（§17 自分を責めさせない）。
  *
  * - 8日前: 白湯の習慣について（メモなし時点でも温かい一言）。
  * - 5日前: 「外食での焼き魚定食」メモへのお返事（7日前のメモにリンク）。
@@ -338,7 +338,7 @@ export const DEMO_GUIDE_MESSAGES: DemoGuideMessage[] = [
 ];
 
 /**
- * 🌱 「腸のおはなし」 — 田村さんの学習進捗デモシード。
+ * 🌱 「腸のおはなし」 — 田中さんの学習進捗デモシード。
  *
  * Lesson 1, 2, 3 が完了済み（3つのバッジ取得済み）、4-7 は未着手。
  * デモ中に Lesson 4「乳酸菌が逆効果になることもあります」を読了すると

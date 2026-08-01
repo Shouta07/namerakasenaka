@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function ClientGuidePage() {
   // TODO(phase-1): 本番では Supabase の guide_customers を
   // client_id = ログインユーザーの client id で照会して解決する。
-  // 現在はデモ顧客（client-yamada）→ ガイド顧客（田村洋子）の紐付けで動作する。
+  // 現在はデモ顧客（client-yamada）→ ガイド顧客（田中太郎）の紐付けで動作する。
   const clientId = isDemoMode() ? demoClient.id : null;
   return <ClientGuideView clientId={clientId} />;
 }

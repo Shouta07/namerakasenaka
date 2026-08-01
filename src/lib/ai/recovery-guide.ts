@@ -106,7 +106,7 @@ function extractJson(raw: string): string {
  *   every text field through the banned-word filter. Throws
  *   RecoveryGuideComplianceError on a hit so the caller can show retry
  *   guidance.
- * - Without the key (demo mode): returns the curated 田村洋子 sample after a
+ * - Without the key (demo mode): returns the curated 田中太郎 sample after a
  *   simulated 1200ms generation delay.
  */
 export async function generateRecoveryGuide(

@@ -104,7 +104,7 @@ export function GuideCustomerForm() {
         <CardContent className="space-y-3">
           <h2 className="text-sm font-semibold text-stone-900">基本情報</h2>
           <Field label="顧客名">
-            <Input {...register("name")} placeholder="例：田村 洋子" />
+            <Input {...register("name")} placeholder="例：田中 太郎" />
           </Field>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="年齢">

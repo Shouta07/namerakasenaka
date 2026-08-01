@@ -14,7 +14,7 @@ import {
 import { containsBannedWord } from "@/lib/compliance/banned-words";
 
 describe("RecoveryGuideJson schema", () => {
-  it("parses the 田村洋子 fixture guide", () => {
+  it("parses the 田中太郎 fixture guide", () => {
     const parsed = parseRecoveryGuideJson(TAMURA_SAMPLE_GUIDE);
     expect(parsed.today_summary.length).toBeGreaterThan(0);
     expect(parsed.easy_explanations.length).toBe(5);

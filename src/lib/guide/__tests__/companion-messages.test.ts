@@ -12,7 +12,7 @@ import { containsBannedWord } from "@/lib/compliance/banned-words";
  * 伴走ループ — サロン→顧客メッセージとペルソナ統一の不変条件を担保する。
  *
  * 1) banned-word filter: すべての salon_to_customer 本文が §8.2 + §17 を通過。
- * 2) persona unify: demoClient.displayName が「田村」を含み、recovery-fixture の
+ * 2) persona unify: demoClient.displayName が「田中 太郎」で、recovery-fixture の
  *    clientId がそれに紐付いていること。
  * 3) ordering & unread counting: source ヘルパが新着順を保ち、未読を正しく数えること。
  */
@@ -39,9 +39,9 @@ describe("companion messages — banned-word filter", () => {
   });
 });
 
-describe("persona unify — 田村 洋子 across demo + recovery fixtures", () => {
-  it("primary demo client display name includes 田村", () => {
-    expect(demoClient.displayName).toContain("田村");
+describe("persona unify — 田中 太郎 across demo + recovery fixtures", () => {
+  it("primary demo client display name is the unified sample persona", () => {
+    expect(demoClient.displayName).toBe("田中 太郎");
   });
 
   it("recovery-fixture clientId resolves to the demo client id", () => {

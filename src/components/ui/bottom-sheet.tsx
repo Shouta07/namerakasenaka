@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils/cn";
 
 export type BottomSheetProps = {
@@ -52,7 +53,9 @@ export function BottomSheet({
 
   if (!mounted) return null;
 
-  return (
+  // backdrop-filter を持つ祖先（ヘッダ等）の中に置かれると、position:fixed が
+  // ビューポートではなくその祖先を基準にしてしまう。body 直下に出して回避する。
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
       role="dialog"
@@ -100,8 +103,11 @@ export function BottomSheet({
             </button>
           </div>
         ) : null}
-        <div className="overflow-y-auto px-5 pb-2 pt-3">{children}</div>
+        <div className="max-h-[70dvh] overflow-y-auto overscroll-contain px-5 pb-2 pt-3">
+          {children}
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

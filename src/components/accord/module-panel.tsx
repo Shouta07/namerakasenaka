@@ -11,7 +11,10 @@ import { getModuleState, setModuleEnabled } from "@/lib/accord/store";
  * 機能モジュールの増減パネル。
  * Accord のコンセプト「必要な機能だけ、必要なときに」をそのまま UI にする。
  */
-export function ModulePanel() {
+/**
+ * @param compact 設定パネル用の1列表示。カード並べではなく行に畳む。
+ */
+export function ModulePanel({ compact = false }: { compact?: boolean } = {}) {
   const [modules, setModules] = useState<Record<string, boolean> | null>(null);
 
   useEffect(() => {
@@ -24,6 +27,54 @@ export function ModulePanel() {
   function toggle(id: AccordModuleId, name: string, next: boolean) {
     setModuleEnabled(id, next);
     toast(next ? `「${name}」をオンにしました` : `「${name}」をオフにしました`);
+  }
+
+  if (compact) {
+    return (
+      <ul className="divide-y divide-stone-100 rounded-2xl border border-stone-200 bg-white">
+        {ACCORD_MODULES.map((m) => {
+          const enabled = modules ? modules[m.id] !== false : true;
+          return (
+            <li key={m.id} className="flex items-center gap-3 px-4 py-2.5">
+              <span className="text-lg" aria-hidden>
+                {m.emoji}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[13px] font-bold text-stone-900">
+                  {m.name}
+                </span>
+                <span className="block text-[11px] text-stone-500">{m.short}</span>
+              </span>
+              {m.core ? (
+                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">
+                  コア
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={enabled}
+                  aria-label={`${m.name} を${enabled ? "オフ" : "オン"}にする`}
+                  onClick={() => toggle(m.id, m.short, !enabled)}
+                  className={cn(
+                    "relative h-6 w-11 flex-none rounded-full transition-colors",
+                    "after:absolute after:-inset-2.5 after:content-['']",
+                    enabled ? "bg-brand-700" : "bg-stone-300",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all",
+                      enabled ? "left-[22px]" : "left-0.5",
+                    )}
+                  />
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    );
   }
 
   return (

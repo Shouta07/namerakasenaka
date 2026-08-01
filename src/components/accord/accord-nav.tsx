@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils/cn";
 import { getModuleState } from "@/lib/accord/store";
+import { DemoSettingsButton, DatasetBanner } from "@/components/accord/demo-settings";
 import type { AccordModuleId } from "@/lib/accord/fixtures";
 
 /**
@@ -78,7 +79,12 @@ export function AccordNav() {
             },
           )}
         </nav>
+
+        <DemoSettingsButton />
       </div>
+
+      {/* 状態が既定と違うときは、画面の上で必ず知らせる */}
+      <DatasetBanner />
     </header>
   );
 }

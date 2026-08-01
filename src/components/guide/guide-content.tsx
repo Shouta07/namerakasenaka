@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { demoOrganization } from "@/lib/demo/fixtures";
 import type { RecoveryGuideJson } from "@/lib/guide/schema";
 import type { DailyCheckRecord, GuideMessageRecord } from "@/lib/guide/source";
 import { LessonsCard } from "@/components/lessons/lessons-card";
@@ -217,7 +218,9 @@ export function GuideContent({
       {/* 10. 励ましのメッセージ */}
       <div className="rounded-3xl bg-[#eaf3ea] p-5 sm:p-6">
         <Paragraphs text={guide.encouraging_message} lead />
-        <p className="mt-3 text-right text-sm text-[#587f63]">— なめらかせなか</p>
+        <p className="mt-3 text-right text-sm text-[#587f63]">
+          — {demoOrganization.shortName}
+        </p>
       </div>
     </>
   );

@@ -21,7 +21,7 @@ export class RecoveryGuideComplianceError extends Error {
   }
 }
 
-const SYSTEM_PROMPT = `あなたは「なめらかせなか」（背中ケア専門サロン）の回復ガイド作成アシスタントです。エクシアクリニックの検査結果と医師コメントをもとに、お客様がスマートフォンで読む「あなた専用の回復ガイド」を日本語で作成します。
+const SYSTEM_PROMPT = `あなたは背中ケア専門サロンの回復ガイド作成アシスタントです。提携クリニックの検査結果と医師コメントをもとに、お客様がスマートフォンで読む「あなた専用の回復ガイド」を日本語で作成します。
 
 【絶対に守ること】
 - 医療診断をしない。病名の断定をしない。
@@ -68,7 +68,7 @@ function buildUserPrompt(input: RecoveryGuideInput): string {
     `■ お名前: ${input.name}`,
     `■ 年齢: ${input.age != null ? `${input.age}歳` : "（未記入）"}`,
     `■ 主な悩み: ${input.concern || "（未記入）"}`,
-    `■ 検査結果メモ（エクシアクリニックより）: ${input.testResultMemo || "（未記入）"}`,
+    `■ 検査結果メモ（提携クリニックより）: ${input.testResultMemo || "（未記入）"}`,
     `■ 医師コメント: ${input.doctorComment || "（未記入）"}`,
     `■ サロンメモ: ${input.salonMemo || "（未記入）"}`,
     `■ 食事制限内容: ${input.dietaryRestrictions || "（未記入）"}`,

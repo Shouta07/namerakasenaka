@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { markStoredGuideMessageRead } from "@/lib/demo/store";
 import { isDemoMode } from "@/lib/demo";
+import { demoOrganization } from "@/lib/demo/fixtures";
 import { relativeTimeJa } from "@/lib/demo/time";
 import type { GuideMessageRecord } from "@/lib/guide/source";
 import { Eyebrow, SoftCard } from "./guide-content";
@@ -70,7 +71,7 @@ export function CompanionMessagesCard({
               >
                 <p className="text-base leading-relaxed text-stone-700">{m.body}</p>
                 <p className="mt-2 text-right text-xs text-[#587f63]">
-                  {relativeTimeJa(m.createdAt)} ・ なめらかせなか
+                  {relativeTimeJa(m.createdAt)} ・ {demoOrganization.shortName}
                 </p>
               </div>
             </li>

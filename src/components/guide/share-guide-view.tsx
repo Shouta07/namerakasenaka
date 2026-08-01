@@ -13,6 +13,7 @@ import {
 import { upsertStoredDailyCheck, newId } from "@/lib/demo/store";
 import { safeParseRecoveryGuideJson } from "@/lib/guide/schema";
 import { isDemoMode } from "@/lib/demo";
+import { demoOrganization } from "@/lib/demo/fixtures";
 import type { DailyCheckSubmit } from "./daily-check-card";
 import { Eyebrow, GuideContent, SoftCard } from "./guide-content";
 
@@ -39,7 +40,7 @@ export function ShareGuideView({ token }: { token: string }) {
           <p className="text-lg font-medium text-stone-700">ページが見つかりませんでした</p>
           <p className="mt-3 text-base leading-relaxed text-stone-500">
             リンクの有効期限が切れているか、URL が変わった可能性があります。
-            お手数ですが、なめらかせなかまでご連絡ください。
+            お手数ですが、{demoOrganization.shortName}までご連絡ください。
           </p>
         </div>
       </Shell>
@@ -102,14 +103,15 @@ export function ShareGuideView({ token }: { token: string }) {
       <header className="px-1 pt-2 text-center">
         <p className="inline-flex items-center gap-1.5 text-sm font-medium tracking-wide text-[#587f63]">
           <Leaf className="h-4 w-4" aria-hidden />
-          なめらかせなか
+          {demoOrganization.shortName}
           <Sparkles className="h-4 w-4" aria-hidden />
         </p>
         <h1 className="mt-2 text-2xl font-bold leading-snug text-stone-800">
           {customer.name}さんの回復ガイド
         </h1>
         <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-stone-500">
-          エクシアクリニックの検査結果をもとに、なめらかせなかが作成したあなた専用のガイドです
+          提携クリニックの検査結果をもとに、{demoOrganization.shortName}
+          が作成したあなた専用のガイドです
         </p>
       </header>
 
@@ -129,10 +131,10 @@ export function ShareGuideView({ token }: { token: string }) {
           {/* 三社フッタ */}
           <footer className="space-y-2 px-2 pb-4 text-center text-xs leading-relaxed text-stone-400">
             <p>
-              本ガイドは医療診断ではありません。検査・診断についてはエクシアクリニックにご相談ください。効果には個人差があります。
+              本ガイドは医療診断ではありません。検査・診断については提携クリニックにご相談ください。効果には個人差があります。
             </p>
             <p>
-              サロン運営：なめらかせなか ／ 検査・医師コメント：エクシアクリニック ／
+              サロン運営：{demoOrganization.shortName} ／ 検査・医師コメント：提携クリニック ／
               開発・運営：バイタリティデザイン合同会社
             </p>
           </footer>

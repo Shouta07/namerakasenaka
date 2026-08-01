@@ -2,11 +2,11 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
 import { isDemoMode } from "@/lib/demo";
-import { demoClient } from "@/lib/demo/fixtures";
+import { demoClient, demoOrganization } from "@/lib/demo/fixtures";
 import { ClientGuideView } from "@/components/guide/client-guide-view";
 
 export const metadata: Metadata = {
-  title: "回復ガイド | なめらかせなか",
+  title: `回復ガイド | ${demoOrganization.shortName}`,
 };
 
 /**

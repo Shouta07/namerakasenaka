@@ -22,14 +22,23 @@ import type { BackPhotoSeverity, BackPhotoLighting } from "@/components/progress
 
 export type DemoOrganization = {
   id: string;
+  /** テナント（店舗）名。顧客画面のヘッダーなどに出る。 */
   name: string;
+  /** 署名・差出人表示に使う短い呼び名。 */
+  shortName: string;
   planName: string;
   billingMode: "B2B_ONLY" | "B2C_ONLY" | "DUAL";
 };
 
+/**
+ * デモ用テナント。特定の店舗名はハードコードしない —
+ * 顧客向け画面は「導入店舗の名前」を出すのが正しく、
+ * 汎用SaaSのデモとしても固有名が出てはいけない。
+ */
 export const demoOrganization: DemoOrganization = {
-  id: "org-carat-demo",
-  name: "carat なめらかせなか 表参道店",
+  id: "org-demo-salon",
+  name: "背中ケアサロン 表参道店",
+  shortName: "背中ケアサロン",
   planName: "Pro プラン（B2B + B2C）",
   billingMode: "DUAL",
 };

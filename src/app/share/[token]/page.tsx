@@ -2,11 +2,11 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
 import { ShareGuideView } from "@/components/guide/share-guide-view";
+import { demoOrganization } from "@/lib/demo/fixtures";
 
 export const metadata: Metadata = {
-  title: "あなた専用の回復ガイド | なめらかせなか",
-  description:
-    "エクシアクリニックの検査結果をもとに、なめらかせなかが作成したあなた専用の回復ガイドです。",
+  title: `あなた専用の回復ガイド | ${demoOrganization.shortName}`,
+  description: `提携クリニックの検査結果をもとに、${demoOrganization.shortName}が作成したあなた専用の回復ガイドです。`,
   robots: { index: false, follow: false },
 };
 

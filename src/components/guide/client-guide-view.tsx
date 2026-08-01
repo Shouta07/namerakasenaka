@@ -77,7 +77,7 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
         guideCustomerId={customer.id}
       />
       <p className="px-2 pb-2 text-center text-xs leading-relaxed text-stone-400">
-        本ガイドは医療診断ではありません。検査・診断についてはエクシアクリニックにご相談ください。効果には個人差があります。
+        本ガイドは医療診断ではありません。検査・診断については提携クリニックにご相談ください。効果には個人差があります。
       </p>
     </div>
   );

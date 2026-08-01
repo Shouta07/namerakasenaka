@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { LabRadar } from "@/components/charts/lab-radar";
 import { LabValueBar } from "@/components/charts/lab-value-bar";
+import { LabDataList } from "@/components/charts/lab-data-list";
 import {
+  LAB_ROWS,
   RADAR_AXES,
   gaugePercent,
   radarLevel,
@@ -196,6 +198,19 @@ export function MyLabCard() {
           </li>
         ))}
       </ul>
+
+      {/* 取り込んだ検査データそのもの。加工前を見られることが信用になる。 */}
+      <details className="group mt-3">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[12.5px] font-bold text-[#3c6347]">
+          受け取った検査データを見る（{LAB_ROWS.length}項目）
+          <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+            ▾
+          </span>
+        </summary>
+        <div className="mt-2">
+          <LabDataList view="retest" />
+        </div>
+      </details>
 
       <p className="mt-3 rounded-2xl bg-[#fafcfa] px-4 py-3 text-[12px] leading-relaxed text-stone-600">
         破線が前回の形です。数字はあなたを評価するものではなく、

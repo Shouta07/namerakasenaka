@@ -99,6 +99,25 @@ export const LAB_JUDGEMENT_META: Record<
   out: { label: "基準外", chip: "bg-rose-50 text-rose-700", bar: "bg-rose-500" },
 };
 
+/**
+ * 取り込んだ検査データの出所。
+ *
+ * 「どこの・いつの・何項目を取り込んだのか」が分からないデータは信用されない。
+ * 一覧の先頭に必ず出す。
+ */
+export const LAB_META = {
+  panel: "血液検査（一般・栄養）＋ 食物IgG抗体パネル",
+  lab: "提携検査機関",
+  /** 初回と再検査の採血日。 */
+  collectedOn: { first: "2026-04-02", retest: "2026-07-20" },
+  /** 結果を受け取った日。 */
+  receivedOn: { first: "2026-04-09", retest: "2026-07-27" },
+  /** 実際の検査票にある項目数（このデモで表示しているのはその一部）。 */
+  totalItems: 112,
+  /** 内容を確認した人。 */
+  reviewedBy: "提携クリニック医師",
+} as const;
+
 export const LAB_ROWS: LabRow[] = [
   {
     id: "ferritin",

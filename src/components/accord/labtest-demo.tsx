@@ -7,6 +7,7 @@ import { LabtestRadar } from "@/components/accord/labtest-radar";
 import {
   LABTEST_DISCLAIMER,
   LAB_JUDGEMENT_META,
+  LAB_META,
   LAB_ROWS,
   LAB_VIEW_META,
   RETEST_TALK,
@@ -137,6 +138,28 @@ export function LabtestDemo() {
         title="この翻訳のもとになった検査値"
         lead="基準範囲だけでなく「適正範囲」を持つのがポイント。基準値内でも、整えたい水準から外れている項目に印がつきます。"
       >
+        {/* 取り込みの出所 — どこの・いつの・何項目か */}
+        <dl className="mb-2 flex flex-wrap gap-x-6 gap-y-1 rounded-2xl bg-white px-4 py-3 text-[12px]">
+          <div>
+            <dt className="text-stone-400">採血日</dt>
+            <dd className="font-semibold text-stone-700">
+              {new Date(LAB_META.collectedOn[view]).toLocaleDateString("ja-JP")}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-stone-400">検査</dt>
+            <dd className="font-semibold text-stone-700">
+              {LAB_META.panel}（{LAB_META.lab}）
+            </dd>
+          </div>
+          <div>
+            <dt className="text-stone-400">取り込んだ項目</dt>
+            <dd className="font-semibold text-stone-700">
+              全 {LAB_META.totalItems} 項目 → 肌に関わる {LAB_ROWS.length} 項目を表示
+            </dd>
+          </div>
+        </dl>
+
         <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white">
           <table className="w-full min-w-[720px] text-left text-[13px]">
             <thead>
@@ -193,7 +216,7 @@ export function LabtestDemo() {
           </table>
         </div>
         <p className="mt-2 text-[12px] text-stone-500">
-          ※ 10項目のみ表示（実際の経過表は100項目以上）。食物IgG抗体パネルも同じ画面に取り込みます。
+          ※ 実際の経過表は {LAB_META.totalItems} 項目。食物IgG抗体パネルも同じ画面に取り込みます。
         </p>
       </Step>
 

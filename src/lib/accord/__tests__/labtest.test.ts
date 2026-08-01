@@ -11,6 +11,7 @@ import {
   FOOD_REACTIONS,
   JOURNEY,
   LABTEST_DISCLAIMER,
+  LAB_META,
   LAB_ROWS,
   LAB_TRANSLATIONS,
   LEVEL_TITLE,
@@ -300,6 +301,30 @@ describe("レーダーと「なぜ」の地図", () => {
         expect(p).toBeLessThanOrEqual(100);
       }
     }
+  });
+});
+
+describe("取り込んだデータの出所（LAB_META）", () => {
+  it("採血日 → 受領日 の順になっている", () => {
+    for (const v of ["first", "retest"] as const) {
+      expect(
+        new Date(LAB_META.collectedOn[v]).getTime(),
+      ).toBeLessThan(new Date(LAB_META.receivedOn[v]).getTime());
+    }
+  });
+
+  it("再検査は初回より後", () => {
+    expect(new Date(LAB_META.collectedOn.retest).getTime()).toBeGreaterThan(
+      new Date(LAB_META.collectedOn.first).getTime(),
+    );
+  });
+
+  it("表示している項目数は、全項目数を超えない", () => {
+    expect(LAB_ROWS.length).toBeLessThanOrEqual(LAB_META.totalItems);
+  });
+
+  it("特定の検査会社名を出さない（架空デモのため）", () => {
+    expect(LAB_META.lab).not.toMatch(/BioTek|エクシア/);
   });
 });
 

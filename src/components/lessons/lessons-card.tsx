@@ -1,4 +1,4 @@
-"use clieninline-flex min-h-11 items-center t";
+"use client";
 
 import { useState } from "react";
 import { BookOpen, GraduationCap, Sparkles } from "lucide-react";

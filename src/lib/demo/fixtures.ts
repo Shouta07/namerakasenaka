@@ -193,6 +193,60 @@ export const demoTherapists: DemoTherapist[] = [
   { id: "th-nakamura", name: "中村 真奈", role: "junior" },
 ];
 
+/**
+ * 背中の状態評価。撮影のたびにサロン／クリニックが付ける。
+ *
+ * 炎症と色素沈着は別々に持つ。色素は遅れて改善するので、ひとつの指標に
+ * まとめると「効いていない」に見えてしまう。
+ */
+export type DemoSkinAssessment = {
+  /** 対応する経過写真。 */
+  photoId: string;
+  assessedOn: string; // ISO
+  /** 0（落ち着いている）〜5（強い）。 */
+  inflammation: number;
+  /** 0（目立たない）〜5（濃い）。 */
+  pigmentation: number;
+  /** 評価した人。 */
+  assessedBy: string;
+  note: string;
+};
+
+export const demoSkinAssessments: DemoSkinAssessment[] = [
+  {
+    photoId: "photo-y-w1",
+    assessedOn: daysAgoIso(84, 10),
+    inflammation: 4,
+    pigmentation: 4,
+    assessedBy: "佐藤 美咲",
+    note: "赤みが広い範囲に出ています。まずは触らないことから。",
+  },
+  {
+    photoId: "photo-y-w2",
+    assessedOn: daysAgoIso(63, 11),
+    inflammation: 3,
+    pigmentation: 4,
+    assessedBy: "佐藤 美咲",
+    note: "赤みの範囲が少し狭くなってきました。",
+  },
+  {
+    photoId: "photo-y-w3",
+    assessedOn: daysAgoIso(35, 10),
+    inflammation: 2,
+    pigmentation: 4,
+    assessedBy: "佐藤 美咲",
+    note: "新しくできる数が減っています。跡はこれからの時期です。",
+  },
+  {
+    photoId: "photo-y-w4",
+    assessedOn: daysAgoIso(7, 11),
+    inflammation: 1,
+    pigmentation: 3,
+    assessedBy: "佐藤 美咲",
+    note: "落ち着いてきました。色素は時間がかかるところなので、日焼け対策を続けましょう。",
+  },
+];
+
 /** 担当セラピストから顧客への「ひとこと」— 進捗ページの温度を作るデモデータ。 */
 export type DemoTherapistCheer = {
   clientId: string;

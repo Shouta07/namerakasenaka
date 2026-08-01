@@ -14,12 +14,14 @@ import { demoOrganization } from "@/lib/demo/fixtures";
  * 操作は下のバーと親指の届く範囲だけで完結させる。
  * 大きい画面では、端末の形のまま中央に置く（PC用に間延びさせない）。
  *
- * タブは2つ。お客様に「記録する場所」を持たせない —
+ * タブは4つまで。お客様に「記録する場所」を持たせない —
  * 記録はサロンがやり、お客様は受け取るだけでいい。
  */
 const items: NavItem[] = [
   { href: "/c/progress", label: "今日", icon: "sparkles" },
-  { href: "/c/guide", label: "からだ", icon: "camera" },
+  { href: "/c/guide", label: "血液診断", icon: "droplet" },
+  { href: "/c/skin", label: "背中ケア", icon: "camera" },
+  { href: "/c/learn", label: "学ぶ", icon: "book-open" },
 ];
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {

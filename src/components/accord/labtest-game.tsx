@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import {
   BADGES,
-  CURRENT_STAGE_INDEX,
+  LAB_VIEW_META,
   MATERIALS,
   STAGES,
   STREAK_NOTE,
   STREAK_WEEKS,
+  badgeEarned,
   gaugePercent,
   materialRow,
   materialsLevel,
+  stageIndexFor,
+  type LabView,
 } from "@/lib/accord/labtest-fixtures";
 
 /**
@@ -22,11 +24,13 @@ import {
  * - バッジは数字の良し悪しではなく「続けたこと」に対して配る
  * - できなかった週は色が薄くなるだけで、消えない
  */
-export function LabtestGame() {
-  const [view, setView] = useState<"first" | "retest">("first");
+export function LabtestGame({ view }: { view: LabView }) {
   const lv = materialsLevel(view);
   const before = materialsLevel("first");
   const leveledUp = view === "retest" && lv.level > before.level;
+  const stageIndex = stageIndexFor(view);
+  const badges = BADGES.map((b) => ({ ...b, earned: badgeEarned(b, view) }));
+  const weeks = view === "first" ? [] : STREAK_WEEKS;
 
   return (
     <div className="rounded-3xl border border-stone-200 bg-gradient-to-b from-brand-50/60 to-white p-5 sm:p-6">
@@ -39,27 +43,9 @@ export function LabtestGame() {
             数字を「材料あつめ」に読みかえる
           </h3>
         </div>
-        <div className="flex rounded-full border border-stone-200 bg-white p-0.5">
-          {(
-            [
-              ["first", "初回"],
-              ["retest", "3ヶ月後"],
-            ] as const
-          ).map(([k, label]) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => setView(k)}
-              className={`rounded-full px-4 py-1.5 text-[12.5px] font-bold transition ${
-                view === k
-                  ? "bg-brand-700 text-white"
-                  : "text-stone-500 hover:text-brand-700"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <span className="rounded-full border border-stone-200 bg-white px-3.5 py-1.5 text-[12px] font-bold text-stone-600">
+          {LAB_VIEW_META[view].label}（{LAB_VIEW_META[view].when}）の画面
+        </span>
       </div>
 
       {/* レベル */}
@@ -162,8 +148,8 @@ export function LabtestGame() {
         </h4>
         <ol className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-stretch">
           {STAGES.map((s, i) => {
-            const done = i < CURRENT_STAGE_INDEX;
-            const current = i === CURRENT_STAGE_INDEX;
+            const done = i < stageIndex;
+            const current = i === stageIndex;
             return (
               <li
                 key={s.id}
@@ -203,26 +189,37 @@ export function LabtestGame() {
         <h4 className="text-[13.5px] font-bold text-stone-900">
           🔥 「今日のひとつ」をつづけた記録
         </h4>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {STREAK_WEEKS.map((w) => (
-            <div key={w.week} className="flex flex-col items-center gap-1">
-              <div className="flex gap-0.5">
-                {Array.from({ length: 7 }, (_, d) => (
-                  <span
-                    key={d}
-                    aria-hidden
-                    className={`h-4 w-2.5 rounded-sm ${
-                      d < w.done ? "bg-brand-500" : "bg-stone-100"
-                    }`}
-                  />
-                ))}
+        {weeks.length === 0 ? (
+          <div className="mt-3 rounded-xl border border-dashed border-stone-200 p-4 text-center">
+            <p className="text-[12.5px] font-semibold text-stone-600">
+              これから記録がたまっていきます
+            </p>
+            <p className="mt-1 text-[11.5px] text-stone-400">
+              明日の「今日のひとつ」から、1マスずつ埋まります。
+            </p>
+          </div>
+        ) : (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {weeks.map((w) => (
+              <div key={w.week} className="flex flex-col items-center gap-1">
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 7 }, (_, d) => (
+                    <span
+                      key={d}
+                      aria-hidden
+                      className={`h-4 w-2.5 rounded-sm ${
+                        d < w.done ? "bg-brand-500" : "bg-stone-100"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-[9.5px] tabular-nums text-stone-400">
+                  W{w.week}
+                </span>
               </div>
-              <span className="text-[9.5px] tabular-nums text-stone-400">
-                W{w.week}
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         <p className="mt-2.5 text-[11.5px] leading-relaxed text-stone-500">
           {STREAK_NOTE}
         </p>
@@ -233,11 +230,11 @@ export function LabtestGame() {
         <h4 className="text-[13.5px] font-bold text-stone-900">
           🏅 あつめたバッジ{" "}
           <span className="ml-1 text-[11.5px] font-medium text-stone-400">
-            {BADGES.filter((b) => b.earned).length} / {BADGES.length}
+            {badges.filter((b) => b.earned).length} / {badges.length}
           </span>
         </h4>
         <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">
-          {BADGES.map((b) => (
+          {badges.map((b) => (
             <div
               key={b.id}
               className={`rounded-2xl border p-3 text-center ${

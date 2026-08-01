@@ -3,6 +3,7 @@ import { containsBannedWord } from "@/lib/compliance/banned-words";
 import {
   BADGES,
   CURRENT_STAGE_INDEX,
+  LAB_TRANSLATIONS_RETEST,
   FOOD_REACTIONS,
   JOURNEY,
   LABTEST_DISCLAIMER,
@@ -20,6 +21,9 @@ import {
   labChange,
   materialRow,
   materialsLevel,
+  badgeEarned,
+  stageIndexFor,
+  translationsFor,
 } from "../labtest-fixtures";
 
 describe("labChange — 継続提案で言い違えてはいけない区別", () => {
@@ -179,8 +183,33 @@ describe("ゲーミフィケーション — 材料ゲージとレベル", () =>
   });
 
   it("バッジは続けたことに対して配る — 未獲得も残しておく", () => {
-    expect(BADGES.filter((b) => b.earned).length).toBeGreaterThan(0);
-    expect(BADGES.some((b) => !b.earned)).toBe(true);
+    expect(BADGES.filter((b) => badgeEarned(b, "retest")).length).toBeGreaterThan(0);
+    expect(BADGES.some((b) => !badgeEarned(b, "retest"))).toBe(true);
+  });
+
+  it("タブを切り替えるとバッジが増える。初回で得たものは消えない", () => {
+    const first = BADGES.filter((b) => badgeEarned(b, "first"));
+    const retest = BADGES.filter((b) => badgeEarned(b, "retest"));
+    expect(first.length).toBeGreaterThan(0);
+    expect(retest.length).toBeGreaterThan(first.length);
+    for (const b of first) {
+      expect(badgeEarned(b, "retest"), `${b.label} が3ヶ月後に消えている`).toBe(true);
+    }
+  });
+
+  it("現在地はタブで動く — 初回は出発地点、3ヶ月後は答え合わせ", () => {
+    expect(stageIndexFor("first")).toBe(0);
+    expect(stageIndexFor("retest")).toBe(STAGES.length - 1);
+  });
+
+  it("再検査ぶんの翻訳が、初回と同じ枠・同じ件数で用意されている", () => {
+    const a = translationsFor("first");
+    const b = translationsFor("retest");
+    expect(b.map((t) => t.id)).toEqual(a.map((t) => t.id));
+    for (const [i, t] of b.entries()) {
+      expect(t.finding).not.toBe(a[i].finding);
+      expect(t.rowIds).toEqual(a[i].rowIds);
+    }
   });
 
   it("現在地はステージの範囲内", () => {
@@ -201,6 +230,7 @@ describe("薬機法・医療広告の禁止語（§8.2）", () => {
   const texts = [
     ...LAB_ROWS.map((r) => r.note),
     ...LAB_TRANSLATIONS.flatMap((t) => [t.finding, t.meaning, t.action, t.skinLink]),
+    ...LAB_TRANSLATIONS_RETEST.flatMap((t) => [t.finding, t.meaning, t.action, t.skinLink]),
     ...JOURNEY.map((s) => s.body),
     ...MATERIALS.map((m) => m.role),
     ...Object.values(LEVEL_TITLE),

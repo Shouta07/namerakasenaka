@@ -323,13 +323,33 @@ export const LEVEL_TITLE: Record<number, string> = {
   5: "整えを保つ時期",
 };
 
+/** 画面全体の切り替えタブ。初回の検査時点か、3ヶ月後の再検査時点か。 */
+export type LabView = "first" | "retest";
+
+export const LAB_VIEW_META: Record<
+  LabView,
+  { label: string; when: string; caption: string }
+> = {
+  first: {
+    label: "初回",
+    when: "Week 1",
+    caption: "検査を受けた直後。ここから伴走がはじまります。",
+  },
+  retest: {
+    label: "3ヶ月後",
+    when: "Week 12",
+    caption: "再検査の結果が届いたところ。続けたぶんが数字に出ています。",
+  },
+};
+
 /** 続けたことに対して渡すバッジ。数字の良し悪しでは配らない。 */
 export type Badge = {
   id: string;
   emoji: string;
   label: string;
   how: string;
-  earned: boolean;
+  /** いつ獲得するか。null はまだ先のバッジ。 */
+  earnedAt: LabView | null;
 };
 
 export const BADGES: Badge[] = [
@@ -338,65 +358,72 @@ export const BADGES: Badge[] = [
     emoji: "🩸",
     label: "はじめの一歩",
     how: "検査を受けて、自分の数字を知った",
-    earned: true,
+    earnedAt: "first",
   },
   {
     id: "b-guide",
     emoji: "📖",
     label: "翻訳を読んだ",
     how: "検査結果の解説をひととおり読んだ",
-    earned: true,
+    earnedAt: "first",
   },
   {
     id: "b-7days",
     emoji: "🔥",
     label: "7日つづいた",
     how: "「今日のひとつ」を7日つづけた",
-    earned: true,
+    earnedAt: "retest",
   },
   {
     id: "b-rotation",
     emoji: "🔄",
     label: "4日ローテーション完走",
     how: "献立の4日サイクルを1周した",
-    earned: true,
+    earnedAt: "retest",
   },
   {
     id: "b-photo",
     emoji: "📷",
     label: "経過4回",
     how: "経過写真を4回のこした",
-    earned: true,
+    earnedAt: "retest",
   },
   {
     id: "b-half",
     emoji: "🎉",
     label: "折り返し",
     how: "コースの半分まで来た",
-    earned: true,
+    earnedAt: "retest",
   },
   {
     id: "b-retest",
     emoji: "🔁",
     label: "再検査までたどりついた",
     how: "3ヶ月後の再検査を受けた",
-    earned: true,
+    earnedAt: "retest",
   },
   {
     id: "b-level4",
     emoji: "🏅",
     label: "入れ替わりの時期へ",
     how: "材料がそろった度が Lv.4 になった",
-    earned: false,
+    earnedAt: "retest",
   },
   {
     id: "b-sixmonth",
     emoji: "🌳",
     label: "6ヶ月つづいた",
     how: "コースを最後まで続けた",
-    earned: false,
+    earnedAt: null,
   },
 ];
+
+/** その時点で獲得済みのバッジか。初回で得たものは、3ヶ月後にも残る。 */
+export function badgeEarned(badge: Badge, view: LabView): boolean {
+  if (badge.earnedAt === null) return false;
+  if (badge.earnedAt === "first") return true;
+  return view === "retest";
+}
 
 /** クエストマップ。12週間を5つのステージにまとめて現在地を示す。 */
 export type Stage = {
@@ -447,6 +474,11 @@ export const STAGES: Stage[] = [
 
 /** いまいるステージ（デモは再検査到達＝5段目）。 */
 export const CURRENT_STAGE_INDEX = 4;
+
+/** 切り替えタブに応じた現在地。初回は出発地点、3ヶ月後は答え合わせ。 */
+export function stageIndexFor(view: LabView): number {
+  return view === "first" ? 0 : CURRENT_STAGE_INDEX;
+}
 
 /** 週ごとの継続ログ。伴走が続いているかを一目で見せるヒートマップ用。 */
 export const STREAK_WEEKS: { week: number; done: number }[] = [
@@ -523,6 +555,52 @@ export const LAB_TRANSLATIONS: LabTranslation[] = [
     rowIds: ["bun", "alb", "ast", "alt"],
   },
 ];
+
+/** 再検査ぶんの翻訳。同じ枠のまま中身が更新される＝ループが回っている証拠。 */
+export const LAB_TRANSLATIONS_RETEST: LabTranslation[] = [
+  {
+    id: "t-iron",
+    finding: "鉄の蓄え（フェリチン）が 42 → 88 になり、適正の範囲に入りました。",
+    meaning:
+      "材料と酸素が届きやすい状態に近づいています。ここからが、皮ふが入れ替わっていく時期にあたります。",
+    action:
+      "いまの食べ方を、あと3ヶ月そのまま続けてみましょう。増やすものはもうありません。",
+    skinLink: "新しい皮ふをつくる準備が整ってきた時期です。",
+    rowIds: ["ferritin"],
+  },
+  {
+    id: "t-vitd",
+    finding: "ビタミンD が 18 → 34。基準は超えましたが、適正の目安（40〜60）にはもう少しです。",
+    meaning:
+      "季節や日差しの量で動きやすい項目です。下がりやすい時期は、意識して足す必要があるとされています。",
+    action: "散歩の15分はこのまま。冬に向かう時期は、鮭・きのこの回数を少し増やしてみましょう。",
+    skinLink: "ゆらぎやすさが残る場合、この項目が関わっていることがあります。",
+    rowIds: ["vitd"],
+  },
+  {
+    id: "t-zinc",
+    finding: "亜鉛が 68 → 86。基準の下限に届き、適正まであと少しです。",
+    meaning:
+      "皮ふの入れ替わりに使う材料がそろってきています。使う量も増える時期なので、切らさないことが大事とされています。",
+    action: "牡蠣・赤身・ナッツを週2回のペースで。甘い飲みものを減らせた分は、そのまま維持を。",
+    skinLink: "同じ場所のくり返しが落ち着いてきているか、写真で確かめてみましょう。",
+    rowIds: ["zinc"],
+  },
+  {
+    id: "t-protein",
+    finding:
+      "アルブミン 4.1 → 4.5 で適正圏に。BUN も 9.8 → 13.4 と上がり、AST と ALT の差も縮まりました。",
+    meaning:
+      "食べた量ではなく、吸収できている量が増えてきた可能性があります。よく噛むことが効いてくる時期です。",
+    action: "1食に手のひら1枚分、を続けましょう。次は朝食のタンパク質を1品足せるか試してみます。",
+    skinLink: "肌をつくる材料そのものが届くようになり、変化が出やすい状態に近づいています。",
+    rowIds: ["bun", "alb", "ast", "alt"],
+  },
+];
+
+export function translationsFor(view: LabView): LabTranslation[] {
+  return view === "first" ? LAB_TRANSLATIONS : LAB_TRANSLATIONS_RETEST;
+}
 
 /** 食物IgG抗体パネル。0〜IV のクラスで反応の高さをみる。 */
 export type FoodReaction = {

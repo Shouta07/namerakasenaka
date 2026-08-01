@@ -112,7 +112,7 @@ export default function HomePage() {
           <RiskWidgets />
         </section>
 
-        <section className="mt-6 grid gap-4 lg:grid-cols-3">
+        <section className="mt-6 grid min-w-0 gap-4 lg:grid-cols-3 [&>*]:min-w-0">
           <div className="lg:col-span-2 rounded-lg border border-stone-200 bg-white">
             <header className="flex items-center justify-between border-b border-stone-200 px-4 py-2.5">
               <h3 className="text-sm font-semibold text-stone-900">本日の予約</h3>
@@ -210,7 +210,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-6 grid gap-4 lg:grid-cols-3">
+        <section className="mt-6 grid min-w-0 gap-4 lg:grid-cols-3 [&>*]:min-w-0">
           <div className="lg:col-span-1">
             <RevenueTile
               monthlyTotalJpy={demoKpiSnapshot.monthlyRevenueJpy}

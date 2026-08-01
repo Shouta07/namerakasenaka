@@ -39,7 +39,7 @@ export function AccordNav() {
             Accord
           </span>
           <span className="hidden text-[11px] font-medium text-stone-400 sm:inline">
-            初回カウンセリング支援
+            血液検査 × 肌改善の継続伴走
           </span>
         </Link>
 

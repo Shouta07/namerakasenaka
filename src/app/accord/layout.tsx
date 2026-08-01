@@ -3,11 +3,11 @@ import { AccordNav } from "@/components/accord/accord-nav";
 
 export const metadata: Metadata = {
   title: {
-    default: "Accord ｜ 初回カウンセリング支援",
+    default: "Accord ｜ 血液検査 × 肌改善の継続伴走 SaaS",
     template: "%s ｜ Accord",
   },
   description:
-    "クリニック・サロンの初回カウンセリングを支援。AI相手の接客練習、成約の見える化、月1回の伴走でスタッフの接客を底上げします。",
+    "血液検査を接客に使う肌改善サロン・クリニック専用。検査の翻訳ガイド、AI接客練習、成約の見える化、再検査サイクルまで——施術後の継続伴走を商品にできます。",
 };
 
 export default function AccordLayout({

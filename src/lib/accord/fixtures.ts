@@ -124,7 +124,7 @@ export const MONTHLY_TREND = [
 ];
 
 export const STAFF_CONVERSION = [
-  { name: "田村（オーナー）", counseling: 6, contracts: 5 },
+  { name: "三浦（オーナー）", counseling: 6, contracts: 5 },
   { name: "佐藤 美咲", counseling: 7, contracts: 4 },
   { name: "高橋 里奈", counseling: 5, contracts: 2 },
 ];
@@ -257,6 +257,7 @@ export type RubricKey = (typeof ROLEPLAY_RUBRIC)[number]["key"];
 
 export type TimelineKind =
   | "counseling"
+  | "labtest"
   | "treatment"
   | "photo"
   | "line"
@@ -296,11 +297,18 @@ export const ACCORD_CUSTOMERS: AccordCustomer[] = [
     nextAction: "7/2 の4回目来店時に、経過写真を一緒に見返す",
     timeline: [
       {
+        id: "s0",
+        kind: "labtest",
+        at: "2026-05-10",
+        title: "初回血液検査",
+        body: "亜鉛・ビタミンD・フェリチンが低め。翻訳ガイドで「肌の材料が足りない状態」と図解つきで説明し、深い納得。再検査は6ヶ月後（11月頃）を提案。",
+      },
+      {
         id: "s1",
         kind: "counseling",
         at: "2026-05-10",
         title: "初回カウンセリング",
-        body: "皮膚科で治療→再発を繰り返し。甘いものの習慣あり。腸のメカニズム図解に強い納得。6ヶ月コース成約。",
+        body: "皮膚科で治療→再発を繰り返し。甘いものの習慣あり。検査の翻訳と腸のメカニズム図解に強い納得。6ヶ月コース成約。",
       },
       {
         id: "s2",
@@ -373,7 +381,7 @@ export const ACCORD_CUSTOMERS: AccordCustomer[] = [
     status: "体験予約",
     statusNote: "7/5 体験予約（検査のみ希望）",
     lineConsent: false,
-    assignedTo: "田村（オーナー）",
+    assignedTo: "三浦（オーナー）",
     concern: "他サロンでの契約失敗経験から強い警戒。勧誘NGの意思表示あり。",
     nextAction: "体験時は提案をせず、検査と説明のみ。LINE同意は無理に取らない",
     timeline: [
@@ -432,14 +440,32 @@ export const COPILOT_BRIEF: CopilotInsight[] = [
       "フォロー文面を準備しました（送信は確認後）。参考: 前回6月の同様フォローでは 38名中9名が再来店予約につながりました。",
   },
   {
+    id: "retest-window",
+    severity: "opportunity",
+    title: "再検査の提案時期のお客様が 8名います",
+    body:
+      "初回の血液検査から6ヶ月前後のお客様が 8名。改善を数字で見せられる再検査は、継続とコース更新のいちばん強い理由になります。",
+    evidence: [
+      "初回検査から5〜7ヶ月: 8名（うちLINE同意あり 8名）",
+      "うち経過写真で改善傾向: 6名",
+      "前回の再検査提案: 7名中5名が受検 → 4名がコース継続",
+    ],
+    action: {
+      label: "8名に再検査のご案内を準備する",
+      via: "LINE経過共有",
+    },
+    doneEffect:
+      "再検査のご案内を準備しました（送信は確認後）。数字の変化を翻訳ガイドで見せられるお客様から順に並べています。",
+  },
+  {
     id: "staff-strength",
     severity: "opportunity",
-    title: "田村さんの型に、勝ち筋があります",
+    title: "三浦さんの型に、勝ち筋があります",
     body:
-      "田村さんの成約率は平均より 12pt 高く、ヒアリング時間はむしろ短い傾向。「先に不安を言語化してから提案する」型が効いている可能性があります。",
+      "三浦さんの成約率は平均より 12pt 高く、ヒアリング時間はむしろ短い傾向。「先に不安を言語化してから提案する」型が効いている可能性があります。",
     evidence: [
-      "成約率: 田村 83% / 店舗平均 61%",
-      "平均ヒアリング時間: 田村 28分 / 店舗平均 41分",
+      "成約率: 三浦 83% / 店舗平均 61%",
+      "平均ヒアリング時間: 三浦 28分 / 店舗平均 41分",
       "価格の話を切り出す位置: 会話の後半 84%（平均 52%）",
     ],
     action: {
@@ -481,6 +507,7 @@ export const KIND_META: Record<
   { label: string; emoji: string }
 > = {
   counseling: { label: "カウンセリング", emoji: "📋" },
+  labtest: { label: "血液検査", emoji: "🩸" },
   treatment: { label: "施術", emoji: "✋" },
   photo: { label: "写真", emoji: "📷" },
   line: { label: "LINE共有", emoji: "💬" },

@@ -62,6 +62,15 @@ describe("toppings registry integrity", () => {
     expect(c.plans.pro.included).toBe(true);
   });
 
+  it("v2.3: 血液検査翻訳ガイド(ai-guide) is a launch hero, standard+", () => {
+    const g = TOPPINGS["ai-guide"];
+    expect(g.status).toBe("launch");
+    expect(g.name).toContain("血液検査");
+    expect(g.plans.starter.included).toBe(false);
+    expect(g.plans.standard.included).toBe(true);
+    expect(g.plans.pro.included).toBe(true);
+  });
+
   it("cull v2.2: backlog toppings are not in the launch catalog and grant nothing", () => {
     const launchIds = launchToppings().map(([id]) => id);
     for (const id of ["case-library", "multi-location", "data-import", "lessons", "qa"]) {

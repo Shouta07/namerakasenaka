@@ -70,7 +70,7 @@ export function CustomerActions({ customer }: { customer: AccordCustomer }) {
         {customer.lineConsent ? (
           <>
             <div className="mt-3 flex flex-wrap gap-2">
-              {["経過写真（before/after）", "今日のカウンセリング要約", "次回予約のご案内"].map(
+              {["経過写真（before/after）", "検査結果のわかりやすい解説", "再検査・次回予約のご案内"].map(
                 (label) => (
                   <button
                     key={label}

@@ -4,9 +4,11 @@
  * docs/accord/topping-architecture.md §2 のカタログをコード化したもの。
  * ナビ・ゲート・料金表・エンタイトルメント写像はすべてここを読む。
  *
- * 【スコープ方針（v2.2 cull）】ローンチは物語を1周させる最小構成に絞る:
- *   院が入れる → 患者に必要なものだけ出る → 反応が戻る → 数字が見える →
- *   練習で上手くなる → コパイロットが次の一手。
+ * 【スコープ方針（v2.3 vertical focus）】市場は1ニッチに固定:
+ *   血液検査（血液診断）を接客に使う、肌改善サロン・クリニック（背中ニキビ等）。
+ *   機構は汎用SaaSだが、コンテンツと訴求はこのニッチ専用。ローンチは物語1周:
+ *   検査を翻訳して見せる → 成約 → 患者に必要なものだけ届く → 反応が戻る →
+ *   数字が見える → 練習で上手くなる → コパイロットが次の一手（再検査の提案まで）。
  * それ以外は status:"backlog"（ロードマップ保持・料金表から除外）。
  * 単品アドオン価格はローンチでは持たない（3プラン束のみ販売）。
  */
@@ -88,6 +90,17 @@ export const TOPPINGS = {
   },
 
   // ── トッピング（ローンチ） ─────────────────────────────
+  "ai-guide": {
+    name: "血液検査の翻訳ガイド",
+    short: "検査翻訳",
+    description:
+      "血液検査の結果を「あなたの体で起きていること」の言葉と図解に翻訳し、カウンセリングで見せて LINE でお渡し。検査を成約と継続の武器に変える、このニッチの中核機能。",
+    emoji: "🩸",
+    tier: "topping",
+    dependsOn: ["core", "line-share"],
+    status: "launch",
+    plans: { starter: OUT, standard: INC, pro: INC },
+  },
   roleplay: {
     name: "AI接客練習",
     short: "接客練習",
@@ -200,16 +213,6 @@ export const TOPPINGS = {
     emoji: "📦",
     tier: "content",
     dependsOn: ["lessons"],
-    status: "backlog",
-    plans: NONE,
-  },
-  "ai-guide": {
-    name: "AIパーソナルガイド",
-    short: "AIガイド",
-    description: "検査・悩みからお客様専用ガイドをAI生成。二面配信の自動生成経路。",
-    emoji: "✨",
-    tier: "topping",
-    dependsOn: ["core", "line-share"],
     status: "backlog",
     plans: NONE,
   },

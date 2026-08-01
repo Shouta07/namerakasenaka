@@ -10,19 +10,19 @@ export default function AccordHomePage() {
       {/* ヒーロー */}
       <section>
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">
-          ACCORD — 初回カウンセリング支援
+          ACCORD — 血液検査 × 肌改善サロン・クリニック専用
         </p>
         <h1 className="mt-3 text-3xl font-extrabold leading-tight text-stone-900 sm:text-4xl">
-          初回カウンセリングを、
+          血液検査を、
           <br className="sm:hidden" />
-          <span className="text-brand-700">いちばん得意な接客</span>に。
+          <span className="text-brand-700">いちばん強い接客</span>に変える。
         </h1>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-stone-600">
-          Accord は、クリニック・サロンの初回カウンセリングを支援するサービスです。
-          <strong className="text-stone-800">AI相手の接客練習</strong>、
-          <strong className="text-stone-800">成約の見える化ダッシュボード</strong>、
-          <strong className="text-stone-800">月1回の伴走</strong>で、スタッフの接客を底上げ。
-          記録や写真の経過は、ご本人の同意のもと LINE でお客様の手元にも届きます。
+          Accord は、血液検査を接客に使う肌改善サロン・クリニック（背中ニキビ・肌質改善）専用の SaaS です。
+          <strong className="text-stone-800">検査結果の翻訳ガイド</strong>で成約を決め、
+          <strong className="text-stone-800">LINE経過共有と継続フォロー</strong>で施術後も伴走し、
+          <strong className="text-stone-800">再検査サイクル</strong>で改善を数字で見せて続けてもらう。
+          「施術して終わり」を終わらせ、<strong className="text-stone-800">伴走を御社の商品に</strong>します。
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
@@ -44,19 +44,19 @@ export default function AccordHomePage() {
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {[
           {
+            emoji: "🩸",
+            title: "検査を翻訳して、成約を決める",
+            body: "血液検査の結果を「あなたの体で起きていること」の言葉と図解に翻訳。納得が、いちばん強いクロージングです。",
+          },
+          {
+            emoji: "🌱",
+            title: "施術後も、伴走が続く",
+            body: "LINE経過共有と「今日のひとつ」で来店の間も関わり続け、6ヶ月後の再検査で改善を数字で見せる。継続の理由が積み上がります。",
+          },
+          {
             emoji: "🎭",
-            title: "練習してから、本番へ",
-            body: "AIがお客様役。不安型・比較検討型・不信型 — 苦手なお客様ほど、何度でも練習できます。",
-          },
-          {
-            emoji: "📊",
-            title: "感覚ではなく、数字で",
-            body: "初回予約から成約までのどこで離れているかが見える。練習のテーマが数字から決まります。",
-          },
-          {
-            emoji: "🤝",
-            title: "月に一度、一緒に振り返る",
-            body: "数字と練習ログを見ながら翌月のテーマを決める伴走。導入して終わり、にしません。",
+            title: "練習と数字で、店が上手くなる",
+            body: "AIお客様で何度でも接客練習。成約ダッシュボードとコパイロットが、次に磨くテーマを毎朝提案します。",
           },
         ].map((c) => (
           <div key={c.title} className="rounded-2xl border border-stone-200 bg-white p-5">

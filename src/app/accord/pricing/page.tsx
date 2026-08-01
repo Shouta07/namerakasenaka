@@ -20,7 +20,8 @@ export default function AccordPricingPage() {
           必要な機能だけ、必要なぶんだけ。
         </h1>
         <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-stone-600">
-          Accord は「生地（顧客台帳・カウンセリング記録）」の上に、機能をトッピングして使う SaaS です。
+          Accord は血液検査を接客に使う肌改善サロン・クリニック専用の SaaS。
+          「生地（顧客台帳・カウンセリング記録）」の上に、検査翻訳・伴走・練習の機能をトッピングして使います。
           プランは必要なトッピングをまとめた3つの束。店舗のフェーズに合わせて、上のプランへ増やせます。
         </p>
       </header>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { LabRadar } from "@/components/charts/lab-radar";
 import { LabValueBar } from "@/components/charts/lab-value-bar";
 import { LabDataList } from "@/components/charts/lab-data-list";
@@ -21,6 +21,17 @@ import {
  */
 export function MyLabCard() {
   const [selected, setSelected] = useState(0);
+  const [rawOpen, setRawOpen] = useState(false);
+  const rawRef = useRef<HTMLDetailsElement>(null);
+
+  function openRaw() {
+    setRawOpen(true);
+    // 開いてから位置を合わせる。畳んだままだと高さが確定しない。
+    requestAnimationFrame(() =>
+      rawRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }
+
   const now = radarLevel("retest");
   const before = radarLevel("first");
 
@@ -44,6 +55,18 @@ export function MyLabCard() {
         </h2>
         <span className="text-[11px] text-stone-400">7月の再検査ぶん</span>
       </div>
+
+      {/* この図が何からできているか。生データへの入口は、上にも置く。 */}
+      <p className="mt-1 text-[11.5px] leading-relaxed text-stone-500">
+        7月20日の血液検査 {LAB_ROWS.length} 項目からつくっています。
+        <button
+          type="button"
+          onClick={openRaw}
+          className="ml-1 font-bold text-[#3c6347] underline underline-offset-2"
+        >
+          生データを見る
+        </button>
+      </p>
 
       {/* いまの状態 */}
       <div className="mt-3 flex items-center gap-3 rounded-2xl bg-[#f3f8f3] p-4">
@@ -200,15 +223,20 @@ export function MyLabCard() {
       </ul>
 
       {/* 取り込んだ検査データそのもの。加工前を見られることが信用になる。 */}
-      <details className="group mt-3">
+      <details
+        ref={rawRef}
+        className="group mt-3 scroll-mt-16"
+        open={rawOpen}
+        onToggle={(e) => setRawOpen((e.currentTarget as HTMLDetailsElement).open)}
+      >
         <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[12.5px] font-bold text-[#3c6347]">
-          受け取った検査データを見る（{LAB_ROWS.length}項目）
+          受け取った生の検査データを見る（{LAB_ROWS.length}項目）
           <span className="ml-1 transition group-open:rotate-180" aria-hidden>
             ▾
           </span>
         </summary>
         <div className="mt-2">
-          <LabDataList view="retest" />
+          <LabDataList />
         </div>
       </details>
 

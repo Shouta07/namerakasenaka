@@ -199,7 +199,14 @@ export function LabtestDemo() {
       >
         <LabtestRadar view={view} />
 
-        <div className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <details className="group mt-6">
+          <summary className="cursor-pointer list-none text-[13px] font-bold text-brand-700">
+            1項目ずつの詳しい翻訳を読む
+            <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+              ▾
+            </span>
+          </summary>
+          <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
           {translationsFor(view).map((t) => (
             <article
               key={t.id}
@@ -214,8 +221,9 @@ export function LabtestDemo() {
                 背中の肌との関係： {t.skinLink}
               </p>
             </article>
-          ))}
-        </div>
+            ))}
+          </div>
+        </details>
       </Step>
 
       {/* お客様側 — ゲーミフィケーション */}
@@ -234,14 +242,24 @@ export function LabtestDemo() {
           <strong className="text-stone-800">上のタブを切り替える</strong>と、
           続けたぶんだけゲージが伸びるのが見えます。
         </p>
-        <div className="mt-4">
-          <LabtestGame view={view} />
-        </div>
+        <details className="group mt-4">
+          <summary className="cursor-pointer list-none rounded-2xl border border-stone-200 bg-white p-4 text-[13px] font-bold text-brand-700 transition hover:border-brand-500">
+            お客様のスマホ画面を開く（材料あつめ・バッジ・現在地）
+            <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+              ▾
+            </span>
+          </summary>
+          <div className="mt-4">
+            <LabtestGame view={view} />
+          </div>
+        </details>
       </section>
 
       {/* STEP 3 — 接客 */}
       <Step
         n="3"
+        collapsed
+        openLabel="接客での見せ方を開く"
         title="接客で見せる"
         lead="紙の検査票を渡す代わりに、翻訳ガイドを一緒に見ながら話す。売り込みではなく、事実の共有が成約を決めます。"
       >
@@ -279,6 +297,8 @@ export function LabtestDemo() {
       {/* STEP 4 — 伴走 */}
       <Step
         n="4"
+        collapsed
+        openLabel="伴走の中身（食事・12週間）を開く"
         title="伴走する"
         lead="検査でわかった「避けたい食品」は、禁止リストではなく献立の組み方に変える。来店の間の12週間を、仕組みで持たせます。"
       >
@@ -448,19 +468,30 @@ export function LabtestDemo() {
   );
 }
 
+/**
+ * 1ステップ。
+ *
+ * `collapsed` を付けたステップは畳んだ状態で始まる。
+ * 全部を開いて置くと7画面を超え、商談で最後まで到達しない —
+ * 深い話は「見たい人が開く」に寄せて、既定の1周を短くする。
+ */
 function Step({
   n,
   title,
   lead,
+  collapsed,
+  openLabel,
   children,
 }: {
   n: string;
   title: string;
   lead: string;
+  collapsed?: boolean;
+  openLabel?: string;
   children: React.ReactNode;
 }) {
-  return (
-    <section>
+  const head = (
+    <>
       <div className="flex items-baseline gap-3">
         <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-brand-700 text-[13px] font-extrabold text-white">
           {n}
@@ -470,7 +501,32 @@ function Step({
       <p className="mt-2 max-w-3xl text-[13.5px] leading-relaxed text-stone-600">
         {lead}
       </p>
-      <div className="mt-4">{children}</div>
+    </>
+  );
+
+  if (!collapsed) {
+    return (
+      <section>
+        {head}
+        <div className="mt-4">{children}</div>
+      </section>
+    );
+  }
+
+  return (
+    <section>
+      <details className="group">
+        <summary className="cursor-pointer list-none rounded-2xl border border-stone-200 bg-white p-5 transition hover:border-brand-500">
+          {head}
+          <span className="mt-3 inline-flex min-h-11 items-center text-[12.5px] font-bold text-brand-700">
+            {openLabel ?? "開いて見る"}
+            <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+              ▾
+            </span>
+          </span>
+        </summary>
+        <div className="mt-4">{children}</div>
+      </details>
     </section>
   );
 }

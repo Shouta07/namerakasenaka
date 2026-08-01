@@ -1,11 +1,21 @@
 import Link from "next/link";
-import { CalendarClock, Camera, GitCompare, Utensils } from "lucide-react";
+import {
+  CalendarClock,
+  Camera,
+  GitCompare,
+  Heart,
+  Leaf,
+  Sparkles,
+  Utensils,
+} from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import {
   demoAppointments,
   demoClient,
   demoMealLogs,
+  demoProgressPhotos,
+  demoTherapistCheer,
 } from "@/lib/demo/fixtures";
 import { HypothesisCard } from "@/components/guide/hypothesis-card";
 import { UnreadCompanionBanner } from "@/components/guide/unread-banner";
@@ -144,34 +154,100 @@ function DemoClientProgress() {
 
   const latestMeal = demoMealLogs[0];
 
+  // 歩みの物語 — 日数・折り返し・自己実感の推移をデモデータから組み立てる。
+  const journeyDays = Math.max(
+    1,
+    Math.ceil(
+      (Date.now() - new Date(demoClient.startedOn).getTime()) / 86_400_000,
+    ),
+  );
+  const progressRatio = demoClient.sessionsCompleted / demoClient.sessionsTotal;
+  const milestoneLabel =
+    progressRatio >= 1
+      ? "🎉 コースを完走しました"
+      : progressRatio >= 0.5
+        ? "🎉 折り返し地点に到着"
+        : "🌱 歩みはじめの季節";
+  const myPhotos = demoProgressPhotos
+    .filter((p) => p.clientId === demoClient.id && p.selfRating != null)
+    .sort((a, b) => a.takenAt.localeCompare(b.takenAt));
+  const firstRating = myPhotos[0]?.selfRating ?? null;
+  const latestRating = myPhotos[myPhotos.length - 1]?.selfRating ?? null;
+
   return (
     <div className="space-y-6">
-      <section className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-        <CustomerAvatar name={demoClient.displayName} size="lg" role="customer" />
-        <div className="min-w-0 flex-1">
-          <p className="text-xs text-stone-500">{demoClient.furigana}</p>
-          <h1 className="text-xl font-bold text-stone-900">
-            {demoClient.displayName} さん
-          </h1>
-          <p className="mt-1 text-xs text-stone-500">
-            {demoClient.courseName} ・ 担当 {demoClient.primaryTherapistName}
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-stone-100">
-              <div
-                className="h-full bg-brand-500"
-                style={{
-                  width: `${Math.round(
-                    (demoClient.sessionsCompleted / demoClient.sessionsTotal) * 100,
-                  )}%`,
-                }}
-              />
-            </div>
-            <span className="text-xs font-medium text-stone-600">
-              {demoClient.sessionsCompleted}/{demoClient.sessionsTotal} 回
-            </span>
+      <section className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <CustomerAvatar name={demoClient.displayName} size="lg" role="customer" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-stone-500">{demoClient.furigana}</p>
+            <h1 className="text-xl font-bold text-stone-900">
+              {demoClient.displayName} さん
+            </h1>
+            <p className="mt-1 text-xs text-stone-500">
+              {demoClient.courseName} ・ 担当 {demoClient.primaryTherapistName}
+            </p>
+          </div>
+          <div className="flex-none text-right">
+            <p className="text-[11px] text-stone-400">はじめてから</p>
+            <p className="text-lg font-bold tabular-nums text-brand-700">
+              {journeyDays}
+              <span className="ml-0.5 text-xs font-semibold text-stone-500">日目</span>
+            </p>
           </div>
         </div>
+        <div className="mt-3 flex items-center gap-2">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-stone-100">
+            <div
+              className="h-full bg-brand-500"
+              style={{ width: `${Math.round(progressRatio * 100)}%` }}
+            />
+          </div>
+          <span className="text-xs font-medium text-stone-600">
+            {demoClient.sessionsCompleted}/{demoClient.sessionsTotal} 回
+          </span>
+        </div>
+        <p className="mt-2 text-xs font-semibold text-brand-700">{milestoneLabel}</p>
+      </section>
+
+      {/* ここまでの歩み — 記録を「小さな勝ちのお祝い」に翻訳する */}
+      {firstRating != null && latestRating != null ? (
+        <section className="rounded-2xl border border-brand-100 bg-brand-50/50 p-5">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-stone-900">
+            <Sparkles className="h-4 w-4 text-brand-700" />
+            ここまでの歩み
+          </h2>
+          <div className="mt-3 flex items-center gap-3">
+            <RatingDots value={firstRating} label="はじめた頃" />
+            <span className="text-stone-400" aria-hidden>
+              →
+            </span>
+            <RatingDots value={latestRating} label="いちばん最近" highlight />
+          </div>
+          <p className="mt-3 text-xs leading-relaxed text-stone-600">
+            ご自身でつけた「実感の点数」が {firstRating} → {latestRating}{" "}
+            に変わりました。数字は評価ではなく、
+            {demoClient.displayName.split(" ")[0]}
+            さんご自身の感覚の記録です。感じ方が変わってきたこと自体が、続けてきた証です。
+          </p>
+        </section>
+      ) : null}
+
+      {/* 担当からのひとこと — 画面の向こうに人がいることを伝える */}
+      <section className="rounded-2xl border border-stone-200 bg-white p-5">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-stone-900">
+          <Heart className="h-4 w-4 text-rose-500" />
+          {demoTherapistCheer.therapistName} からのひとこと
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-stone-700">
+          {demoTherapistCheer.body}
+        </p>
+        <p className="mt-2 text-[11px] text-stone-400">
+          {new Date(demoTherapistCheer.writtenAt).toLocaleDateString("ja-JP", {
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
       </section>
 
       {/* 伴走ループ — サロンから未読のお返事があるときだけ表示 */}
@@ -205,6 +281,20 @@ function DemoClientProgress() {
           </CardContent>
         </Card>
       ) : null}
+
+      {/* 今日のひとつ — 次の一歩をいつも1つだけ置いておく */}
+      <section className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4">
+        <Leaf className="h-5 w-5 flex-none text-emerald-600" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-stone-900">今日のひとつ</p>
+          <p className="mt-0.5 text-xs leading-relaxed text-stone-600">
+            次の来店までの間も、小さなケアをひとつずつ。今日ぶんの「ひとつ」が回復ガイドに届いています。
+          </p>
+        </div>
+        <Link href="/c/guide" className="flex-none">
+          <Button size="sm">見にいく →</Button>
+        </Link>
+      </section>
 
       <section>
         <div className="mb-3 flex items-center justify-between">
@@ -269,6 +359,49 @@ function DemoClientProgress() {
           </CardContent>
         </Card>
       </section>
+
+      <footer className="pb-2 pt-4 text-center text-[11px] text-stone-400">
+        Powered by Accord — 美容・ウェルネス店舗の現場CXを創る
+      </footer>
+    </div>
+  );
+}
+
+/** 自己実感（1〜5）を5つのドットで見せる小さな表示。 */
+function RatingDots({
+  value,
+  label,
+  highlight = false,
+}: {
+  value: number;
+  label: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-start gap-1">
+      <span className="text-[11px] text-stone-500">{label}</span>
+      <div className="flex items-center gap-1" aria-label={`${label}: 実感 ${value}/5`}>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <span
+            key={i}
+            aria-hidden
+            className={`h-2.5 w-2.5 rounded-full ${
+              i <= value
+                ? highlight
+                  ? "bg-brand-500"
+                  : "bg-stone-400"
+                : "bg-stone-200"
+            }`}
+          />
+        ))}
+        <span
+          className={`ml-1 text-xs font-bold tabular-nums ${
+            highlight ? "text-brand-700" : "text-stone-500"
+          }`}
+        >
+          {value}
+        </span>
+      </div>
     </div>
   );
 }

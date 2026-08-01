@@ -184,6 +184,21 @@ export const demoTherapists: DemoTherapist[] = [
   { id: "th-nakamura", name: "中村 真奈", role: "junior" },
 ];
 
+/** 担当セラピストから顧客への「ひとこと」— 進捗ページの温度を作るデモデータ。 */
+export type DemoTherapistCheer = {
+  clientId: string;
+  therapistName: string;
+  writtenAt: string; // ISO
+  body: string;
+};
+
+export const demoTherapistCheer: DemoTherapistCheer = {
+  clientId: demoClient.id,
+  therapistName: demoClient.primaryTherapistName,
+  writtenAt: daysAgoIso(7, 12),
+  body: "折り返しの3回目、おつかれさまでした。写真を並べてみると、ご自身の実感メモも少しずつ明るくなっていて、私もうれしいです。ここからの3回は、ホームケアの保湿をもう一歩ていねいにやってみましょう。次回、やり方を一緒におさらいしますね。",
+};
+
 export type DemoProgressPhoto = {
   id: string;
   clientId: string;

@@ -86,7 +86,8 @@ export function RoleNav({ items, title }: { items: NavItem[]; title: string }) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
+                // iPad を指で使うので、サイドバーも 44px を割らない。
+                "flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm",
                 active
                   ? "bg-brand-50 text-brand-700 font-medium"
                   : "text-stone-700 hover:bg-stone-50",

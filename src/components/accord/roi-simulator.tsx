@@ -181,7 +181,7 @@ export function RoiSimulator() {
           </div>
 
           <details className="mt-4 rounded-2xl bg-stone-50 p-4">
-            <summary className="cursor-pointer list-none text-[12px] font-bold text-stone-700">
+            <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[12px] font-bold text-stone-700">
               この試算の前提を見る ▼
             </summary>
             <ul className="mt-2 space-y-1">

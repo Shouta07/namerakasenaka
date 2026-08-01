@@ -24,14 +24,14 @@ export default function TherapistLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
       <RoleNav title="Therapist" items={sidebarItems} />
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <RoleTopBar
           role="セラピスト"
           persona="therapist"
           eyebrow={demoOrganization.name}
           right={<PresentationModeToggle />}
         />
-        <main className="flex-1 px-4 pt-4 pb-[calc(72px+max(var(--safe-bottom),12px))] md:px-8 md:pb-8">
+        <main className="min-w-0 flex-1 px-4 pt-4 pb-[calc(72px+max(var(--safe-bottom),12px))] md:px-8 md:pb-8">
           {children}
         </main>
       </div>

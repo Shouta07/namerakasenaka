@@ -83,7 +83,7 @@ export function PersonaSwitcher({ active }: { active: PersonaKey }) {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-2.5 py-1 text-[11px] font-medium text-stone-700 shadow-sm hover:bg-stone-50"
+        className="tap-44 inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-2.5 py-1 text-[11px] font-medium text-stone-700 shadow-sm hover:bg-stone-50"
       >
         {renderIcon(current.iconKey)}
         <span>{current.label}</span>

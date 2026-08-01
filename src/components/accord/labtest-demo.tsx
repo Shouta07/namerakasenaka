@@ -105,7 +105,7 @@ export function LabtestDemo() {
         <LabtestRadar view={view} />
 
         <details className="group mt-6">
-          <summary className="cursor-pointer list-none text-[13px] font-bold text-brand-700">
+          <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[13px] font-bold text-brand-700">
             1項目ずつの詳しい翻訳を読む
             <span className="ml-1 transition group-open:rotate-180" aria-hidden>
               ▾

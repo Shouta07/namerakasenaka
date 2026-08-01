@@ -87,6 +87,27 @@ a,
   touch-action: manipulation;
 }
 
+/*
+ * 指で押せる大きさ（44px）を、見た目を変えずに確保する。
+ * 情報密度の高い一覧ヘッダの「全件」「詳細」のような小さなリンクは、
+ * 文字を大きくすると表が間延びする。そこで当たり判定だけを
+ * 透明な擬似要素で 44px に広げる。親に overflow:hidden があると
+ * はみ出しが切れるので、その場合は素直に min-h-11 を使うこと。
+ */
+.tap-44 {
+  position: relative;
+}
+.tap-44::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  min-width: 44px;
+  transform: translateY(-50%);
+}
+
 :where(button, [role="button"], a):active {
   opacity: 0.8;
 }

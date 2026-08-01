@@ -177,7 +177,7 @@ export function GuideCustomerDetail({ guideCustomerId }: { guideCustomerId: stri
                   setDraft(toDraft(record));
                   setEditing(true);
                 }}
-                className="inline-flex h-8 items-center gap-1 rounded-lg border border-stone-200 px-2 text-xs text-stone-700"
+                className="tap-44 inline-flex h-8 items-center gap-1 rounded-lg border border-stone-200 px-2 text-xs text-stone-700"
               >
                 <Pencil className="h-3 w-3" />
                 編集

@@ -17,7 +17,9 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "h-9 px-3 text-sm",
+  // 密なUI用の小さいボタン。見た目は36pxのまま、当たり判定だけ44pxに広げる
+  // （指で押せない小ささを、視覚的な余白を増やさずに解消する）。
+  sm: "relative h-9 px-3 text-sm after:absolute after:inset-x-0 after:-inset-y-1 after:content-['']",
   md: "h-11 px-4 text-sm",
   lg: "h-14 px-6 text-base font-semibold",
 };

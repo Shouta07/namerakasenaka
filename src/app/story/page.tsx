@@ -281,7 +281,7 @@ function SceneCard({ s, idx }: { s: Scene; idx: number }) {
             </div>
 
             <details className="rounded-2xl border border-stone-100 bg-white p-3.5 group open:border-stone-200">
-              <summary className="cursor-pointer list-none text-[12px] font-semibold text-stone-500 hover:text-stone-700 flex items-center gap-2">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-[12px] font-semibold text-stone-500 hover:text-stone-700">
                 <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-stone-100 text-stone-500 group-open:rotate-45 transition-transform">
                   +
                 </span>
@@ -334,7 +334,7 @@ export default function StoryPage() {
               href="/"
               className="text-[#8c5a3c] underline underline-offset-2"
             >
-              namerakasenaka.vercel.app
+              このデモ環境
             </Link>{" "}
             は「何ができるか」の倉庫です。
             <br className="hidden sm:block" />
@@ -484,7 +484,10 @@ export default function StoryPage() {
       <footer className="border-t border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex flex-wrap items-center gap-x-3 text-[11px] text-stone-400">
           <span>© バイタリティデザイン合同会社 — 使いみち絵巻 v1</span>
-          <Link href="/hub" className="font-semibold text-[#8c5a3c] hover:underline">
+          <Link
+            href="/hub"
+            className="inline-flex min-h-11 items-center font-semibold text-[#8c5a3c] hover:underline"
+          >
             すべての画面・資料 → /hub
           </Link>
         </div>

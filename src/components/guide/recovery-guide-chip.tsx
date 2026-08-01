@@ -26,7 +26,7 @@ export function RecoveryGuideChip({
   return (
     <Link
       href={`/admin/customers/${match.id}`}
-      className="inline-flex h-8 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 text-xs font-medium text-emerald-700 hover:bg-emerald-100"
+      className="tap-44 inline-flex h-8 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 text-xs font-medium text-emerald-700 hover:bg-emerald-100"
     >
       <Sparkles className="h-3 w-3" />
       回復ガイドを見る →

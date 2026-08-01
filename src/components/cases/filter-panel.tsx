@@ -239,7 +239,7 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-[32px] items-center rounded-full border px-3 py-1 text-xs transition-colors",
+        "inline-flex min-h-11 items-center rounded-full border px-3.5 text-xs transition-colors",
         selected
           ? "border-brand-500 bg-brand-500 text-white"
           : "border-stone-200 bg-white text-stone-700 hover:bg-stone-50",

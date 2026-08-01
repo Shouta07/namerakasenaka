@@ -103,7 +103,7 @@ export default function NewPhotoPage({
               accept="image/*"
               capture="environment"
               onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm"
+              className="block w-full py-3 text-sm file:min-h-11 file:rounded-lg file:border file:border-stone-200 file:bg-white file:px-4 file:text-sm"
             />
           </div>
 

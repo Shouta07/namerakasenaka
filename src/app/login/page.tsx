@@ -15,7 +15,7 @@ export default function LoginPage() {
     >
       <Link
         href="/"
-        className="mb-4 inline-flex items-center gap-1 self-start text-xs text-stone-500 hover:text-stone-700"
+        className="mb-2 inline-flex min-h-11 items-center gap-1 self-start text-xs text-stone-500 hover:text-stone-700"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         トップに戻る

@@ -176,7 +176,7 @@ function DemoTherapistToday() {
                     ? `/t/clients/${c.id}`
                     : "/t/today"
                 }
-                className="flex items-center gap-3"
+                className="flex min-h-11 items-center gap-3"
               >
                 <CustomerAvatar name={c.displayName} size="md" role="customer" />
                 <div className="min-w-0 flex-1">

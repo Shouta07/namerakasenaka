@@ -24,7 +24,7 @@ export function DemoSettingsButton() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="デモの設定をひらく"
-        className="flex min-h-11 flex-none items-center gap-1.5 rounded-full border border-stone-200 px-3 text-[12px] font-bold text-stone-500 transition hover:border-brand-500 hover:text-brand-700"
+        className="flex min-h-11 min-w-11 flex-none items-center justify-center gap-1.5 rounded-full border border-stone-200 px-3 text-[12px] font-bold text-stone-500 transition hover:border-brand-500 hover:text-brand-700"
       >
         <Settings2 className="h-4 w-4" aria-hidden />
         <span className="hidden sm:inline">デモ設定</span>

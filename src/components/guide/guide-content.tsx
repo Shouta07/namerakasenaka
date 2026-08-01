@@ -57,7 +57,7 @@ export function GuideContent({
               key={e.term}
               className="group rounded-2xl border border-[#e3ece3] bg-[#fafcfa] px-4 py-3"
             >
-              <summary className="flex min-h-[28px] cursor-pointer list-none items-center justify-between text-base font-medium text-stone-700 [&::-webkit-details-marker]:hidden">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-base font-medium text-stone-700 [&::-webkit-details-marker]:hidden">
                 {e.term}
                 <span
                   aria-hidden

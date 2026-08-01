@@ -18,7 +18,7 @@ export default async function RoleplaySessionPage({
       <div className="mx-auto max-w-2xl space-y-4">
         <Link
           href="/accord/roleplay"
-          className="text-[12px] font-semibold text-stone-500 hover:text-brand-700"
+          className="inline-flex min-h-11 items-center text-[12px] font-semibold text-stone-500 hover:text-brand-700"
         >
           ← シナリオ一覧へ
         </Link>

@@ -300,7 +300,7 @@ export function CaseFormView({ caseId, basePath }: CaseFormViewProps) {
             <button
               type="button"
               onClick={addInlineTag}
-              className="inline-flex h-8 items-center gap-1 rounded-lg border border-stone-200 px-2 text-xs text-stone-700"
+              className="tap-44 inline-flex h-8 items-center gap-1 rounded-lg border border-stone-200 px-2 text-xs text-stone-700"
             >
               <Plus className="h-3 w-3" />
               タグ追加
@@ -315,7 +315,7 @@ export function CaseFormView({ caseId, basePath }: CaseFormViewProps) {
                   type="button"
                   onClick={() => toggleTag(t.id)}
                   className={cn(
-                    "inline-flex min-h-[32px] items-center rounded-full border px-3 py-1 text-xs",
+                    "inline-flex min-h-11 items-center rounded-full border px-3.5 text-xs",
                     on
                       ? "border-brand-500 bg-brand-500 text-white"
                       : "border-stone-200 bg-white text-stone-700",

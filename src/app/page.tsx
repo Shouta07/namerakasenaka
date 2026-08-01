@@ -118,7 +118,7 @@ export default function HomePage() {
               <h3 className="text-sm font-semibold text-stone-900">本日の予約</h3>
               <Link
                 href="/admin/calendar"
-                className="inline-flex items-center gap-1 text-[11px] font-medium text-brand-700 hover:underline"
+                className="tap-44 inline-flex items-center gap-1 text-[11px] font-medium text-brand-700 hover:underline"
               >
                 全件
                 <ArrowRight className="h-3 w-3" />
@@ -232,12 +232,12 @@ export default function HomePage() {
                 <input
                   type="search"
                   placeholder="顧客を検索"
-                  className="h-8 w-44 rounded-md border border-stone-200 bg-white pl-7 pr-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="h-11 w-44 rounded-md border border-stone-200 bg-white pl-7 pr-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <Link
                 href="/admin/invites/new"
-                className="inline-flex h-8 items-center gap-1 rounded-md bg-brand-500 px-2.5 text-[11px] font-medium text-white hover:bg-brand-700"
+                className="inline-flex h-11 items-center gap-1 rounded-md bg-brand-500 px-3.5 text-[11px] font-medium text-white hover:bg-brand-700"
               >
                 顧客を追加
               </Link>
@@ -285,7 +285,7 @@ export default function HomePage() {
             <h3 className="text-sm font-semibold text-stone-900">セラピスト実績（今月）</h3>
             <Link
               href="/admin/staff"
-              className="inline-flex items-center gap-1 text-[11px] font-medium text-brand-700 hover:underline"
+              className="tap-44 inline-flex items-center gap-1 text-[11px] font-medium text-brand-700 hover:underline"
             >
               詳細
               <ArrowRight className="h-3 w-3" />

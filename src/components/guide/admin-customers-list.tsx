@@ -35,8 +35,8 @@ export function AdminGuideCustomersList() {
             へ。
           </p>
         </div>
-        <Link href="/admin/customers/new">
-          <Button size="sm">
+        <Link href="/admin/customers/new" className="flex-none">
+          <Button>
             <Plus className="h-4 w-4" />
             新規発行
           </Button>
@@ -82,14 +82,14 @@ export function AdminGuideCustomersList() {
                   <button
                     type="button"
                     onClick={() => copyShareUrl(c.shareToken)}
-                    className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50"
+                    className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50"
                   >
                     <Copy className="h-3.5 w-3.5" />
                     共有URLコピー
                   </button>
                   <Link
                     href={`/admin/customers/${c.id}`}
-                    className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-brand-50 px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100"
+                    className="inline-flex h-11 flex-1 items-center justify-center rounded-lg bg-brand-50 px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100"
                   >
                     詳細
                   </Link>

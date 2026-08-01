@@ -83,7 +83,7 @@ export function PresentationModeToggle() {
       aria-pressed={active}
       title={active ? "プレゼンモード ON" : "プレゼンモード OFF"}
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-medium shadow-sm transition-colors",
+        "tap-44 inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-medium shadow-sm transition-colors",
         active
           ? "border-brand-300 bg-brand-50 text-brand-700"
           : "border-stone-200 bg-white text-stone-600 hover:bg-stone-50",

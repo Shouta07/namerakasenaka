@@ -29,7 +29,7 @@ export default async function AccordCustomerDetailPage({
       <div className="space-y-6">
         <Link
           href="/accord/customers"
-          className="text-[12px] font-semibold text-stone-500 hover:text-brand-700"
+          className="inline-flex min-h-11 items-center text-[12px] font-semibold text-stone-500 hover:text-brand-700"
         >
           ← 顧客一覧へ
         </Link>

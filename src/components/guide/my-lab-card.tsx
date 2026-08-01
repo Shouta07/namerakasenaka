@@ -62,7 +62,7 @@ export function MyLabCard() {
         <button
           type="button"
           onClick={openRaw}
-          className="ml-1 font-bold text-[#3c6347] underline underline-offset-2"
+          className="tap-44 ml-1 font-bold text-[#3c6347] underline underline-offset-2"
         >
           生データを見る
         </button>

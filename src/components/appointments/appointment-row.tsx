@@ -177,7 +177,7 @@ export function AppointmentFlowRow({
             <button
               type="button"
               onClick={() => transition("checked_in")}
-              className="inline-flex min-h-9 items-center gap-1 rounded-md bg-sky-600 px-3 text-[12px] font-medium text-white hover:bg-sky-700"
+              className="inline-flex min-h-11 items-center gap-1 rounded-md bg-sky-600 px-3.5 text-[12px] font-medium text-white hover:bg-sky-700"
             >
               <UserCheck className="h-3.5 w-3.5" />
               受付
@@ -187,7 +187,7 @@ export function AppointmentFlowRow({
             <button
               type="button"
               onClick={() => transition("in_progress")}
-              className="inline-flex min-h-9 items-center gap-1 rounded-md bg-amber-600 px-3 text-[12px] font-medium text-white hover:bg-amber-700"
+              className="inline-flex min-h-11 items-center gap-1 rounded-md bg-amber-600 px-3 text-[12px] font-medium text-white hover:bg-amber-700"
             >
               <Play className="h-3.5 w-3.5" />
               施術開始
@@ -205,7 +205,7 @@ export function AppointmentFlowRow({
               <button
                 type="button"
                 onClick={() => transition("completed")}
-                className="inline-flex min-h-9 items-center gap-1 rounded-md bg-emerald-600 px-3 text-[12px] font-medium text-white hover:bg-emerald-700"
+                className="inline-flex min-h-11 items-center gap-1 rounded-md bg-emerald-600 px-3 text-[12px] font-medium text-white hover:bg-emerald-700"
               >
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 施術完了
@@ -230,7 +230,7 @@ export function AppointmentFlowRow({
               )}
               <Link
                 href={`/admin/clients/${clientId}`}
-                className="inline-flex min-h-9 items-center gap-1 rounded-md border border-stone-200 bg-white px-3 text-[12px] font-medium text-stone-700 hover:bg-stone-50"
+                className="inline-flex min-h-11 items-center gap-1 rounded-md border border-stone-200 bg-white px-3 text-[12px] font-medium text-stone-700 hover:bg-stone-50"
               >
                 次回予約
                 <ArrowRight className="h-3 w-3" />
@@ -239,7 +239,7 @@ export function AppointmentFlowRow({
           ) : null}
         </div>
       ) : (
-        <div className="mt-3 h-9" />
+        <div className="mt-3 h-11" />
       )}
     </li>
   );

@@ -27,7 +27,7 @@ export function DemoBanner() {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label="メニューを開く"
-          className="rounded-full px-1 text-amber-600 hover:bg-amber-100"
+          className="tap-44 rounded-full px-1 text-amber-600 hover:bg-amber-100"
         >
           ⋯
         </button>
@@ -44,7 +44,7 @@ export function DemoBanner() {
                 setTimeout(() => window.location.reload(), 300);
               }
             }}
-            className="rounded px-2 py-1 text-left text-stone-700 hover:bg-stone-100"
+            className="inline-flex min-h-11 items-center rounded px-2 text-left text-stone-700 hover:bg-stone-100"
           >
             デモデータをリセット
           </button>

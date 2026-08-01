@@ -195,7 +195,7 @@ export function AtRiskList({
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/admin/clients/${c.id}`}
-                      className="text-base font-semibold text-stone-900 hover:underline"
+                      className="inline-flex min-h-11 items-center text-base font-semibold text-stone-900 hover:underline"
                     >
                       {c.displayName} 様
                     </Link>
@@ -229,7 +229,10 @@ export function AtRiskList({
                   <MessageSquare className="h-3.5 w-3.5" />
                   メッセージ
                 </Button>
-                <Link href={`/admin/clients/${c.id}?compose=appointment`}>
+                <Link
+                  href={`/admin/clients/${c.id}?compose=appointment`}
+                  className="inline-flex min-h-11 items-center"
+                >
                   <Button type="button" size="sm" variant="secondary">
                     <CalendarPlus className="h-3.5 w-3.5" />
                     予約打診

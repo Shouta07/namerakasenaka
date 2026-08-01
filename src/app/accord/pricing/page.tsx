@@ -84,13 +84,13 @@ export default function AccordPricingPage() {
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href="/accord"
-            className="rounded-full border border-stone-300 px-4 py-2 text-[13px] font-bold text-stone-700 hover:border-brand-500"
+            className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-5 text-[13px] font-bold text-stone-700 hover:border-brand-500"
           >
             ← 概要に戻る
           </Link>
           <Link
             href="/accord/roleplay"
-            className="rounded-full bg-brand-700 px-4 py-2 text-[13px] font-bold text-white hover:bg-brand-500"
+            className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-5 text-[13px] font-bold text-white hover:bg-brand-500"
           >
             接客練習を試す →
           </Link>

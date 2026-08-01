@@ -464,7 +464,7 @@ export default function PlansPage() {
             </p>
             <Link
               href="/accord"
-              className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#8c5a3c] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#754827]"
+              className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#8c5a3c] px-5 text-sm font-bold text-white transition hover:bg-[#754827]"
             >
               実装イメージを触ってみる — Accord デモ →
             </Link>
@@ -752,7 +752,10 @@ export default function PlansPage() {
       <footer className="bg-[#faf8f4]">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex flex-wrap items-center gap-x-3 text-[11px] text-stone-400">
           <span>© バイタリティデザイン合同会社 — 2つの関わり方 v1</span>
-          <Link href="/hub" className="font-semibold text-[#8c5a3c] hover:underline">
+          <Link
+            href="/hub"
+            className="inline-flex min-h-11 items-center font-semibold text-[#8c5a3c] hover:underline"
+          >
             すべての画面・資料 → /hub
           </Link>
         </div>

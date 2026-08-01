@@ -227,7 +227,7 @@ export function EvidenceDashboard() {
                         <td className="px-4 py-3 text-right">
                           <Link
                             href={`/admin/clients/${client.id}`}
-                            className="inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
+                            className="tap-44 inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
                           >
                             開く <ArrowUpRight className="h-3 w-3" />
                           </Link>
@@ -235,7 +235,7 @@ export function EvidenceDashboard() {
                         <td className="px-4 py-3 text-right">
                           <Link
                             href={`/admin/clients/${client.id}/report`}
-                            className="inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
+                            className="tap-44 inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
                           >
                             <Printer className="h-3 w-3" />
                             出力

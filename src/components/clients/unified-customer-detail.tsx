@@ -31,12 +31,9 @@ import {
   addStoredProgressPhoto,
   addStoredTreatmentRecord,
   fileToResizedDataUrl,
-  useAllStoredMessages,
   useHydrated,
   useStoredAppointments,
-  useStoredMealLogs,
   useStoredProgressPhotos,
-  useStoredSalonComments,
   useStoredSalonNotesForClient,
   useStoredSelfLogs,
   useStoredTreatmentRecords,
@@ -46,12 +43,11 @@ import {
   getAvailability,
   type DayAvailability,
   type DemoClient,
-  type DemoMealLog,
   type DemoProgressPhoto,
   type DemoTreatmentRecord,
 } from "@/lib/demo/fixtures";
 import { cn } from "@/lib/utils/cn";
-import { MEAL_TYPE_LABEL, type MealType, type PhotoType } from "@/types/domain";
+import { type PhotoType } from "@/types/domain";
 import {
   BackPhotoPlaceholder,
   severityFromSelfRating,
@@ -128,7 +124,6 @@ export function UnifiedCustomerDetail({
   const storedSelfLogs = useStoredSelfLogs(client.id);
   const storedNotes = useStoredSalonNotesForClient(client.id);
   const storedAppts = useStoredAppointments();
-  const allMessages = useAllStoredMessages();
 
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -147,15 +142,6 @@ export function UnifiedCustomerDetail({
     severity?: BackPhotoSeverity;
     lighting?: BackPhotoLighting;
     source: "fixture" | "stored";
-  };
-  type TimelineMeal = {
-    id: string;
-    mealType: MealType;
-    memo: string | null;
-    loggedAt: string;
-    photoUrl?: string | null;
-    nutritionistComment?: string | null;
-    salonComment?: { therapistName: string; body: string; postedAt: string } | null;
   };
   type TimelineRecord = {
     id: string;
@@ -336,13 +322,12 @@ export function UnifiedCustomerDetail({
       photos: photosRet,
     });
   }, [
-    allMessages,
     client.displayName,
     client.id,
     client.sessionsCompleted,
     client.sessionsTotal,
     fixturePhotos,
-      storedAppts,
+    storedAppts,
     storedPhotos,
     storedSelfLogs,
   ]);
@@ -468,7 +453,7 @@ function CustomerHeader({
           <button
             type="button"
             onClick={() => setTipOpen((v) => !v)}
-            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+            className="tap-44 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
             aria-label="離脱予兆の詳細"
             style={{
               background:
@@ -511,7 +496,7 @@ function CustomerHeader({
       </div>
       <Link
         href={caseSearchHref}
-        className="inline-flex h-10 flex-none items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100"
+        className="inline-flex h-11 flex-none items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100"
       >
         <ImageDown className="h-3.5 w-3.5" />
         症例を検索
@@ -886,28 +871,6 @@ function PhotosTab({
   );
 }
 
-// ---------- Tabs: Meals ----------
-
-function StoredMealComments({ mealLogId }: { mealLogId: string }) {
-  const stored = useStoredSalonComments(mealLogId);
-  if (stored.length === 0) return null;
-  return (
-    <ul className="mt-2 space-y-2">
-      {stored.map((c) => (
-        <li key={c.id} className="rounded-md bg-stone-50 px-3 py-2 text-xs">
-          <p className="font-medium text-stone-700">
-            {c.authorRole === "therapist" ? "セラピスト" : "サロン管理者"}
-            <span className="ml-2 text-stone-400">
-              {new Date(c.createdAt).toLocaleString("ja-JP")}
-            </span>
-          </p>
-          <p className="mt-1 text-stone-700">{c.body}</p>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 // ---------- Tabs: Self-log ----------
 
 function SelfLogTab({
@@ -1043,7 +1006,9 @@ function TreatmentsTab({
                   {viewerRole === "salon_admin" ||
                   (viewerRole === "therapist" && r.source === "stored") ? (
                     <p className="mt-2 text-[11px] text-stone-400">
-                      {/* TODO: real RLS gate. */}
+                      {/* TODO(phase-1): この表示はクライアント側の判定でしかない。
+                          本番では treatment_records の RLS ポリシーが権限の真の境界で、
+                          ここはその結果を映すだけにする（表示と強制を二重化しない）。 */}
                       編集権限あり
                     </p>
                   ) : null}

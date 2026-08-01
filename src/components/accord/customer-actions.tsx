@@ -131,7 +131,7 @@ export function CustomerActions({ customer }: { customer: AccordCustomer }) {
               if (e.key === "Enter" && !e.nativeEvent.isComposing) saveNote();
             }}
             placeholder="気づき・次に話したいこと…"
-            className="h-10 flex-1 rounded-xl border border-stone-200 px-3 text-[13px] focus:border-brand-500 focus:outline-none"
+            className="h-11 flex-1 rounded-xl border border-stone-200 px-3 text-[13px] focus:border-brand-500 focus:outline-none"
           />
           <button
             type="button"

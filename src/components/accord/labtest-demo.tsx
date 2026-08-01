@@ -15,13 +15,6 @@ import {
   type LabView,
 } from "@/lib/accord/labtest-fixtures";
 
-const LOOP = [
-  { n: "1", label: "検査を取り込む", emoji: "🩸" },
-  { n: "2", label: "翻訳する", emoji: "📖" },
-  { n: "3", label: "接客で見せる", emoji: "🤝" },
-  { n: "4", label: "伴走する", emoji: "🌱" },
-  { n: "5", label: "再検査で見せる", emoji: "🔁" },
-];
 
 const VIEWS: LabView[] = ["first", "retest"];
 
@@ -52,21 +45,6 @@ export function LabtestDemo() {
           来店の間も伴走し、3ヶ月後の再検査で変化を数字で見せる。
           その一周ぶんを、デモデータでそのままお見せします。
         </p>
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          {LOOP.map((s, i) => (
-            <div key={s.n} className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-[12.5px] font-semibold text-stone-700">
-                <span aria-hidden>{s.emoji}</span>
-                {s.label}
-              </span>
-              {i < LOOP.length - 1 ? (
-                <span className="text-stone-300" aria-hidden>
-                  →
-                </span>
-              ) : null}
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* 画面全体の時点切り替え — ここを押すと下がまるごと変わる */}
@@ -116,7 +94,6 @@ export function LabtestDemo() {
 
       {/* STEP 1 — 取り込み */}
       <Step
-        n="1"
         title="検査結果を取り込む"
         lead="基準範囲だけでなく「適正範囲」を持つのがポイント。基準値内でも、整えたい水準から外れている項目に印がつきます。ここが、検査票をそのまま渡すのとの違いです。"
       >
@@ -182,7 +159,6 @@ export function LabtestDemo() {
 
       {/* STEP 2 — 翻訳 */}
       <Step
-        n="2"
         title="翻訳する"
         lead={
           view === "first"
@@ -248,9 +224,9 @@ export function LabtestDemo() {
         </details>
       </section>
 
-      {/* STEP 5 — 再検査 */}
+      {/* 再検査のときだけ出す。初回に見せても意味がない。 */}
+      {view === "retest" ? (
       <Step
-        n="5"
         title="再検査で見せる"
         lead="3ヶ月後、同じ項目をもう一度。ここで数字が動いていると、継続は「お願い」ではなく「自然な続き」になります。"
       >
@@ -273,30 +249,17 @@ export function LabtestDemo() {
           </p>
         </div>
       </Step>
+      ) : null}
 
       {/* フッタ */}
       <section className="rounded-2xl border border-stone-200 bg-white p-5">
         <p className="text-[12px] leading-relaxed text-stone-500">{LABTEST_DISCLAIMER}</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link
-            href="/accord"
-            className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4 text-[13px] font-bold text-stone-700 hover:border-brand-500"
-          >
-            ← 概要に戻る
-          </Link>
-          <Link
-            href="/c/progress"
-            className="inline-flex min-h-11 items-center rounded-full border border-stone-300 px-4 text-[13px] font-bold text-stone-700 hover:border-brand-500"
-          >
-            お客様側の画面を見る →
-          </Link>
-          <Link
-            href="/accord/pricing"
-            className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-4 text-[13px] font-bold text-white hover:bg-brand-500"
-          >
-            料金を見る →
-          </Link>
-        </div>
+        <Link
+          href="/accord/pricing"
+          className="mt-4 inline-flex min-h-11 items-center rounded-full bg-brand-700 px-5 text-[13px] font-bold text-white hover:bg-brand-500"
+        >
+          料金を見る →
+        </Link>
       </section>
     </div>
   );
@@ -310,14 +273,12 @@ export function LabtestDemo() {
  * 深い話は「見たい人が開く」に寄せて、既定の1周を短くする。
  */
 function Step({
-  n,
   title,
   lead,
   collapsed,
   openLabel,
   children,
 }: {
-  n: string;
   title: string;
   lead: string;
   collapsed?: boolean;
@@ -326,12 +287,7 @@ function Step({
 }) {
   const head = (
     <>
-      <div className="flex items-baseline gap-3">
-        <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-brand-700 text-[13px] font-extrabold text-white">
-          {n}
-        </span>
-        <h2 className="text-xl font-bold text-stone-900">{title}</h2>
-      </div>
+      <h2 className="text-xl font-bold text-stone-900">{title}</h2>
       <p className="mt-2 max-w-3xl text-[13.5px] leading-relaxed text-stone-600">
         {lead}
       </p>

@@ -15,7 +15,7 @@ import type { AccordModuleId } from "@/lib/accord/fixtures";
  * それらは「上達」の中にまとめ、ナビからは外した。
  */
 const NAV = [
-  { href: "/accord", label: "概要", module: null },
+  // 「概要」はロゴが担う。タブは日々ひらくものだけにする。
   { href: "/accord/customers", label: "お客様", module: "followup" as AccordModuleId },
   { href: "/accord/labtest", label: "検査翻訳", module: "labtest" as AccordModuleId },
   { href: "/accord/copilot", label: "上達", module: "copilot" as AccordModuleId },

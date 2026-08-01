@@ -8,7 +8,11 @@ import {
 import { demoClient, demoProgressPhotos } from "@/lib/demo/fixtures";
 import { useStoredProgressPhotos } from "@/lib/demo/store";
 
-export function DemoProgressTimeline() {
+/**
+ * 毎日ひらく画面なので、既定では直近だけ出す。
+ * 全部を並べると縦に長くなり、下にある「次の一歩」まで届かない。
+ */
+export function DemoProgressTimeline({ limit }: { limit?: number } = {}) {
   const stored = useStoredProgressPhotos(demoClient.id);
 
   const merged = useMemo<TimelinePhoto[]>(() => {
@@ -37,5 +41,5 @@ export function DemoProgressTimeline() {
     );
   }, [stored]);
 
-  return <PhotoTimeline photos={merged} />;
+  return <PhotoTimeline photos={limit ? merged.slice(0, limit) : merged} />;
 }

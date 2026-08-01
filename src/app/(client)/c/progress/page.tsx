@@ -25,7 +25,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CustomerAvatar } from "@/components/ui/customer-avatar";
-import { MEAL_TYPE_LABEL } from "@/types/domain";
 
 type VideoRow = {
   id: string;
@@ -309,56 +308,32 @@ function DemoClientProgress() {
             </Button>
           </Link>
         </div>
-        <DemoProgressTimeline />
+        <DemoProgressTimeline limit={2} />
+        <Link
+          href="/c/progress/compare"
+          className="mt-3 flex min-h-11 items-center justify-center rounded-2xl border border-stone-200 bg-white text-[13px] font-semibold text-brand-700"
+        >
+          これまでの経過をすべて見る →
+        </Link>
       </section>
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-stone-900">
-            <Utensils className="h-4 w-4 text-brand-700" />
-            最新の食事フィードバック
-          </h2>
-          <Link
-            href="/c/meals"
-            className="text-xs font-medium text-brand-700 hover:text-brand-500"
-          >
-            すべて見る →
-          </Link>
-        </div>
-        <Card>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-stone-500">
-                {new Date(latestMeal.loggedAt).toLocaleString("ja-JP", {
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-              <Badge tone="brand">{MEAL_TYPE_LABEL[latestMeal.mealType]}</Badge>
-            </div>
-            <p className="mt-2 text-sm text-stone-700">{latestMeal.memo}</p>
-            <div className="mt-3 rounded-lg bg-emerald-50/60 p-3 text-xs text-emerald-900">
-              <p className="font-semibold">
-                管理栄養士からのフィードバック（{latestMeal.feedback.nutritionistName}・
-                {latestMeal.feedback.nutritionistLicenseNumber}）
-              </p>
-              <p className="mt-1 whitespace-pre-line">
-                {latestMeal.feedback.approvedText}
-              </p>
-            </div>
-            {latestMeal.feedback.salonComment ? (
-              <div className="mt-2 rounded-lg bg-brand-50/60 p-3 text-xs text-brand-900">
-                <p className="font-semibold">
-                  サロンからのコメント（{latestMeal.feedback.salonComment.therapistName}）
-                </p>
-                <p className="mt-1">{latestMeal.feedback.salonComment.body}</p>
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      </section>
+      {/* 食事のフィードバックは /c/meals が本体。ここでは入口だけ置く。 */}
+      <Link
+        href="/c/meals"
+        className="flex min-h-11 items-center gap-3 rounded-2xl border border-stone-200 bg-white p-4"
+      >
+        <Utensils className="h-4 w-4 flex-none text-brand-700" />
+        <span className="flex-1 text-sm font-semibold text-stone-900">
+          食事のフィードバック
+        </span>
+        <span className="text-xs text-stone-400">
+          {new Date(latestMeal.loggedAt).toLocaleDateString("ja-JP", {
+            month: "numeric",
+            day: "numeric",
+          })}
+          に届いています →
+        </span>
+      </Link>
 
       <footer className="pb-2 pt-4 text-center text-[11px] text-stone-400">
         Powered by Accord — 美容・ウェルネス店舗の現場CXを創る

@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 export const metadata = {
   title: "Hub ｜ すべての画面・資料の引き出し",
   description:
-    "なめらかせなか × Accord — 提案資料・実機デモ・顧客向けページ、すべてへの入り口。",
+    "Accord — 提案資料・実機デモ・顧客向けページ、すべてへの入り口。",
 };
 
 type HubLink = {
@@ -28,7 +28,7 @@ const GROUPS: HubGroup[] = [
   {
     key: "proposal",
     eyebrow: "PROPOSAL — 提案・商談で使う",
-    title: "田村さんに見せるページ",
+    title: "商談で見せるページ",
     links: [
       {
         href: "/plans",
@@ -53,7 +53,7 @@ const GROUPS: HubGroup[] = [
   },
   {
     key: "crm",
-    eyebrow: "SENACARE — なめらかせなか CRM（実機デモ）",
+    eyebrow: "SENACARE — サロンCRM（実機デモ）",
     title: "1社目ケースの、動くプロダクト",
     note: "デモモードのため全画面そのまま閲覧できます。操作はブラウザにのみ保存されます。",
     links: [
@@ -77,9 +77,9 @@ const GROUPS: HubGroup[] = [
         emoji: "🌱",
       },
       {
-        href: "/share/tamura-demo-2026",
+        href: "/share/demo-2026",
         title: "LINE共有ページ（実URL）",
-        body: "お客様がLINEから開く限定公開ページ。田村様デモデータ。",
+        body: "お客様がLINEから開く限定公開ページ。デモデータ。",
         emoji: "💬",
       },
       {
@@ -107,7 +107,7 @@ const GROUPS: HubGroup[] = [
     key: "accord",
     eyebrow: "ACCORD — 汎用サービス（横展開の看板）",
     title: "初回カウンセリング支援 Accord",
-    note: "なめらかせなかの設計思想から抽出した、機能を増減できるモジュール式サービス。",
+    note: "1社目の設計思想から抽出した、機能を増減できるモジュール式サービス。",
     links: [
       {
         href: "/accord",
@@ -141,7 +141,7 @@ const GROUPS: HubGroup[] = [
 const OFFLINE_DOCS = [
   "Accord 事業モデル 3層モート×抽出フライホイール（repo: docs/accord/moat-and-flywheel.md）— 一番強い構造と成立条件",
   "Accord SaaS サービス設計・開発設計書（repo: docs/accord/saas-design.md）— MRR100万への事業/技術設計",
-  "お見積り資料（なめらかせなか_2プラン提案_2026.pptx）— 金額・費用ロジック・体制・スケジュール",
+  "お見積り資料（2プラン提案_2026.pptx）— 金額・費用ロジック・体制・スケジュール",
   "営業プレイブック（make_playbook 10枚）— 商談の進め方（自分用）",
   "業務委託 基本契約書 v2 / 個別契約書 SOW v2（Word）— デザイナー発注用",
   "デザイン業務委託契約 汎用ひな形（Word）— 甲=バイタリティデザイン固定",
@@ -230,7 +230,7 @@ export default function HubPage() {
 
       <footer className="border-t border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl px-5 py-6 text-[11px] text-stone-400 sm:px-8">
-          © バイタリティデザイン合同会社 — なめらかせなか × Accord Hub
+          © バイタリティデザイン合同会社 — Accord Hub
         </div>
       </footer>
     </main>

@@ -48,14 +48,14 @@ export type DemoDailyCheck = {
   createdAt: string;
 };
 
-export const TAMURA_GUIDE_CUSTOMER_ID = "guide-tamura-demo";
-export const TAMURA_SHARE_TOKEN = "tamura-demo-2026";
+export const DEMO_GUIDE_CUSTOMER_ID = "guide-demo-customer";
+export const DEMO_SHARE_TOKEN = "demo-2026";
 
 /**
  * 田中太郎さんのプリ生成ガイド。
  * ANTHROPIC_API_KEY 未設定時の generateRecoveryGuide のデモ出力にも使う。
  */
-export const TAMURA_SAMPLE_GUIDE: RecoveryGuideJson = {
+export const DEMO_SAMPLE_GUIDE: RecoveryGuideJson = {
   today_summary:
     "今のあなたの背中ニキビは、腸の炎症や食事への反応が関係している可能性があります。検査の結果をもとに、からだの内側から少しずつ整えていきましょう。",
   current_body_state:
@@ -144,7 +144,7 @@ export const TAMURA_SAMPLE_GUIDE: RecoveryGuideJson = {
 
 export const DEMO_GUIDE_CUSTOMERS: DemoGuideCustomer[] = [
   {
-    id: TAMURA_GUIDE_CUSTOMER_ID,
+    id: DEMO_GUIDE_CUSTOMER_ID,
     organizationId: demoOrganization.id,
     // デモのログイン顧客（client-yamada）に紐付け、/c/guide からも
     // 同じガイド・同じデイリーチェックを参照できるようにする（§17）。
@@ -152,7 +152,7 @@ export const DEMO_GUIDE_CUSTOMERS: DemoGuideCustomer[] = [
     name: "田中 太郎",
     age: 42,
     concern: "背中ニキビ、肌荒れ、食事制限が続くか不安",
-    shareToken: TAMURA_SHARE_TOKEN,
+    shareToken: DEMO_SHARE_TOKEN,
     createdAt: daysAgoIso(12, 11),
     updatedAt: daysAgoIso(11, 15),
   },
@@ -160,8 +160,8 @@ export const DEMO_GUIDE_CUSTOMERS: DemoGuideCustomer[] = [
 
 export const DEMO_HEALTH_RECORDS: DemoHealthRecord[] = [
   {
-    id: "health-tamura-demo",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "health-demo-1",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     testResultMemo:
       "【検査結果】\n・IgGフードアレルギー検査：乳製品（カゼイン）・卵白・グルテンに高反応。牛肉に中程度反応。魚・豚肉・ラム肉・野菜・米は低反応で取り入れやすい。\n・腸内環境検査：カンジダ菌が基準値より高め。ゾヌリン値も高めでリーキーガット傾向あり。",
     doctorComment:
@@ -172,7 +172,7 @@ export const DEMO_HEALTH_RECORDS: DemoHealthRecord[] = [
       "乳製品・卵・グルテンを控える（先生の方針）。牛肉は週1回までを目安に。",
     currentProblem:
       "ランチの外食で何を選べばよいか分からない。甘いものをやめられない日がある。このまま続けられるか不安。",
-    aiSummaryJson: TAMURA_SAMPLE_GUIDE,
+    aiSummaryJson: DEMO_SAMPLE_GUIDE,
     aiGeneratedAt: daysAgoIso(11, 15),
     createdAt: daysAgoIso(12, 11),
     updatedAt: daysAgoIso(11, 15),
@@ -195,8 +195,8 @@ function dateOnly(daysAgo: number): string {
  */
 export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
   {
-    id: "check-tamura-10",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-10",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(10),
     actionDone: true,
     skinCondition: 2,
@@ -205,8 +205,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     createdAt: daysAgoIso(10, 21),
   },
   {
-    id: "check-tamura-9",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-9",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(9),
     actionDone: true,
     skinCondition: 2,
@@ -215,8 +215,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     createdAt: daysAgoIso(9, 22),
   },
   {
-    id: "check-tamura-8",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-8",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(8),
     actionDone: false,
     skinCondition: 2,
@@ -225,8 +225,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     createdAt: daysAgoIso(8, 23),
   },
   {
-    id: "check-tamura-7",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-7",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(7),
     actionDone: true,
     skinCondition: 3,
@@ -236,8 +236,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
   },
   // 6日前: 記録のおやすみ（意図的なギャップ — 連続記録が一度切れる）。
   {
-    id: "check-tamura-5",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-5",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(5),
     actionDone: true,
     skinCondition: 3,
@@ -246,8 +246,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     createdAt: daysAgoIso(5, 22),
   },
   {
-    id: "check-tamura-4",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-4",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(4),
     actionDone: true,
     skinCondition: 3,
@@ -256,8 +256,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     createdAt: daysAgoIso(4, 21),
   },
   {
-    id: "check-tamura-3",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-3",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(3),
     actionDone: true,
     skinCondition: 3,
@@ -266,8 +266,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     createdAt: daysAgoIso(3, 21),
   },
   {
-    id: "check-tamura-2",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-2",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(2),
     actionDone: false,
     skinCondition: 4,
@@ -276,8 +276,8 @@ export const DEMO_DAILY_CHECKS: DemoDailyCheck[] = [
     createdAt: daysAgoIso(2, 22),
   },
   {
-    id: "check-tamura-1",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "check-demo-1",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     date: dateOnly(1),
     actionDone: true,
     skinCondition: 4,
@@ -309,8 +309,8 @@ export type DemoGuideMessage = {
  */
 export const DEMO_GUIDE_MESSAGES: DemoGuideMessage[] = [
   {
-    id: "guide-msg-tamura-8",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "guide-msg-demo-8",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     direction: "salon_to_customer",
     body: "寝る前の白湯、続けられるとよいですね。少しずつで大丈夫です。",
     createdAt: daysAgoIso(8, 19),
@@ -318,8 +318,8 @@ export const DEMO_GUIDE_MESSAGES: DemoGuideMessage[] = [
     respondingToCheckDate: null,
   },
   {
-    id: "guide-msg-tamura-5",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "guide-msg-demo-5",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     direction: "salon_to_customer",
     body: "外食での焼き魚定食、選び方がとても素敵でした。続けやすい工夫を見つけていきましょう。",
     createdAt: daysAgoIso(5, 11),
@@ -327,8 +327,8 @@ export const DEMO_GUIDE_MESSAGES: DemoGuideMessage[] = [
     respondingToCheckDate: dateOnly(5),
   },
   {
-    id: "guide-msg-tamura-2",
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    id: "guide-msg-demo-2",
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     direction: "salon_to_customer",
     body: "3日続きましたね、すばらしい積み重ねです。あなたのペースで、一緒に歩んでいきましょう。",
     createdAt: daysAgoIso(2, 10),
@@ -357,21 +357,21 @@ export type DemoLessonProgress = {
 
 export const DEMO_LESSON_PROGRESS: DemoLessonProgress[] = [
   {
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     lessonId: "lesson-1-gut-map",
     completedAt: daysAgoIso(6, 21),
     quizCorrectFirstTry: true,
     revisitCount: 1,
   },
   {
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     lessonId: "lesson-2-sibo",
     completedAt: daysAgoIso(4, 22),
     quizCorrectFirstTry: true,
     revisitCount: 0,
   },
   {
-    guideCustomerId: TAMURA_GUIDE_CUSTOMER_ID,
+    guideCustomerId: DEMO_GUIDE_CUSTOMER_ID,
     lessonId: "lesson-3-fructan",
     completedAt: daysAgoIso(2, 21),
     quizCorrectFirstTry: false,

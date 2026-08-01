@@ -9,13 +9,13 @@ import {
   DEMO_DAILY_CHECKS,
   DEMO_GUIDE_CUSTOMERS,
   DEMO_HEALTH_RECORDS,
-  TAMURA_SAMPLE_GUIDE,
+  DEMO_SAMPLE_GUIDE,
 } from "@/lib/demo/recovery-fixtures";
 import { containsBannedWord } from "@/lib/compliance/banned-words";
 
 describe("RecoveryGuideJson schema", () => {
   it("parses the 田中太郎 fixture guide", () => {
-    const parsed = parseRecoveryGuideJson(TAMURA_SAMPLE_GUIDE);
+    const parsed = parseRecoveryGuideJson(DEMO_SAMPLE_GUIDE);
     expect(parsed.today_summary.length).toBeGreaterThan(0);
     expect(parsed.easy_explanations.length).toBe(5);
     expect(parsed.easy_explanations.map((e) => e.term)).toEqual([
@@ -28,23 +28,23 @@ describe("RecoveryGuideJson schema", () => {
   });
 
   it("requires exactly 3 weekly_actions", () => {
-    expect(TAMURA_SAMPLE_GUIDE.weekly_actions).toHaveLength(3);
+    expect(DEMO_SAMPLE_GUIDE.weekly_actions).toHaveLength(3);
 
     const twoActions = {
-      ...TAMURA_SAMPLE_GUIDE,
-      weekly_actions: TAMURA_SAMPLE_GUIDE.weekly_actions.slice(0, 2),
+      ...DEMO_SAMPLE_GUIDE,
+      weekly_actions: DEMO_SAMPLE_GUIDE.weekly_actions.slice(0, 2),
     };
     expect(recoveryGuideJsonSchema.safeParse(twoActions).success).toBe(false);
 
     const fourActions = {
-      ...TAMURA_SAMPLE_GUIDE,
-      weekly_actions: [...TAMURA_SAMPLE_GUIDE.weekly_actions, "もうひとつ"],
+      ...DEMO_SAMPLE_GUIDE,
+      weekly_actions: [...DEMO_SAMPLE_GUIDE.weekly_actions, "もうひとつ"],
     };
     expect(recoveryGuideJsonSchema.safeParse(fourActions).success).toBe(false);
   });
 
   it("parses the optional result_mappings (あなたの結果とつながり)", () => {
-    const parsed = parseRecoveryGuideJson(TAMURA_SAMPLE_GUIDE);
+    const parsed = parseRecoveryGuideJson(DEMO_SAMPLE_GUIDE);
     expect(parsed.result_mappings).toHaveLength(4);
     expect(parsed.result_mappings?.[0].finding).toContain("カンジダ");
     // 検査でわかったこと → からだで起きていること → ためしてみること が全行そろう
@@ -56,7 +56,7 @@ describe("RecoveryGuideJson schema", () => {
   });
 
   it("still accepts guides without result_mappings (旧スキーマ互換)", () => {
-    const legacy: Record<string, unknown> = { ...TAMURA_SAMPLE_GUIDE };
+    const legacy: Record<string, unknown> = { ...DEMO_SAMPLE_GUIDE };
     delete legacy.result_mappings;
     const parsed = safeParseRecoveryGuideJson(legacy);
     expect(parsed).not.toBeNull();
@@ -65,13 +65,13 @@ describe("RecoveryGuideJson schema", () => {
 
   it("rejects malformed result_mappings entries", () => {
     const broken = {
-      ...TAMURA_SAMPLE_GUIDE,
+      ...DEMO_SAMPLE_GUIDE,
       result_mappings: [{ finding: "x", meaning: "y" }],
     };
     expect(recoveryGuideJsonSchema.safeParse(broken).success).toBe(false);
 
     const empty = {
-      ...TAMURA_SAMPLE_GUIDE,
+      ...DEMO_SAMPLE_GUIDE,
       result_mappings: [{ finding: "", meaning: "y", action: "z" }],
     };
     expect(recoveryGuideJsonSchema.safeParse(empty).success).toBe(false);
@@ -85,7 +85,7 @@ describe("RecoveryGuideJson schema", () => {
   });
 
   it("fixture guide contains no banned words in any text field (§8.2 + §17)", () => {
-    for (const text of collectGuideTexts(TAMURA_SAMPLE_GUIDE)) {
+    for (const text of collectGuideTexts(DEMO_SAMPLE_GUIDE)) {
       const check = containsBannedWord(text);
       expect(check.hits, `banned words in: ${text}`).toEqual([]);
     }
@@ -118,7 +118,7 @@ describe("recovery demo fixtures", () => {
   });
 
   it("the demo customer carries the well-known share token", () => {
-    expect(DEMO_GUIDE_CUSTOMERS[0].shareToken).toBe("tamura-demo-2026");
+    expect(DEMO_GUIDE_CUSTOMERS[0].shareToken).toBe("demo-2026");
     expect(DEMO_HEALTH_RECORDS[0].aiSummaryJson).not.toBeNull();
   });
 });

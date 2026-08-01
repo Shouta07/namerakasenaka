@@ -6,7 +6,7 @@ import {
   type RecoveryGuideInput,
   type RecoveryGuideJson,
 } from "@/lib/guide/schema";
-import { TAMURA_SAMPLE_GUIDE } from "@/lib/demo/recovery-fixtures";
+import { DEMO_SAMPLE_GUIDE } from "@/lib/demo/recovery-fixtures";
 
 const MODEL = "claude-sonnet-4-6";
 
@@ -116,7 +116,7 @@ export async function generateRecoveryGuide(
 
   if (!apiKey) {
     await delay(1200);
-    const guide = parseRecoveryGuideJson(TAMURA_SAMPLE_GUIDE);
+    const guide = parseRecoveryGuideJson(DEMO_SAMPLE_GUIDE);
     assertCompliant(guide);
     return guide;
   }

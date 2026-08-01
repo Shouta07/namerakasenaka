@@ -9,9 +9,9 @@ import {
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "2つの関わり方 ｜ なめらかせなか × 体のほんとうの話",
+  title: "2つの関わり方 ｜ 体のほんとうの話",
   description:
-    "つくって渡す（翻訳・納品）か、一緒に走る（伴走・体験設計）か。なめらかせなかと描く、背中ケアの未来。",
+    "つくって渡す（翻訳・納品）か、一緒に走る（伴走・体験設計）か。御社と描く、背中ケアの未来。",
 };
 
 const BRAND = "#8c5a3c";
@@ -66,7 +66,7 @@ function AccompanyLoop() {
     <svg viewBox="0 0 360 320" className="w-full h-auto" role="img" aria-label="お客様に伴走するループの図">
       <rect x={2} y={2} width={356} height={316} rx={22} fill="#fdf7f3" stroke="#efe2d6" strokeWidth={1.5} />
       <text x={180} y={32} fontSize={13} fontWeight={800} fill="#5b4636" textAnchor="middle">
-        なめらかせなか の「伴走ループ」
+        御社の「伴走ループ」
       </text>
       {/* リング */}
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="#e3cdb6" strokeWidth={2} strokeDasharray="3 5" />
@@ -189,8 +189,8 @@ const PLAN_B_LAYERS = [
     body: "「今日のひとつ」だけ、責めないクイズ、そっと届くリマインド。意志に頼らず、自然と続いてしまう仕組みを運用ルールごと設計。",
   },
   {
-    title: "田村さんの新しい接客の型をつくる",
-    body: "iPad と送信ボタンを、田村さんの一日の動線に溶け込ませる台本。誰がやっても『なめらかせなからしい』接客になる再現性を。",
+    title: "新しい接客の型をつくる",
+    body: "iPad と送信ボタンを、スタッフの一日の動線に溶け込ませる台本。誰がやっても『御社らしい』接客になる再現性を。",
   },
   {
     title: "知見とデータで、磨き続ける",
@@ -257,7 +257,7 @@ export default function PlansPage() {
             </strong>
             で断ち切る。
             <br className="hidden sm:block" />
-            なめらかせなかが、医療の知恵を
+            御社が、医療の知恵を
             <strong className="font-bold text-stone-800">
               『あなたの体の物語』
             </strong>
@@ -332,7 +332,7 @@ export default function PlansPage() {
             <p className="mt-2 text-[15px] leading-relaxed text-stone-700">
               納品した仕組みを、
               <strong className="text-stone-900">
-                なめらかせなかとしてどうお客様に伴走していくか
+                御社としてどうお客様に伴走していくか
               </strong>
               ——その<strong className="text-stone-900">体験設計</strong>まで行い、
               回り続ける状態を一緒に育てます。
@@ -414,7 +414,7 @@ export default function PlansPage() {
             どんなに良い仕組みも、使われ続けなければ意味がありません。
             プランBでは、成果物を
             <strong className="text-stone-800">
-              なめらかせなかとしてどうお客様に伴走していくか
+              御社としてどうお客様に伴走していくか
             </strong>
             ——その体験そのものを設計し、回り続ける状態まで一緒に育てます。
           </p>
@@ -451,7 +451,7 @@ export default function PlansPage() {
           <div className="mt-6 rounded-2xl border-2 border-[#8c5a3c] bg-[#fdf7f3] p-6 sm:p-7">
             <Eyebrow>OUTCOME — 生まれるもの</Eyebrow>
             <p className="mt-2 text-lg font-bold text-stone-900">
-              「医師監修の根本ケア」を、なめらかせなかだけが提供できる
+              「医師監修の根本ケア」を、御社だけが提供できる
               <span className="text-[#8c5a3c]">指名される体験</span>に。
             </p>
             <p className="mt-2 text-[14.5px] leading-relaxed text-stone-600">
@@ -485,7 +485,7 @@ export default function PlansPage() {
             <strong className="text-stone-800">食事・スキンケア・運動</strong>へと広がります。
             ぜんぶを一度に作る必要はありません。
             <strong className="text-stone-800">
-              なめらかせなかが「ここから」と決めたテーマを1つずつ
+              御社が「ここから」と決めたテーマを1つずつ
             </strong>
             、効果を確かめながら組み込めます（＝パーツでのご提供）。
           </p>
@@ -541,7 +541,7 @@ export default function PlansPage() {
                 },
                 {
                   t: "③ 必要なぶんだけ",
-                  b: "全部そろえなくてもいい。なめらかせなかのペースで、テーマを増やせます。",
+                  b: "全部そろえなくてもいい。御社のペースで、テーマを増やせます。",
                 },
               ].map((s) => (
                 <div key={s.t} className="rounded-2xl bg-[#fbf8f3] p-4">
@@ -631,7 +631,7 @@ export default function PlansPage() {
             まず<strong className="text-stone-800">プランAで「動くもの」をつくり</strong>、
             そこで終わらせず
             <strong className="text-stone-800">プランBの伴走設計へ</strong>。
-            ひと続きで、なめらかせなかだけの体験に育てていきます。
+            ひと続きで、御社だけの体験に育てていきます。
           </p>
 
           <div className="mt-9 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -689,13 +689,13 @@ export default function PlansPage() {
                 "「もう背中で悩まなくなった。理由がわかって、自分でケアできるようになったから」",
             },
             {
-              who: "なめらかせなか",
+              who: "御社",
               emoji: "🤍",
               quote:
                 "「『医師監修で、根本から』。そう言える唯一のサロンとして、紹介で予約が埋まる」",
             },
             {
-              who: "田村さん",
+              who: "御社のご担当",
               emoji: "✨",
               quote:
                 "「施術の手だけじゃなく、想いそのものが仕組みになって、一人ひとりに届いている」",
@@ -727,7 +727,7 @@ export default function PlansPage() {
               まずは、夢の続きをお話しさせてください。
             </h2>
             <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/85">
-              ここにある体験を、なめらかせなかの現実にするための
+              ここにある体験を、御社の現実にするための
               金額・費用ロジック・進め方は、お渡しするお見積り資料で
               ひとつずつご説明します。
             </p>
@@ -751,7 +751,7 @@ export default function PlansPage() {
 
       <footer className="bg-[#faf8f4]">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex flex-wrap items-center gap-x-3 text-[11px] text-stone-400">
-          <span>© なめらかせなか × バイタリティデザイン合同会社 — 2つの関わり方 v1</span>
+          <span>© バイタリティデザイン合同会社 — 2つの関わり方 v1</span>
           <Link href="/hub" className="font-semibold text-[#8c5a3c] hover:underline">
             すべての画面・資料 → /hub
           </Link>

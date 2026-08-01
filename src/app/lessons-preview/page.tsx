@@ -23,7 +23,7 @@ export default function LessonsPreviewPage() {
           腸のおはなし — 全 7 レッスンの図解
         </h1>
         <p className="mt-3 text-sm text-stone-600">
-          医師監修。なめらかせなか向け回復ガイドのゲーミフィケーション学習コース。
+          医師監修。回復ガイドのゲーミフィケーション学習コース。
         </p>
         <p className="mt-2 text-xs text-stone-400">
           本ページは社内・三社レビュー用プレビューです
@@ -123,10 +123,10 @@ export default function LessonsPreviewPage() {
         <p className="text-xs text-stone-500">
           実機で体験する場合は{" "}
           <Link
-            href="/share/tamura-demo-2026?presenter=1"
+            href="/share/demo-2026?presenter=1"
             className="text-brand-700 underline"
           >
-            /share/tamura-demo-2026
+            /share/demo-2026
           </Link>{" "}
           を開き、「腸のおはなし」セクションから各レッスンをタップしてください。
         </p>

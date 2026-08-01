@@ -120,7 +120,7 @@ export function SceneCounseling({ className }: { className?: string }) {
     <svg
       viewBox="0 0 360 300"
       role="img"
-      aria-label="サロンのカウンセリングで田村さんがお客様の悩みを聴く場面"
+      aria-label="サロンのカウンセリングで担当者がお客様の悩みを聴く場面"
       className={className}
     >
       <SoftBg tone="cream" />
@@ -130,10 +130,10 @@ export function SceneCounseling({ className }: { className?: string }) {
       <rect x={36} y={186} width={288} height={10} rx={4} fill="#e2cdb1" />
       <rect x={48} y={196} width={264} height={14} fill="#d6bb95" opacity={0.6} />
 
-      {/* 田村さん（左） */}
+      {/* 担当者（左） */}
       <Person x={92} y={130} hair="#2f241b" color="#bfa988" />
       <text x={92} y={184} fontSize={9} fontWeight={700} fill={C.ink} textAnchor="middle">
-        田村さん
+        担当者
       </text>
 
       {/* お客様（右） */}
@@ -142,7 +142,7 @@ export function SceneCounseling({ className }: { className?: string }) {
         お客様
       </text>
 
-      {/* iPad（テーブル上、田村側・少し大きく） */}
+      {/* iPad（テーブル上、担当者側・少し大きく） */}
       <g transform="translate(146 150)">
         <IPad x={0} y={0} w={70} h={50}>
           {/* カウンセリングフォーム想起 */}
@@ -251,7 +251,7 @@ export function SceneTranslate({ className }: { className?: string }) {
       <Footnote
         x={180}
         y={282}
-        text="同じ検査結果が、顧客にも田村さんにも『次の一手』として伝わる状態に。"
+        text="同じ検査結果が、顧客にも担当者にも『次の一手』として伝わる状態に。"
         anchor="middle"
       />
     </svg>
@@ -277,7 +277,7 @@ export function SceneShare({ className }: { className?: string }) {
         {/* サロンのカード */}
         <rect x={0} y={20} width={86} height={84} rx={6} fill="#fff" stroke={SCREEN_EDGE} strokeWidth={1.2} />
         <rect x={0} y={20} width={86} height={18} rx={6} fill={ACCENT} />
-        <text x={43} y={32} fontSize={8.5} fontWeight={800} fill="#fff" textAnchor="middle">なめらかせなか</text>
+        <text x={43} y={32} fontSize={8.5} fontWeight={800} fill="#fff" textAnchor="middle">サロン</text>
         <text x={43} y={56} fontSize={9} fontWeight={700} fill={C.ink} textAnchor="middle">本日の施術完了</text>
         <text x={43} y={70} fontSize={7.5} fill="#7a6657" textAnchor="middle">送信ボタンを押すと</text>
         <text x={43} y={82} fontSize={7.5} fill="#7a6657" textAnchor="middle">お客様に届きます</text>
@@ -301,7 +301,7 @@ export function SceneShare({ className }: { className?: string }) {
           <rect x={5} y={10} width={58} height={32} rx={3} fill="#06c755" />
           <circle cx={13} cy={20} r={4} fill="#fff" />
           <text x={20} y={20} fontSize={6} fontWeight={800} fill="#fff">LINE</text>
-          <text x={9} y={32} fontSize={6.5} fill="#fff">なめらかせなか</text>
+          <text x={9} y={32} fontSize={6.5} fill="#fff">サロン</text>
           <text x={9} y={39} fontSize={5.5} fill="#fff" opacity={0.85}>本日のあなたのページ</text>
 
           {/* タップ → /share カード */}
@@ -534,7 +534,7 @@ export function SceneRevisit({ className }: { className?: string }) {
       <SoftBg tone="green" />
       <DiagramTitle x={18} y={26} text="場面 6 — 次回来店、変化を持って戻る" />
 
-      {/* 左: 田村側ダッシュボード（iPad） */}
+      {/* 左: 担当者側ダッシュボード（iPad） */}
       <g transform="translate(28 64)">
         <IPad x={0} y={0} w={150} h={170}>
           {/* タイトル */}
@@ -620,7 +620,7 @@ export function SceneRevisit({ className }: { className?: string }) {
         </text>
       </g>
 
-      <LabelChip x={104} y={246} text="田村さん側に状況が見える" fontSize={9} />
+      <LabelChip x={104} y={246} text="担当者側に状況が見える" fontSize={9} />
       <LabelChip x={296} y={246} text="お客様は変化を実感" anchor="middle" fontSize={9} />
 
       <Footnote

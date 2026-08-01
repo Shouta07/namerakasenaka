@@ -11,9 +11,9 @@ import {
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "使いみち絵巻 ｜ なめらかせなか × 体のほんとうの話",
+  title: "使いみち絵巻 ｜ 体のほんとうの話",
   description:
-    "サロンの一日に、このアプリがどう入っていくか。6つの場面で、なめらかせなかの新しい体験を絵巻にしました。",
+    "サロンの一日に、このアプリがどう入っていくか。6つの場面で、新しい体験を絵巻にしました。",
 };
 
 type Phase = "P0" | "POC" | "FULL";
@@ -67,7 +67,7 @@ type Scene = {
   pull: string;
   illustration: React.ReactNode;
   whatHappens: string;
-  tamuraDoes: string;
+  staffDoes: string;
   customerKeeps: string;
   builtIn: Phase[];
   detail: { heading: string; body: string }[];
@@ -81,7 +81,7 @@ const SCENES: Scene[] = [
     illustration: <SceneCounseling />,
     whatHappens:
       "iPad のカウンセリングシートを一緒に見ながら、お客様の悩みと体の情報を集めます。",
-    tamuraDoes: "話を聴く。チェック項目を一緒に埋める。録音は任意。",
+    staffDoes: "話を聴く。チェック項目を一緒に埋める。録音は任意。",
     customerKeeps: "「ちゃんと聴いてもらえた」という記憶と、自分用のシート。",
     builtIn: ["P0", "POC"],
     detail: [
@@ -102,7 +102,7 @@ const SCENES: Scene[] = [
     illustration: <SceneTranslate />,
     whatHappens:
       "検査結果のページを開くと、医療の言葉が「あなたの体ではこれが起きやすい」という言葉に変換され、図解と「今日のひとつ」がセットで表示されます。",
-    tamuraDoes:
+    staffDoes:
       "iPad を一緒に覗き込んで、図解を指差しながら3分で説明する。",
     customerKeeps:
       "「自分の体が初めて理解できた」という納得感。退店時のページ URL。",
@@ -124,8 +124,8 @@ const SCENES: Scene[] = [
     pull: "送信ボタンひとつで、LINE に『あなたのページ』が届く。",
     illustration: <SceneShare />,
     whatHappens:
-      "退店時、田村さんが「送信」を押すと、お客様の LINE に『今日のあなたのページ』のリンクが届きます。タップで限定公開の専用ページへ。",
-    tamuraDoes: "送信ボタンを押す。それだけ。",
+      "退店時、担当者が「送信」を押すと、お客様の LINE に『今日のあなたのページ』のリンクが届きます。タップで限定公開の専用ページへ。",
+    staffDoes: "送信ボタンを押す。それだけ。",
     customerKeeps:
       "自分専用の URL（限定公開）。今日の話 / 今日のひとつ / 読み物 / 次回予約。",
     builtIn: ["POC"],
@@ -147,7 +147,7 @@ const SCENES: Scene[] = [
     illustration: <SceneDoOne />,
     whatHappens:
       "翌朝、お客様がスマホで自分のページを開くと、『今日のひとつ』が大きく表示されています。実行して「できた！」をタップすると、小さな種が育ちます。",
-    tamuraDoes: "何もしない。仕組みが勝手に伴走する。",
+    staffDoes: "何もしない。仕組みが勝手に伴走する。",
     customerKeeps: "達成の記録。続ければ続けるほど、種が増えていく実感。",
     builtIn: ["POC"],
     detail: [
@@ -168,7 +168,7 @@ const SCENES: Scene[] = [
     illustration: <SceneLesson />,
     whatHappens:
       "週末や夜、お客様が時間のあるときに、レッスンを 1 章ずつ読み進めます。最後にひとくちクイズ。当たっても外れても、種は受け取れます。",
-    tamuraDoes: "進捗を見るだけ。声かけは管理画面が候補を出してくれる。",
+    staffDoes: "進捗を見るだけ。声かけは管理画面が候補を出してくれる。",
     customerKeeps:
       "「自分は今、体のことが分かりかけている」という静かな自信。バッジ。",
     builtIn: ["POC", "FULL"],
@@ -189,8 +189,8 @@ const SCENES: Scene[] = [
     pull: "施術中に話す材料が、もう積み上がっている。",
     illustration: <SceneRevisit />,
     whatHappens:
-      "次回来店時、田村さんの iPad には、そのお客様のこの 2 週間が一目で見える経過サマリが出ます。種の数、レッスン進捗、実行ログ、変化のメモ。",
-    tamuraDoes:
+      "次回来店時、担当者の iPad には、そのお客様のこの 2 週間が一目で見える経過サマリが出ます。種の数、レッスン進捗、実行ログ、変化のメモ。",
+    staffDoes:
       "サマリを見ながら 30 秒で「前回からの変化」を確認、施術と次のテーマを決める。",
     customerKeeps:
       "「変わってきている」という感覚。次回もまた来たい理由。",
@@ -264,10 +264,10 @@ function SceneCard({ s, idx }: { s: Scene; idx: number }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="rounded-2xl border border-stone-100 bg-stone-50/60 p-3.5">
                 <p className="text-[11px] font-semibold text-stone-500">
-                  田村さんがやること
+                  担当者がやること
                 </p>
                 <p className="mt-1 text-sm leading-relaxed text-stone-800">
-                  {s.tamuraDoes}
+                  {s.staffDoes}
                 </p>
               </div>
               <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-3.5">
@@ -324,7 +324,7 @@ export default function StoryPage() {
             USE-CASE STORYBOARD — 使いみち絵巻
           </p>
           <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold leading-tight text-stone-900">
-            なめらかせなかの一日に、
+            サロンの一日に、
             <br className="hidden sm:block" />
             このアプリがどう入っていくか。
           </h1>
@@ -359,8 +359,8 @@ export default function StoryPage() {
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             {
-              who: "田村さん",
-              role: "なめらかせなか / 施術担当",
+              who: "担当者",
+              role: "施術担当",
               what:
                 "iPad と送信ボタンで「内面からの理念」をお客様に届ける。",
               emoji: "🤍",
@@ -483,7 +483,7 @@ export default function StoryPage() {
 
       <footer className="border-t border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex flex-wrap items-center gap-x-3 text-[11px] text-stone-400">
-          <span>© なめらかせなか × バイタリティデザイン合同会社 — 使いみち絵巻 v1</span>
+          <span>© バイタリティデザイン合同会社 — 使いみち絵巻 v1</span>
           <Link href="/hub" className="font-semibold text-[#8c5a3c] hover:underline">
             すべての画面・資料 → /hub
           </Link>

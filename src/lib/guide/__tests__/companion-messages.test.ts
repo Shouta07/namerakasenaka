@@ -3,7 +3,7 @@ import {
   DEMO_GUIDE_CUSTOMERS,
   DEMO_GUIDE_MESSAGES,
   DEMO_DAILY_CHECKS,
-  TAMURA_GUIDE_CUSTOMER_ID,
+  DEMO_GUIDE_CUSTOMER_ID,
 } from "@/lib/demo/recovery-fixtures";
 import { demoClient } from "@/lib/demo/fixtures";
 import { containsBannedWord } from "@/lib/compliance/banned-words";
@@ -45,11 +45,11 @@ describe("persona unify — 田中 太郎 across demo + recovery fixtures", () =
   });
 
   it("recovery-fixture clientId resolves to the demo client id", () => {
-    const tamura = DEMO_GUIDE_CUSTOMERS.find(
-      (c) => c.id === TAMURA_GUIDE_CUSTOMER_ID,
+    const demoGuideCustomer = DEMO_GUIDE_CUSTOMERS.find(
+      (c) => c.id === DEMO_GUIDE_CUSTOMER_ID,
     );
-    expect(tamura).toBeDefined();
-    expect(tamura!.clientId).toBe(demoClient.id);
+    expect(demoGuideCustomer).toBeDefined();
+    expect(demoGuideCustomer!.clientId).toBe(demoClient.id);
   });
 
   it("avatar would render 田 — first character of the unified display name", () => {
@@ -67,7 +67,7 @@ describe("companion messages — ordering and unread counting", () => {
   it("DEMO_GUIDE_MESSAGES seed contains exactly one unread for the demo", () => {
     const unread = DEMO_GUIDE_MESSAGES.filter(
       (m) =>
-        m.guideCustomerId === TAMURA_GUIDE_CUSTOMER_ID && m.readAt === null,
+        m.guideCustomerId === DEMO_GUIDE_CUSTOMER_ID && m.readAt === null,
     );
     expect(unread.length).toBe(1);
   });
@@ -75,7 +75,7 @@ describe("companion messages — ordering and unread counting", () => {
   it("newest-first ordering puts the unread reply at the top", () => {
     const ordered = sortedNewestFirst(
       DEMO_GUIDE_MESSAGES.filter(
-        (m) => m.guideCustomerId === TAMURA_GUIDE_CUSTOMER_ID,
+        (m) => m.guideCustomerId === DEMO_GUIDE_CUSTOMER_ID,
       ),
     );
     expect(ordered[0].readAt).toBeNull();

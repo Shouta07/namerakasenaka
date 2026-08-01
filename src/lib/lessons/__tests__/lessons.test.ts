@@ -17,7 +17,7 @@ import {
 import { containsBannedWord } from "@/lib/compliance/banned-words";
 import type { LessonProgress } from "@/lib/demo/store";
 
-const CUST = "guide-tamura-demo";
+const CUST = "guide-demo-customer";
 const isoDaysAgo = (n: number): string => {
   const d = new Date();
   d.setDate(d.getDate() - n);

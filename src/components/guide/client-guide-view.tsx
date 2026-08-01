@@ -12,6 +12,7 @@ import { upsertStoredDailyCheck } from "@/lib/demo/store";
 import { safeParseRecoveryGuideJson } from "@/lib/guide/schema";
 import { isDemoMode } from "@/lib/demo";
 import type { DailyCheckSubmit } from "./daily-check-card";
+import { MyLabCard } from "./my-lab-card";
 import { GuideContent } from "./guide-content";
 
 /**
@@ -66,6 +67,7 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5">
       <CompactHeader generatedAt={healthRecord?.aiGeneratedAt ?? null} />
+      <MyLabCard />
       <GuideContent
         guide={guide}
         today={today}

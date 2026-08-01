@@ -1,7 +1,6 @@
 import Link from "next/link";
 import {
   CalendarClock,
-  Camera,
   GitCompare,
   Heart,
   Leaf,
@@ -20,7 +19,7 @@ import {
 import { HypothesisCard } from "@/components/guide/hypothesis-card";
 import { UnreadCompanionBanner } from "@/components/guide/unread-banner";
 import { PhotoTimeline, type TimelinePhoto } from "@/components/progress/photo-timeline";
-import { DemoProgressTimeline } from "@/components/progress/demo-progress-timeline";
+import { BeforeAfter } from "@/components/progress/before-after";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -295,27 +294,15 @@ function DemoClientProgress() {
         </Link>
       </section>
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-stone-900">
-            <Camera className="h-4 w-4 text-brand-700" />
-            進捗フォトタイムライン
-          </h2>
-          <Link href="/c/progress/compare">
-            <Button variant="secondary">
-              <GitCompare className="h-4 w-4" />
-              比較する
-            </Button>
-          </Link>
-        </div>
-        <DemoProgressTimeline limit={2} />
-        <Link
-          href="/c/progress/compare"
-          className="mt-3 flex min-h-11 items-center justify-center rounded-2xl border border-stone-200 bg-white text-[13px] font-semibold text-brand-700"
-        >
-          これまでの経過をすべて見る →
-        </Link>
-      </section>
+      <BeforeAfter />
+
+      <Link
+        href="/c/progress/compare"
+        className="flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white text-[13px] font-semibold text-brand-700"
+      >
+        <GitCompare className="h-4 w-4" />
+        これまでの経過をすべて見る →
+      </Link>
 
       {/* 食事のフィードバックは /c/meals が本体。ここでは入口だけ置く。 */}
       <Link

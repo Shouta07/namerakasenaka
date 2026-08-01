@@ -85,15 +85,32 @@ export function CopilotBrief() {
         </p>
       </div>
 
-      {/* インサイトカード */}
+      {/* インサイトカード — 出すのは1件だけ。残りは畳む。
+          4件を並べると、どれから手をつけるか決められなくなる。 */}
       <div className="space-y-4">
-        {COPILOT_BRIEF.map((insight) => (
-          <InsightCard
-            key={insight.id}
-            insight={insight}
-            decision={decisions[insight.id]}
-          />
-        ))}
+        <InsightCard
+          insight={COPILOT_BRIEF[0]}
+          decision={decisions[COPILOT_BRIEF[0].id]}
+        />
+        {COPILOT_BRIEF.length > 1 ? (
+          <details className="group">
+            <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[12.5px] font-bold text-brand-700">
+              ほかの気づき {COPILOT_BRIEF.length - 1} 件を見る
+              <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+                ▾
+              </span>
+            </summary>
+            <div className="mt-3 space-y-4">
+              {COPILOT_BRIEF.slice(1).map((insight) => (
+                <InsightCard
+                  key={insight.id}
+                  insight={insight}
+                  decision={decisions[insight.id]}
+                />
+              ))}
+            </div>
+          </details>
+        ) : null}
       </div>
 
       {/* 先週の効果（ループが閉じる証拠） */}

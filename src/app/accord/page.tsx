@@ -150,7 +150,14 @@ export default function AccordHomePage() {
         <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-stone-600">
           全部の機能を使いこなす必要はありません。検査を1件、翻訳してみるところから始めます。
         </p>
-        <ol className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+        <details className="group mt-3">
+          <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[13px] font-bold text-brand-700">
+            3つの中身を見る
+            <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+              ▾
+            </span>
+          </summary>
+        <ol className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-3">
           {FIRST_30_DAYS.map((s, i) => (
             <li
               key={s.when}
@@ -169,6 +176,7 @@ export default function AccordHomePage() {
             </li>
           ))}
         </ol>
+        </details>
         <div className="mt-4 rounded-2xl border border-stone-200 bg-white p-5">
           <p className="text-[13px] font-bold text-stone-900">
             いま使っている予約・カルテのシステムは、そのままで大丈夫です。

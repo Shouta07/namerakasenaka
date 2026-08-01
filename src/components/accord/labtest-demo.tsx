@@ -92,10 +92,50 @@ export function LabtestDemo() {
         </div>
       </div>
 
-      {/* STEP 1 — 取り込み */}
+      {/* STEP 2 — 翻訳 */}
       <Step
-        title="検査結果を取り込む"
-        lead="基準範囲だけでなく「適正範囲」を持つのがポイント。基準値内でも、整えたい水準から外れている項目に印がつきます。ここが、検査票をそのまま渡すのとの違いです。"
+        title="翻訳する"
+        lead={
+          view === "first"
+            ? "まず6つの「力」に翻訳して全体像を1枚にし、選んだ力については「なぜそうなっているのか」を地図でたどります。そのうえで、検査でわかったこと → からだで起きていること → 今日からできること の3列に落とします。AIが下書きし、サロンが確認してから出します。"
+            : "再検査も同じ形で翻訳し直します。レーダーは初回の形を破線で残すので、どこがどれだけ伸びたかがそのまま見えます。"
+        }
+      >
+        <LabtestRadar view={view} />
+
+        <details className="group mt-6">
+          <summary className="cursor-pointer list-none text-[13px] font-bold text-brand-700">
+            1項目ずつの詳しい翻訳を読む
+            <span className="ml-1 transition group-open:rotate-180" aria-hidden>
+              ▾
+            </span>
+          </summary>
+          <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+          {translationsFor(view).map((t) => (
+            <article
+              key={t.id}
+              className="rounded-2xl border border-stone-200 bg-white p-5"
+            >
+              <div className="space-y-3">
+                <Row label="検査でわかったこと" tone="fact" body={t.finding} />
+                <Row label="からだで起きていること" tone="mean" body={t.meaning} />
+                <Row label="今日からできること" tone="act" body={t.action} />
+              </div>
+              <p className="mt-3 rounded-xl bg-stone-50 px-3 py-2 text-[12px] leading-relaxed text-stone-600">
+                背中の肌との関係： {t.skinLink}
+              </p>
+            </article>
+            ))}
+          </div>
+        </details>
+      </Step>
+
+      {/* 根拠 — 結論のあとに置き、既定では畳む */}
+      <Step
+        collapsed
+        openLabel="検査値（10項目）を見る"
+        title="この翻訳のもとになった検査値"
+        lead="基準範囲だけでなく「適正範囲」を持つのがポイント。基準値内でも、整えたい水準から外れている項目に印がつきます。"
       >
         <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white">
           <table className="w-full min-w-[720px] text-left text-[13px]">
@@ -155,44 +195,6 @@ export function LabtestDemo() {
         <p className="mt-2 text-[12px] text-stone-500">
           ※ 10項目のみ表示（実際の経過表は100項目以上）。食物IgG抗体パネルも同じ画面に取り込みます。
         </p>
-      </Step>
-
-      {/* STEP 2 — 翻訳 */}
-      <Step
-        title="翻訳する"
-        lead={
-          view === "first"
-            ? "まず6つの「力」に翻訳して全体像を1枚にし、選んだ力については「なぜそうなっているのか」を地図でたどります。そのうえで、検査でわかったこと → からだで起きていること → 今日からできること の3列に落とします。AIが下書きし、サロンが確認してから出します。"
-            : "再検査も同じ形で翻訳し直します。レーダーは初回の形を破線で残すので、どこがどれだけ伸びたかがそのまま見えます。"
-        }
-      >
-        <LabtestRadar view={view} />
-
-        <details className="group mt-6">
-          <summary className="cursor-pointer list-none text-[13px] font-bold text-brand-700">
-            1項目ずつの詳しい翻訳を読む
-            <span className="ml-1 transition group-open:rotate-180" aria-hidden>
-              ▾
-            </span>
-          </summary>
-          <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
-          {translationsFor(view).map((t) => (
-            <article
-              key={t.id}
-              className="rounded-2xl border border-stone-200 bg-white p-5"
-            >
-              <div className="space-y-3">
-                <Row label="検査でわかったこと" tone="fact" body={t.finding} />
-                <Row label="からだで起きていること" tone="mean" body={t.meaning} />
-                <Row label="今日からできること" tone="act" body={t.action} />
-              </div>
-              <p className="mt-3 rounded-xl bg-stone-50 px-3 py-2 text-[12px] leading-relaxed text-stone-600">
-                背中の肌との関係： {t.skinLink}
-              </p>
-            </article>
-            ))}
-          </div>
-        </details>
       </Step>
 
       {/* お客様側 — ゲーミフィケーション */}

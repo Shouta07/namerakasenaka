@@ -8,6 +8,7 @@
 
 export type AccordModuleId =
   | "counseling"
+  | "labtest"
   | "copilot"
   | "roleplay"
   | "dashboard"
@@ -36,6 +37,15 @@ export const ACCORD_MODULES: AccordModule[] = [
     emoji: "📋",
     core: true,
     href: "/accord/customers",
+  },
+  {
+    id: "labtest",
+    name: "血液検査の翻訳ガイド",
+    short: "検査翻訳",
+    description:
+      "検査結果を「検査でわかったこと → からだで起きていること → 今日からできること」に翻訳。再検査で変化を見せるまでが一続きです。",
+    emoji: "🩸",
+    href: "/accord/labtest",
   },
   {
     id: "copilot",
@@ -94,6 +104,7 @@ export const ACCORD_MODULES: AccordModule[] = [
 
 export const DEFAULT_MODULE_STATE: Record<AccordModuleId, boolean> = {
   counseling: true,
+  labtest: true,
   copilot: true,
   roleplay: true,
   dashboard: true,

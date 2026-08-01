@@ -9,6 +9,7 @@ import type { AccordModuleId } from "@/lib/accord/fixtures";
 
 const NAV = [
   { href: "/accord", label: "概要", module: null },
+  { href: "/accord/labtest", label: "検査翻訳", module: "labtest" as AccordModuleId },
   { href: "/accord/copilot", label: "コパイロット", module: "copilot" as AccordModuleId },
   { href: "/accord/roleplay", label: "接客練習", module: "roleplay" as AccordModuleId },
   { href: "/accord/dashboard", label: "ダッシュボード", module: "dashboard" as AccordModuleId },

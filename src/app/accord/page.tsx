@@ -26,8 +26,14 @@ export default function AccordHomePage() {
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            href="/accord/roleplay"
+            href="/accord/labtest"
             className="rounded-full bg-brand-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-500"
+          >
+            🩸 検査から継続伴走までを見る
+          </Link>
+          <Link
+            href="/accord/roleplay"
+            className="rounded-full border border-stone-300 bg-white px-5 py-2.5 text-sm font-bold text-stone-700 transition hover:border-brand-500"
           >
             🎭 接客練習をはじめる
           </Link>

@@ -44,7 +44,7 @@ export function ClientGuideView({ clientId }: { clientId: string | null }) {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5">
       <CompactHeader generatedAt={healthRecord?.aiGeneratedAt ?? null} />
-      <MyLabCard />
+      <MyLabCard customerId={customer.id} />
       <GuideContent
         guide={guide}
         checks={checks}

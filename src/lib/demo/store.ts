@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { MealType, PhotoType } from "@/types/domain";
 import type { RecoveryGuideJson } from "@/lib/guide/schema";
+import type { ConsentRecord } from "@/lib/labtest/consent";
 
 const NS_KEY = "senacare-demo-v1";
 const MAX_BYTES = 1_500_000; // 1.5 MB hard cap on a single data URL.
@@ -257,6 +258,37 @@ export type GuideMessage = {
   respondingToCheckDate: string | null;
 };
 
+/**
+ * 同意の記録。フラグではなく「いつ・誰が・何について確認したか」を残す。
+ * 型は src/lib/labtest/consent.ts が持ち、ここは保存だけを担う。
+ */
+export type StoredConsent = ConsentRecord;
+
+/**
+ * 施術者が投入した検査結果 1回ぶん。
+ *
+ * 患者は入力しない。ここに入るのは必ずスタッフが取り込んだデータで、
+ * publishedAt が null のあいだは患者の画面に出ない（同意の確認前）。
+ */
+export type StoredLabImport = {
+  id: string;
+  /** guide customer id。 */
+  customerId: string;
+  /** 採血日（YYYY-MM-DD）。検査票から人が入れる。 */
+  collectedOn: string;
+  /** 取り込んだ検査値。 */
+  values: { rowId: string; value: number; sourceLabel: string; sourceUnit: string }[];
+  /** 元ファイル名。あとで検査票と突き合わせるために残す。 */
+  sourceFileName: string;
+  /** 読み取れなかった行数。0 でないことを隠さない。 */
+  unparsedCount: number;
+  /** 取り込んだスタッフ。 */
+  importedBy: string;
+  importedAt: string;
+  /** 患者の画面に出した日時。null なら未公開。 */
+  publishedAt: string | null;
+};
+
 type Snapshot = {
   messages: StoredMessage[];
   selfLogs: StoredSelfLog[];
@@ -277,6 +309,8 @@ type Snapshot = {
   dailyChecks: StoredDailyCheck[];
   guideMessages: GuideMessage[];
   lessonProgress: LessonProgress[];
+  consents: StoredConsent[];
+  labImports: StoredLabImport[];
 };
 
 const EMPTY: Snapshot = {
@@ -299,6 +333,8 @@ const EMPTY: Snapshot = {
   dailyChecks: [],
   guideMessages: [],
   lessonProgress: [],
+  consents: [],
+  labImports: [],
 };
 
 // ---------- Low-level access ----------
@@ -1031,4 +1067,82 @@ export function useResetStore(): () => void {
   return useCallback(() => {
     clearStore();
   }, []);
+}
+
+// ---------- 同意と、検査結果の取り込み ----------
+//
+// この2つは対で扱う。取り込んだだけでは患者には見えず、
+// 同意の記録があってはじめて公開できる（強制は API 側）。
+
+export function useStoredConsents(): StoredConsent[] {
+  return useStore("consents");
+}
+
+/** 同意を記録する。同じ目的の古い記録は残したまま、新しい意思を積む。 */
+export function grantConsent(
+  input: Omit<StoredConsent, "id" | "grantedAt" | "revokedAt"> & {
+    id?: string;
+    grantedAt?: string;
+  },
+): StoredConsent {
+  const next: StoredConsent = {
+    id: input.id ?? newId(),
+    customerId: input.customerId,
+    scope: input.scope,
+    grantedAt: input.grantedAt ?? new Date().toISOString(),
+    grantedBy: input.grantedBy,
+    revokedAt: null,
+    method: input.method,
+  };
+  update("consents", (cur) => [...cur, next]);
+  return next;
+}
+
+/**
+ * 同意を取り消す。記録は消さない — 「取り消した」ことも履歴。
+ * 取り消した瞬間から公開は不許可になる。
+ */
+export function revokeConsent(consentId: string): void {
+  const at = new Date().toISOString();
+  update("consents", (cur) =>
+    cur.map((c) => (c.id === consentId ? { ...c, revokedAt: at } : c)),
+  );
+}
+
+export function useStoredLabImports(): StoredLabImport[] {
+  return useStore("labImports");
+}
+
+/** 取り込みを保存する。この時点では未公開（publishedAt = null）。 */
+export function addStoredLabImport(
+  input: Omit<StoredLabImport, "id" | "importedAt" | "publishedAt"> & {
+    id?: string;
+    importedAt?: string;
+  },
+): StoredLabImport {
+  const next: StoredLabImport = {
+    id: input.id ?? newId(),
+    customerId: input.customerId,
+    collectedOn: input.collectedOn,
+    values: input.values,
+    sourceFileName: input.sourceFileName,
+    unparsedCount: input.unparsedCount,
+    importedBy: input.importedBy,
+    importedAt: input.importedAt ?? new Date().toISOString(),
+    publishedAt: null,
+  };
+  update("labImports", (cur) => [...cur, next]);
+  return next;
+}
+
+/** 公開状態を切り替える。呼ぶ前に必ず API 側の同意チェックを通すこと。 */
+export function setLabImportPublished(id: string, published: boolean): void {
+  const at = published ? new Date().toISOString() : null;
+  update("labImports", (cur) =>
+    cur.map((r) => (r.id === id ? { ...r, publishedAt: at } : r)),
+  );
+}
+
+export function removeStoredLabImport(id: string): void {
+  update("labImports", (cur) => cur.filter((r) => r.id !== id));
 }

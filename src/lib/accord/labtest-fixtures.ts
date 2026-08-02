@@ -551,6 +551,26 @@ export function radarLevel(values: LabView): LevelResult {
   return { ...base, level, title: LEVEL_TITLE[level] };
 }
 
+/**
+ * 取り込んだ検査値からレーダーのレベルを出す。
+ *
+ * radarLevel() は固定の LAB_ROWS を見るが、こちらは渡された行だけを見る。
+ * 検査票に載っていた項目しか数えない — 測っていない項目を
+ * 「届いていない」と数えると、実態より低く出てしまうため。
+ */
+export function radarLevelFromRows(
+  rows: LabRow[],
+  values: LabView,
+): LevelResult {
+  if (rows.length === 0) {
+    return { level: 1, gathered: 0, total: 0, percent: 0, title: LEVEL_TITLE[1] };
+  }
+  const pcts = rows.map((r) => gaugePercent(r, r[values]));
+  const base = levelFromPercents(pcts);
+  const level = Math.max(1, Math.min(5, Math.round((base.gathered / pcts.length) * 5)));
+  return { ...base, level, title: LEVEL_TITLE[level] };
+}
+
 export function materialsLevel(values: "first" | "retest"): LevelResult {
   const pcts = MATERIALS.map((m) => {
     const row = materialRow(m);

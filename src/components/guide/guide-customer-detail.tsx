@@ -19,6 +19,7 @@ import type { RecoveryGuideJson } from "@/lib/guide/schema";
 import { copyShareUrl } from "./admin-customers-list";
 import { CustomerMemosSection } from "./customer-memos-section";
 import { AdminLessonProgressSection } from "./admin-lesson-progress-section";
+import { LabImportFlow } from "@/components/labtest/lab-import-flow";
 
 type RecordDraft = {
   testResultMemo: string;
@@ -148,7 +149,7 @@ export function GuideCustomerDetail({ guideCustomerId }: { guideCustomerId: stri
             <button
               type="button"
               onClick={() => copyShareUrl(customer.shareToken)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50"
+              className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50"
             >
               <Copy className="h-3.5 w-3.5" />
               共有URLをコピー
@@ -156,7 +157,7 @@ export function GuideCustomerDetail({ guideCustomerId }: { guideCustomerId: stri
             <Link
               href={`/share/${customer.shareToken}`}
               target="_blank"
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50"
+              className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               顧客ページをプレビュー
@@ -284,6 +285,13 @@ export function GuideCustomerDetail({ guideCustomerId }: { guideCustomerId: stri
           {guide ? <GuidePreview guide={guide} /> : null}
         </CardContent>
       </Card>
+
+      {/* 検査結果の取り込み — 患者は入力しない。ここから入れて、同意を確かめて出す */}
+      <LabImportFlow
+        customerId={customer.id}
+        customerName={customer.name}
+        staffName="担当スタッフ"
+      />
 
       {/* 🌱 学習進捗 — 腸のおはなしの完了状況 */}
       <AdminLessonProgressSection guideCustomerId={customer.id} />

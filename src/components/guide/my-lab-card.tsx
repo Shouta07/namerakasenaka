@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { LabRadar } from "@/components/charts/lab-radar";
 import { LabValueBar } from "@/components/charts/lab-value-bar";
 import { LabDataList } from "@/components/charts/lab-data-list";
@@ -8,9 +8,14 @@ import {
   LAB_ROWS,
   RADAR_AXES,
   gaugePercent,
-  radarLevel,
-  radarRow,
+  radarLevelFromRows,
+  type LabRow,
 } from "@/lib/accord/labtest-fixtures";
+import {
+  usePublishedLabSeries,
+  type PublishedLabSeries,
+} from "@/lib/labtest/published";
+import { isDemoMode } from "@/lib/demo";
 
 /**
  * お客様のスマホで見る、血液検査の可視化。
@@ -19,7 +24,7 @@ import {
  * 数値の判定表ではなく「6つの力が、どこまでそろったか」。
  * 前回の形を破線で残すので、続けたぶんが図の広がりとして見える。
  */
-export function MyLabCard() {
+export function MyLabCard({ customerId = null }: { customerId?: string | null }) {
   const [selected, setSelected] = useState(0);
   const [rawOpen, setRawOpen] = useState(false);
   const rawRef = useRef<HTMLDetailsElement>(null);
@@ -32,20 +37,42 @@ export function MyLabCard() {
     );
   }
 
-  const now = radarLevel("retest");
-  const before = radarLevel("first");
+  // 施術者が取り込んで公開した検査があればそれを使う。
+  //
+  // 無いときの扱いは、デモと本番で変える必要がある。
+  // デモでは見本を出したい（空の図では商品を説明できない）。
+  // だが本番で、ご自身の検査ページに架空の数値が出るのは事故に等しい。
+  // だから本番では見本に落とさず、静かに何も出さない。
+  const demo = isDemoMode();
+  const published = usePublishedLabSeries(customerId);
+  const rowById = useMemo(() => {
+    const src: LabRow[] | null = published?.rows ?? (demo ? LAB_ROWS : null);
+    return new Map((src ?? []).map((r) => [r.id, r]));
+  }, [published, demo]);
 
-  const values = RADAR_AXES.map((a) => {
-    const row = radarRow(a);
-    return gaugePercent(row, row.retest);
-  });
-  const compare = RADAR_AXES.map((a) => {
-    const row = radarRow(a);
-    return gaugePercent(row, row.first);
-  });
+  // 検査票に無かった項目は軸から外す。測っていないものを
+  // 「届いていない」と描くと、事実でないことを図にしてしまう。
+  const axes = useMemo(
+    () => RADAR_AXES.filter((a) => rowById.has(a.rowId)),
+    [rowById],
+  );
+  const rows = useMemo(
+    () => axes.map((a) => rowById.get(a.rowId)!),
+    [axes, rowById],
+  );
 
-  const axis = RADAR_AXES[selected];
-  const row = radarRow(axis);
+  const safeIndex = Math.min(selected, Math.max(0, axes.length - 1));
+  const now = radarLevelFromRows(rows, "retest");
+  const before = radarLevelFromRows(rows, "first");
+
+  const values = rows.map((r) => gaugePercent(r, r.retest));
+  const compare = rows.map((r) => gaugePercent(r, r.first));
+
+  if (axes.length === 0) return null;
+
+  const axis = axes[safeIndex];
+  const row = rows[safeIndex];
+  const hasPrevious = published ? published.previousCollectedOn !== null : true;
 
   return (
     <section className="rounded-3xl border border-[#e3ece3] bg-white p-5">
@@ -53,12 +80,16 @@ export function MyLabCard() {
         <h2 className="text-base font-bold text-stone-900">
           血液検査からわかったこと
         </h2>
-        <span className="text-[11px] text-stone-400">7月の再検査ぶん</span>
+        <span className="text-[11px] text-stone-400">
+          {published ? `${jaDate(published.latestCollectedOn)} 採血ぶん` : "見本のデータ"}
+        </span>
       </div>
 
       {/* この図が何からできているか。生データへの入口は、上にも置く。 */}
       <p className="mt-1 text-[11.5px] leading-relaxed text-stone-500">
-        7月20日の血液検査 {LAB_ROWS.length} 項目からつくっています。
+        {published
+          ? `${jaDate(published.latestCollectedOn)}の血液検査 ${published.totalValues} 項目から、店舗が取り込んでつくっています。`
+          : `7月20日の血液検査 ${LAB_ROWS.length} 項目からつくっています。`}
         <button
           type="button"
           onClick={openRaw}
@@ -79,9 +110,10 @@ export function MyLabCard() {
         <div className="min-w-0 flex-1">
           <p className="text-[15px] font-bold text-stone-900">{now.title}</p>
           <p className="mt-0.5 text-[12px] leading-relaxed text-stone-600">
-            6つの力のうち{" "}
+            {axes.length}つの力のうち{" "}
             <strong className="text-[#3c6347]">{now.gathered} つ</strong>{" "}
-            が目安に届きました（前回は {before.gathered} つ）
+            が目安に届きました
+            {hasPrevious ? `（前回は ${before.gathered} つ）` : ""}
           </p>
         </div>
       </div>
@@ -89,10 +121,10 @@ export function MyLabCard() {
       {/* レーダー — 前回の形を破線で重ねる */}
       <div className="mt-2">
         <LabRadar
-          labels={RADAR_AXES.map((a) => a.label)}
+          labels={axes.map((a) => a.label)}
           values={values}
-          compare={compare}
-          selectedIndex={selected}
+          compare={hasPrevious ? compare : undefined}
+          selectedIndex={safeIndex}
           onSelect={setSelected}
           color="#3c6347"
           compareColor="#7da589"
@@ -101,27 +133,34 @@ export function MyLabCard() {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-4">
-        <span className="flex items-center gap-1.5 text-[11.5px] text-stone-600">
-          <svg width="18" height="8" aria-hidden>
-            <line
-              x1="0"
-              y1="4"
-              x2="18"
-              y2="4"
-              stroke="#7da589"
-              strokeWidth="2"
-              strokeDasharray="4 3"
-            />
-          </svg>
-          前回（4月）
-        </span>
+        {hasPrevious ? (
+          <span className="flex items-center gap-1.5 text-[11.5px] text-stone-600">
+            <svg width="18" height="8" aria-hidden>
+              <line
+                x1="0"
+                y1="4"
+                x2="18"
+                y2="4"
+                stroke="#7da589"
+                strokeWidth="2"
+                strokeDasharray="4 3"
+              />
+            </svg>
+            前回（{published ? jaShort(published.previousCollectedOn!) : "4月"}）
+          </span>
+        ) : null}
         <span className="flex items-center gap-1.5 text-[11.5px] text-stone-600">
           <svg width="18" height="8" aria-hidden>
             <line x1="0" y1="4" x2="18" y2="4" stroke="#3c6347" strokeWidth="2" />
           </svg>
-          いま（7月）
+          いま（{published ? jaShort(published.latestCollectedOn) : "7月"}）
         </span>
       </div>
+      {!hasPrevious ? (
+        <p className="text-center text-[11.5px] leading-relaxed text-stone-500">
+          今回が1回目です。次の検査を受けると、前回の形が破線で重なります。
+        </p>
+      ) : null}
 
       {/* 選んだ力 — 元データと、その指標が何かを出す */}
       <div className="mt-3 rounded-2xl bg-[#f6f9f6] p-4">
@@ -178,7 +217,7 @@ export function MyLabCard() {
           <div>
             <dt className="text-[11px] font-bold text-[#3c6347]">いまの状態</dt>
             <dd className="mt-0.5 text-[13px] leading-relaxed text-stone-700">
-              {values[selected] >= 100
+              {values[safeIndex] >= 100
                 ? "目安に届いています。いまのやり方を続けましょう。"
                 : axis.ifLow}
             </dd>
@@ -194,13 +233,13 @@ export function MyLabCard() {
 
       {/* 数値の一覧 — 図だけに頼らせない */}
       <ul className="mt-3 divide-y divide-stone-100">
-        {RADAR_AXES.map((a, i) => (
+        {axes.map((a, i) => (
           <li key={a.id}>
             <button
               type="button"
               onClick={() => setSelected(i)}
               className={`flex min-h-11 w-full items-center gap-2 text-left ${
-                i === selected ? "font-bold" : ""
+                i === safeIndex ? "font-bold" : ""
               }`}
             >
               <span className="flex-1 text-[13px] text-stone-700">{a.label}</span>
@@ -230,20 +269,89 @@ export function MyLabCard() {
         onToggle={(e) => setRawOpen((e.currentTarget as HTMLDetailsElement).open)}
       >
         <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[12.5px] font-bold text-[#3c6347]">
-          受け取った生の検査データを見る（{LAB_ROWS.length}項目）
+          受け取った生の検査データを見る（
+          {published ? published.totalValues : LAB_ROWS.length}項目）
           <span className="ml-1 transition group-open:rotate-180" aria-hidden>
             ▾
           </span>
         </summary>
         <div className="mt-2">
-          <LabDataList />
+          {published ? (
+            <IngestedRawTable series={published} />
+          ) : (
+            <LabDataList />
+          )}
         </div>
       </details>
 
       <p className="mt-3 rounded-2xl bg-[#fafcfa] px-4 py-3 text-[12px] leading-relaxed text-stone-600">
-        破線が前回の形です。数字はあなたを評価するものではなく、
-        次に何をするかを決めるための材料です。次の検査は11月ごろの予定です。
+        {hasPrevious ? "破線が前回の形です。" : ""}
+        数字はあなたを評価するものではなく、次に何をするかを決めるための材料です。
       </p>
+
+      {published ? (
+        <p className="mt-2 text-[11px] leading-relaxed text-stone-400">
+          このページは、{jaDate(published.latestCollectedOn)}の検査結果を
+          店舗（{published.importedBy}）が取り込んだものです。
+          ご本人の同意にもとづいて表示しています。表示をやめたいときは、
+          店舗にお申しつけください。
+        </p>
+      ) : null}
     </section>
+  );
+}
+
+/** 2026-07-20 → 7月20日 */
+function jaDate(iso: string): string {
+  const [, m, d] = iso.split("-");
+  return `${Number(m)}月${Number(d)}日`;
+}
+
+/** 2026-07-20 → 7月 */
+function jaShort(iso: string): string {
+  const [, m] = iso.split("-");
+  return `${Number(m)}月`;
+}
+
+/**
+ * 取り込んだ生データの表。
+ *
+ * 「見せている図が、この数字からできている」を1画面で確かめられること。
+ * 加工前を隠さないことが、数値を扱う商品の最低条件だと考えている。
+ */
+function IngestedRawTable({ series }: { series: PublishedLabSeries }) {
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-stone-200">
+      <table className="min-w-[400px] border-collapse text-[12px]">
+        <thead>
+          <tr className="bg-stone-50 text-stone-500">
+            <th className="px-3 py-2 text-left font-medium">項目</th>
+            <th className="px-3 py-2 text-right font-medium">
+              {series.previousCollectedOn ? jaShort(series.previousCollectedOn) : "—"}
+            </th>
+            <th className="px-3 py-2 text-right font-medium">
+              {jaShort(series.latestCollectedOn)}
+            </th>
+            <th className="px-3 py-2 text-left font-medium">適正の目安</th>
+          </tr>
+        </thead>
+        <tbody>
+          {series.rows.map((r) => (
+            <tr key={r.id} className="border-t border-stone-100">
+              <td className="px-3 py-2 text-stone-700">{r.name}</td>
+              <td className="px-3 py-2 text-right tabular-nums text-stone-400">
+                {series.previousCollectedOn ? r.first : "—"}
+              </td>
+              <td className="px-3 py-2 text-right font-bold tabular-nums text-stone-900">
+                {r.retest}
+              </td>
+              <td className="px-3 py-2 tabular-nums text-stone-500">
+                {r.optMin}〜{r.optMax} {r.unit}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

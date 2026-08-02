@@ -31,7 +31,7 @@ import {
   useStoredConsents,
   useStoredLabImports,
 } from "@/lib/demo/store";
-import { LAB_ROWS, judgeLab } from "@/lib/accord/labtest-fixtures";
+import { LAB_ROWS, judgeLab } from "@/lib/field-cx/labtest-fixtures";
 import { cn } from "@/lib/utils/cn";
 
 const ROW_BY_ID = new Map(LAB_ROWS.map((r) => [r.id, r]));

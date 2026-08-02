@@ -57,7 +57,7 @@ export type LineChannelConfig = {
  * ハッシュなので、これが漏れても鍵は復元できません。
  */
 export function secretFingerprint(secret: string): string {
-  return createHmac("sha256", "accord-channel-fingerprint")
+  return createHmac("sha256", "field-cx-channel-fingerprint")
     .update(secret.trim())
     .digest("hex")
     .slice(0, 8);

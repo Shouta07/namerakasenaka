@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 export const metadata = {
   title: "Hub ｜ すべての画面・資料の引き出し",
   description:
-    "Accord — 提案資料・実機デモ・顧客向けページ、すべてへの入り口。",
+    "Field CX — 提案資料・実機デモ・顧客向けページ、すべてへの入り口。",
 };
 
 type HubLink = {
@@ -104,32 +104,32 @@ const GROUPS: HubGroup[] = [
     ],
   },
   {
-    key: "accord",
-    eyebrow: "ACCORD — 汎用サービス（横展開の看板）",
-    title: "初回カウンセリング支援 Accord",
+    key: "field-cx",
+    eyebrow: "FIELD_CX — 汎用サービス（横展開の看板）",
+    title: "初回カウンセリング支援 Field CX",
     note: "1社目の設計思想から抽出した、機能を増減できるモジュール式サービス。",
     links: [
       {
-        href: "/accord",
-        title: "Accord 概要",
+        href: "/field-cx",
+        title: "Field CX 概要",
         body: "3本柱と機能モジュールの増減パネル。",
         emoji: "🎛",
         tag: "入口",
       },
       {
-        href: "/accord/roleplay",
+        href: "/field-cx/roleplay",
         title: "AI相手の接客練習",
         body: "不安型・比較検討型・不信型。採点フィードバック付き。",
         emoji: "🎭",
       },
       {
-        href: "/accord/dashboard",
+        href: "/field-cx/dashboard",
         title: "成約の見える化",
         body: "ファネル・成約率トレンド・スタッフ別・月1伴走レポート。",
         emoji: "📊",
       },
       {
-        href: "/accord/customers",
+        href: "/field-cx/customers",
         title: "顧客別の継続フォロー",
         body: "タイムライン・LINE経過共有（同意ファースト）・メモ。",
         emoji: "🌱",
@@ -139,8 +139,8 @@ const GROUPS: HubGroup[] = [
 ];
 
 const OFFLINE_DOCS = [
-  "Accord 事業モデル 3層モート×抽出フライホイール（repo: docs/accord/moat-and-flywheel.md）— 一番強い構造と成立条件",
-  "Accord SaaS サービス設計・開発設計書（repo: docs/accord/saas-design.md）— MRR100万への事業/技術設計",
+  "Field CX 事業モデル 3層モート×抽出フライホイール（repo: docs/field-cx/moat-and-flywheel.md）— 一番強い構造と成立条件",
+  "Field CX SaaS サービス設計・開発設計書（repo: docs/field-cx/saas-design.md）— MRR100万への事業/技術設計",
   "お見積り資料（2プラン提案_2026.pptx）— 金額・費用ロジック・体制・スケジュール",
   "営業プレイブック（make_playbook 10枚）— 商談の進め方（自分用）",
   "業務委託 基本契約書 v2 / 個別契約書 SOW v2（Word）— デザイナー発注用",
@@ -159,7 +159,7 @@ export default function HubPage() {
             作ってきたもの、ぜんぶここから。
           </h1>
           <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-stone-600">
-            提案資料・実機デモ・顧客向けページ・Accord。
+            提案資料・実機デモ・顧客向けページ・Field CX。
             商談前にこのページを開けば、どの画面にも2クリックで届きます。
             このURLをブックマークしておいてください。
           </p>
@@ -230,7 +230,7 @@ export default function HubPage() {
 
       <footer className="border-t border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl px-5 py-6 text-[11px] text-stone-400 sm:px-8">
-          © バイタリティデザイン合同会社 — Accord Hub
+          © バイタリティデザイン合同会社 — Field CX Hub
         </div>
       </footer>
     </main>

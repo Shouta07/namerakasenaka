@@ -286,7 +286,7 @@ function DemoClientProgress() {
       <LineRecordCard />
 
       <footer className="pb-2 pt-4 text-center text-[11px] text-stone-400">
-        Powered by Accord — 美容・ウェルネス店舗の現場CXを創る
+        Powered by Field CX — 美容・ウェルネス店舗の現場CXを創る
       </footer>
     </div>
   );

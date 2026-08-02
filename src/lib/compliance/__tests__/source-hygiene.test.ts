@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 /**
  * ソースの衛生 — 一度直したものが、静かに戻ってこないようにする。
  *
- * 監査（docs/accord/audit-2026-08.md）で「テストで再混入を検知する」と
+ * 監査（docs/field-cx/audit-2026-08.md）で「テストで再混入を検知する」と
  * 書いた約束を、ここで実際に果たす。
  *
  * 1) 実在名の再混入: 医療機関名・店舗名・担当者名は全て非掲載にした。
@@ -41,6 +41,13 @@ const REAL_NAMES = [
   "田村",
 ];
 
+/**
+ * 使わなくなった旧称。プロダクト名は Field CX。
+ * 旧称は画面・識別子・URLスラッグのどこにも残さない
+ * （ファイル名や import パスに残ると、あとで気づけない）。
+ */
+const RETIRED_PRODUCT_NAMES = ["accord"];
+
 describe("実在名は非掲載のままであること", () => {
   it.each(REAL_NAMES)("src/ のどこにも %s が現れない", (needle) => {
     const lower = needle.toLowerCase();
@@ -50,6 +57,22 @@ describe("実在名は非掲載のままであること", () => {
     expect(offenders, `${needle} が残っている: ${offenders.join(", ")}`).toEqual(
       [],
     );
+  });
+});
+
+describe("旧プロダクト名が戻ってこないこと", () => {
+  it.each(RETIRED_PRODUCT_NAMES)("src/ のどこにも %s が現れない", (needle) => {
+    const offenders = FILES.filter((f) =>
+      readFileSync(f, "utf8").toLowerCase().includes(needle),
+    ).map((f) => f.slice(SRC.length + 1));
+    expect(offenders, `${needle}: ${offenders.join(", ")}`).toEqual([]);
+  });
+
+  it.each(RETIRED_PRODUCT_NAMES)("ファイル名にも %s が残っていない", (needle) => {
+    const offenders = FILES.filter((f) =>
+      f.slice(SRC.length + 1).toLowerCase().includes(needle),
+    ).map((f) => f.slice(SRC.length + 1));
+    expect(offenders, `${needle}: ${offenders.join(", ")}`).toEqual([]);
   });
 });
 

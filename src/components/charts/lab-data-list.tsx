@@ -8,7 +8,7 @@ import {
   gaugePercent,
   judgeLab,
   labChange,
-} from "@/lib/accord/labtest-fixtures";
+} from "@/lib/field-cx/labtest-fixtures";
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("ja-JP", {

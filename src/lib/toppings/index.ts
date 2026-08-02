@@ -1,8 +1,8 @@
 /**
- * Accord トッピング機構 — バレル。
+ * Field CX トッピング機構 — バレル。
  *
  * SaaS 版の各画面・API はここから import する。
- * 詳細: docs/accord/topping-architecture.md
+ * 詳細: docs/field-cx/topping-architecture.md
  */
 
 export * from "./types";

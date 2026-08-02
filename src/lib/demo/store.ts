@@ -289,6 +289,28 @@ export type StoredLabImport = {
   publishedAt: string | null;
 };
 
+/**
+ * 店舗の公式LINEとの接続状態（表に出してよいぶんだけ）。
+ *
+ * シークレットとアクセストークンは**ここに入れない**。
+ * デモでは保存自体をせず、指紋（fingerprint）だけを残して
+ * 「登録済み」を表現する。本番では暗号化して別に保管する。
+ */
+export type StoredLineChannel = {
+  organizationId: string;
+  channelId: string;
+  botUserId: string;
+  /** 鍵そのものではなく、同じ鍵かを確かめるための短い指紋。 */
+  secretFingerprint: string;
+  /** 末尾4文字だけのマスク表示。 */
+  maskedSecret: string;
+  connectedAt: string;
+  connectedBy: string;
+  lastCheckedAt: string | null;
+  lastCheckOk: boolean | null;
+  disconnectedAt: string | null;
+};
+
 type Snapshot = {
   messages: StoredMessage[];
   selfLogs: StoredSelfLog[];
@@ -311,6 +333,7 @@ type Snapshot = {
   lessonProgress: LessonProgress[];
   consents: StoredConsent[];
   labImports: StoredLabImport[];
+  lineChannels: StoredLineChannel[];
 };
 
 const EMPTY: Snapshot = {
@@ -335,6 +358,7 @@ const EMPTY: Snapshot = {
   lessonProgress: [],
   consents: [],
   labImports: [],
+  lineChannels: [],
 };
 
 // ---------- Low-level access ----------
@@ -1145,4 +1169,70 @@ export function setLabImportPublished(id: string, published: boolean): void {
 
 export function removeStoredLabImport(id: string): void {
   update("labImports", (cur) => cur.filter((r) => r.id !== id));
+}
+
+// ---------- 店舗の公式LINEとの接続 ----------
+//
+// 鍵は保存しない。ここに残るのは「登録済みであること」と、
+// 同じ鍵かを確かめるための指紋だけ。
+
+export function useStoredLineChannels(): StoredLineChannel[] {
+  return useStore("lineChannels");
+}
+
+export function useStoredLineChannel(
+  organizationId: string,
+): StoredLineChannel | null {
+  const all = useStore("lineChannels");
+  return (
+    all.find((c) => c.organizationId === organizationId && !c.disconnectedAt) ??
+    null
+  );
+}
+
+/** 接続を記録する。呼ぶ前に API 側の検証を通すこと。 */
+export function connectLineChannel(
+  input: Omit<
+    StoredLineChannel,
+    "connectedAt" | "lastCheckedAt" | "lastCheckOk" | "disconnectedAt"
+  > & { connectedAt?: string },
+): StoredLineChannel {
+  const next: StoredLineChannel = {
+    organizationId: input.organizationId,
+    channelId: input.channelId,
+    botUserId: input.botUserId,
+    secretFingerprint: input.secretFingerprint,
+    maskedSecret: input.maskedSecret,
+    connectedAt: input.connectedAt ?? new Date().toISOString(),
+    connectedBy: input.connectedBy,
+    lastCheckedAt: null,
+    lastCheckOk: null,
+    disconnectedAt: null,
+  };
+  update("lineChannels", (cur) => [
+    ...cur.filter((c) => c.organizationId !== input.organizationId),
+    next,
+  ]);
+  return next;
+}
+
+export function recordLineCheck(organizationId: string, ok: boolean): void {
+  const at = new Date().toISOString();
+  update("lineChannels", (cur) =>
+    cur.map((c) =>
+      c.organizationId === organizationId
+        ? { ...c, lastCheckedAt: at, lastCheckOk: ok }
+        : c,
+    ),
+  );
+}
+
+/**
+ * 連携を解除する。
+ * 店舗が「やめる」と言った瞬間に消せることが、預かる側の最低条件。
+ */
+export function disconnectLineChannel(organizationId: string): void {
+  update("lineChannels", (cur) =>
+    cur.filter((c) => c.organizationId !== organizationId),
+  );
 }

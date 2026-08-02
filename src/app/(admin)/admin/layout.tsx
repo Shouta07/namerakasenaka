@@ -17,6 +17,7 @@ const sidebarItems: NavItem[] = [
   { href: "/admin/evidence", label: "エビデンス", icon: "line-chart" },
   { href: "/admin/staff", label: "スタッフ", icon: "user-round-cog" },
   { href: "/admin/invites/new", label: "招待", icon: "mail" },
+  { href: "/admin/settings/line", label: "公式LINE連携", icon: "message-circle" },
   { href: "/admin/billing", label: "課金", icon: "credit-card" },
 ];
 

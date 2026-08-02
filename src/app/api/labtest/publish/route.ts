@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { isDemoMode } from "@/lib/demo";
 import { getAdminSupabase } from "@/lib/supabase/admin";
+import { getServerSupabase } from "@/lib/supabase/server";
 import { logAudit } from "@/lib/audit/log";
 import {
   canPublishLabtest,
@@ -20,6 +21,10 @@ import {
  *
  * デモモード（Supabase 未接続）でも同意チェックだけは同じ関数で行う。
  * デモだから素通し、にすると「同意ゲートが効いている」ことを確認できない。
+ *
+ * 呼び出せるのは、その患者と同じ組織のスタッフだけ。
+ * service-role は RLS を迂回するので、テナントの境界はこのルートが自分で守る。
+ * ここを書き忘れると、importId を知っているだけで他店舗の検査を公開できてしまう。
  */
 
 const Body = z.object({
@@ -50,6 +55,48 @@ export async function POST(req: Request) {
   }
   const b = parsed.data;
 
+  // 本番はまずスタッフ本人と、その人の組織を確かめる。
+  // デモは Supabase が無いので、この段は飛ばして同意判定だけを見る。
+  let callerOrgId: string | null = null;
+  let callerId: string | null = null;
+  if (!isDemoMode()) {
+    const session = await getServerSupabase();
+    const { data: auth } = await session.auth.getUser();
+    if (!auth.user) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+    const { data: me } = await session
+      .from("users")
+      .select("role, organization_id")
+      .eq("id", auth.user.id)
+      .maybeSingle();
+    const meRow =
+      (me as { role?: string; organization_id?: string | null } | null) ?? null;
+    if (
+      !meRow?.organization_id ||
+      (meRow.role !== "therapist" && meRow.role !== "salon_admin")
+    ) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
+    callerOrgId = meRow.organization_id;
+    callerId = auth.user.id;
+
+    // 対象の患者が、その人の組織のものであること。
+    const { data: customer } = await session
+      .from("guide_customers")
+      .select("organization_id")
+      .eq("id", b.customerId)
+      .maybeSingle();
+    const orgOfCustomer = (customer as { organization_id?: string } | null)
+      ?.organization_id;
+    if (!orgOfCustomer) {
+      return NextResponse.json({ error: "customer_not_found" }, { status: 404 });
+    }
+    if (orgOfCustomer !== callerOrgId) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
+  }
+
   if (b.published) {
     const records: ConsentRecord[] = isDemoMode()
       ? (b.consents ?? [])
@@ -69,22 +116,30 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, mode: "demo" });
   }
 
+  // 上で組織を確かめたうえで、更新自体も organization_id で絞る。
+  // 帯は二重にする — 片方の確認を将来消しても、もう片方が残るように。
   const admin = getAdminSupabase();
   const { error } = await admin
     .from("lab_imports")
     .update({ published_at: b.published ? new Date().toISOString() : null })
     .eq("id", b.importId)
-    .eq("customer_id", b.customerId);
+    .eq("customer_id", b.customerId)
+    .eq("organization_id", callerOrgId);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   await logAudit({
-    actorId: null,
+    // 誰がやったか分からない監査ログは、監査ログではない。
+    actorId: callerId,
     action: b.published ? "approve" : "reject",
     targetType: "lab_import",
     targetId: b.importId,
-    metadata: { customerId: b.customerId, published: b.published },
+    metadata: {
+      customerId: b.customerId,
+      published: b.published,
+      organizationId: callerOrgId,
+    },
   });
 
   return NextResponse.json({ ok: true });

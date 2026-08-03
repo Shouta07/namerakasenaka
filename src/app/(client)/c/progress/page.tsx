@@ -1,10 +1,5 @@
 import Link from "next/link";
-import {
-  CalendarClock,
-  GitCompare,
-  Heart,
-  Sparkles,
-} from "lucide-react";
+import { CalendarClock, Heart, Sparkles } from "lucide-react";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/demo";
 import {
@@ -274,14 +269,6 @@ function DemoClientProgress() {
       ) : null}
 
       <BeforeAfter />
-
-      <Link
-        href="/c/skin"
-        className="flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white text-[13px] font-semibold text-brand-700"
-      >
-        <GitCompare className="h-4 w-4" />
-        背中ケアの記録をすべて見る →
-      </Link>
 
       <LineRecordCard />
 

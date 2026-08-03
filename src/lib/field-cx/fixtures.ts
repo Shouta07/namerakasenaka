@@ -102,15 +102,22 @@ export const FIELD_CX_MODULES: FieldCxModule[] = [
   },
 ];
 
+/**
+ * 既定のモジュール構成 = **価値検証の最小構成**。
+ *
+ * 全部オンにすると、続いた理由も続かなかった理由も分からなくなる。
+ * 何を外し、なぜ外し、いつ戻すかは lib/field-cx/mvp.ts に書いてある。
+ * 商談で見せたいものは、デモ設定から一時的にオンにできる。
+ */
 export const DEFAULT_MODULE_STATE: Record<FieldCxModuleId, boolean> = {
   counseling: true,
   labtest: true,
-  copilot: true,
-  roleplay: true,
-  dashboard: true,
-  line: true,
-  followup: true,
-  mentoring: true,
+  copilot: false,
+  roleplay: false,
+  dashboard: false,
+  line: false,
+  followup: false,
+  mentoring: false,
 };
 
 // ---------------------------------------------------------------

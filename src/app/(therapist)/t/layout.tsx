@@ -12,11 +12,10 @@ const items: NavItem[] = [
   { href: "/t/calendar", label: "予定", icon: "calendar-days" },
 ];
 
+/** 価値検証の最小構成。外したものと理由は lib/field-cx/mvp.ts。 */
 const sidebarItems: NavItem[] = [
   { href: "/t/today", label: "本日", icon: "stethoscope" },
   { href: "/t/clients", label: "担当顧客", icon: "users" },
-  { href: "/t/clients?risk=high", label: "離脱予兆", icon: "alert-triangle" },
-  { href: "/t/cases", label: "症例", icon: "image-down" },
   { href: "/t/calendar", label: "カレンダー", icon: "calendar-days" },
 ];
 

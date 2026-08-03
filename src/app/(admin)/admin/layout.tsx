@@ -6,27 +6,24 @@ import { RoleTopBar } from "@/components/ui/role-top-bar";
 import { PresentationModeToggle } from "@/components/presentation-mode";
 import { demoOrganization } from "@/lib/demo/fixtures";
 
-// Sidebar (desktop) gets everything.
+/**
+ * 価値検証の最小構成。
+ *
+ * 画面は残してあるが、ナビからは外している。
+ * 見えない画面は使われず、使われない画面はサポート原価を生まない。
+ * 何を外し、なぜ外し、いつ戻すかは lib/field-cx/mvp.ts。
+ */
 const sidebarItems: NavItem[] = [
-  { href: "/admin/dashboard", label: "概況", icon: "layout-dashboard" },
+  { href: "/admin/customers", label: "検査と伴走", icon: "sparkles" },
   { href: "/admin/clients", label: "顧客", icon: "users" },
-  { href: "/admin/customers", label: "回復ガイド", icon: "sparkles" },
-  { href: "/admin/cases", label: "症例ライブラリ", icon: "image-down" },
-  { href: "/admin/cases/tags", label: "タグ管理", icon: "tag" },
-  { href: "/admin/at-risk", label: "離脱予兆", icon: "alert-triangle" },
-  { href: "/admin/evidence", label: "エビデンス", icon: "line-chart" },
-  { href: "/admin/staff", label: "スタッフ", icon: "user-round-cog" },
   { href: "/admin/invites/new", label: "招待", icon: "mail" },
   { href: "/admin/settings/line", label: "公式LINE連携", icon: "message-circle" },
-  { href: "/admin/billing", label: "課金", icon: "credit-card" },
 ];
 
-// Mobile bottom nav stays at 5 critical items.
+// 現場は指1本で回す。迷う余地を作らない。
 const mobileItems: NavItem[] = [
-  { href: "/admin/dashboard", label: "概況", icon: "layout-dashboard" },
+  { href: "/admin/customers", label: "検査", icon: "sparkles" },
   { href: "/admin/clients", label: "顧客", icon: "users" },
-  { href: "/admin/at-risk", label: "予兆", icon: "alert-triangle" },
-  { href: "/admin/evidence", label: "成果", icon: "line-chart" },
   { href: "/admin/invites/new", label: "招待", icon: "mail" },
 ];
 

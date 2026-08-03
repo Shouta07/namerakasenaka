@@ -18,10 +18,10 @@ import { demoOrganization } from "@/lib/demo/fixtures";
  * 記録はサロンがやり、お客様は受け取るだけでいい。
  */
 const items: NavItem[] = [
+  // 検証したいのは「検査を見せると続くか」。タブを増やすと、
+  // 続いた理由がどれだったのか分からなくなる。
   { href: "/c/progress", label: "今日", icon: "sparkles" },
   { href: "/c/guide", label: "血液診断", icon: "droplet" },
-  { href: "/c/skin", label: "背中ケア", icon: "camera" },
-  { href: "/c/learn", label: "学ぶ", icon: "book-open" },
 ];
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {

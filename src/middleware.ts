@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import { isDemoMode } from "@/lib/demo";
+import { appMode } from "@/lib/app-mode";
 
 const PUBLIC_PATHS = [
   "/",
@@ -23,10 +23,26 @@ function isPublic(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
-  // Demo mode: Supabase env unset. Every route is browseable with fixture data,
-  // no auth redirects, no session cookie reads.
-  if (isDemoMode()) {
-    return NextResponse.next({ request });
+  const mode = appMode();
+
+  // 設定が壊れている本番は、開かずに落とす。
+  // 「認証が外れたまま動き続ける」より「動かない」ほうが安全。
+  if (mode.fatal) {
+    return new NextResponse(
+      "設定が正しくないため起動できません。管理者にご連絡ください。",
+      { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } },
+    );
+  }
+
+  // デモは全ルート素通し（フィクスチャで動く見本なので認証の対象が無い）。
+  // ただし素通しにするのは、デモだと**宣言または確定**できたときだけ。
+  if (mode.mode === "demo") {
+    const res = NextResponse.next({ request });
+    // 見本のデータであることを、機械にも分かる形で明示する。
+    res.headers.set("x-field-cx-mode", "demo");
+    // デモが検索に載ると、見本の数値が実在の情報として拡散しうる。
+    res.headers.set("x-robots-tag", "noindex, nofollow");
+    return res;
   }
 
   const { response, user } = await updateSession(request);

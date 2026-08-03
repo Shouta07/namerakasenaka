@@ -7,6 +7,7 @@ import {
   Check,
   Eye,
   EyeOff,
+  Send,
   ShieldCheck,
   Trash2,
 } from "lucide-react";
@@ -32,6 +33,7 @@ import {
   useStoredLabImports,
 } from "@/lib/demo/store";
 import { LAB_ROWS, judgeLab } from "@/lib/field-cx/labtest-fixtures";
+import { labPublishedText } from "@/lib/line/send";
 import { cn } from "@/lib/utils/cn";
 
 const ROW_BY_ID = new Map(LAB_ROWS.map((r) => [r.id, r]));
@@ -399,12 +401,75 @@ export function LabImportFlow({
                     {consent.reason}
                   </p>
                 ) : null}
+                {r.publishedAt ? (
+                  <NotifyButton
+                    customerId={customerId}
+                    customerName={customerName}
+                  />
+                ) : null}
               </li>
             ))}
           </ul>
         )}
       </div>
     </section>
+  );
+}
+
+/**
+ * 公開したことを LINE でお知らせする。
+ *
+ * 送るのは**リンクだけ**。検査の数値は本文に入れない
+ * （トーク履歴は端末に残り、退会後も消せないため）。
+ * 同意の判定はサーバに任せる — 画面で判定すると、ゲートが見た目だけになる。
+ */
+function NotifyButton({
+  customerId,
+  customerName,
+}: {
+  customerId: string;
+  customerName: string;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  async function send() {
+    setBusy(true);
+    try {
+      const url = `${window.location.origin}/c/guide`;
+      const res = await fetch("/api/line/send", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          customerId,
+          text: labPublishedText(customerName, url),
+        }),
+      });
+      const json = (await res.json()) as { ok?: boolean; reason?: string };
+      if (!res.ok || !json.ok) {
+        toast.error(json.reason ?? "お知らせを送れませんでした。");
+        return;
+      }
+      toast.success(`${customerName} 様の LINE にお知らせしました。`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => void send()}
+        className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-stone-300 px-4 text-[12.5px] font-bold text-stone-700 transition hover:border-brand-500 disabled:opacity-40"
+      >
+        <Send className="h-3.5 w-3.5" aria-hidden />
+        LINEでお知らせする
+      </button>
+      <p className="mt-1 text-[11px] leading-relaxed text-stone-500">
+        お送りするのはページへのリンクだけです。検査の数値は LINE に残しません。
+      </p>
+    </div>
   );
 }
 

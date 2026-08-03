@@ -1,5 +1,16 @@
+import { isDemoModeResolved } from "@/lib/app-mode";
+
+/**
+ * デモかどうか。
+ *
+ * 判定の本体は lib/app-mode.ts に移した。
+ * 以前はここで「Supabase の環境変数が無ければデモ」と推測していたが、
+ * 環境変数を1つ設定し忘れただけで本番が認証なしで公開されてしまう。
+ * いまは NEXT_PUBLIC_APP_MODE の宣言が優先で、
+ * production と宣言して土台が欠けているときは開かずに落ちる。
+ */
 export function isDemoMode(): boolean {
-  return !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  return isDemoModeResolved();
 }
 
 export const demoOrganization = {

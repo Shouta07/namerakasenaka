@@ -140,6 +140,46 @@ create index idx_lab_imports_org on lab_imports (organization_id);
 
 alter table lab_imports enable row level security;
 
+-- ポリシーの中で他のテーブルを引くときは、security definer の関数にする。
+--
+-- ポリシー式に直接 `exists (select ... from guide_customers ...)` と書くと、
+-- **その内側のクエリにも RLS がかかる**。患者は guide_customers も consents も
+-- 自分では読めないので、内側が常に0行になり、
+-- 「公開済みで同意もあるのに、本人にだけ永久に見えない」状態になる。
+-- 実際に PostgreSQL で流して初めて気づいた（scripts/verify-rls.sql）。
+create or replace function public.is_own_guide_customer(p_customer uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from guide_customers g
+    join clients c on c.id = g.client_id
+    where g.id = p_customer
+      and c.user_id = auth.uid()
+  );
+$$;
+
+create or replace function public.has_active_consent(
+  p_customer uuid,
+  p_scope consent_scope
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from consents k
+    where k.customer_id = p_customer
+      and k.scope = p_scope
+      and k.revoked_at is null
+  );
+$$;
+
 create policy lab_imports_select on lab_imports for select
   using (
     is_super_admin()
@@ -150,18 +190,8 @@ create policy lab_imports_select on lab_imports for select
     -- ご本人は、公開されていて、かつ同意が有効なぶんだけ見える。
     or (
       published_at is not null
-      and exists (
-        select 1 from guide_customers g
-        join clients c on c.id = g.client_id
-        where g.id = lab_imports.customer_id
-          and c.user_id = auth.uid()
-      )
-      and exists (
-        select 1 from consents k
-        where k.customer_id = lab_imports.customer_id
-          and k.scope = 'labtest_view'
-          and k.revoked_at is null
-      )
+      and is_own_guide_customer(customer_id)
+      and has_active_consent(customer_id, 'labtest_view')
     )
   );
 

@@ -81,26 +81,59 @@ export function LabImportFlow({
     setFileName(name);
   }
 
-  function save() {
+  /**
+   * 取り込みを保存する。
+   *
+   * 必ず API を通す。以前はここが localStorage への書き込みだけで、
+   * 本番では検査がどこにも残らなかった。保存の入口はサーバに一本化する。
+   */
+  async function save() {
     if (!parsed || parsed.values.length === 0) return;
-    addStoredLabImport({
-      customerId,
-      collectedOn,
-      values: parsed.values.map((v) => ({
-        rowId: v.rowId,
-        value: v.value,
-        sourceLabel: v.sourceLabel,
-        sourceUnit: v.sourceUnit,
-      })),
-      sourceFileName: fileName,
-      unparsedCount: parsed.unparsed.length,
-      importedBy: staffName,
-    });
-    setParsed(null);
-    setFileName("");
-    toast.success(
-      `${parsed.values.length} 項目を取り込みました。まだ ${customerName} 様には表示されていません。`,
-    );
+    const values = parsed.values.map((v) => ({
+      rowId: v.rowId,
+      value: v.value,
+      sourceLabel: v.sourceLabel,
+      sourceUnit: v.sourceUnit,
+    }));
+    setBusy(true);
+    try {
+      const res = await fetch("/api/labtest/imports", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          customerId,
+          collectedOn,
+          values,
+          sourceFileName: fileName,
+          unparsedCount: parsed.unparsed.length,
+          importedByName: staffName,
+        }),
+      });
+      const json = (await res.json()) as { ok?: boolean; mode?: string };
+      if (!res.ok || !json.ok) {
+        toast.error("取り込みを保存できませんでした。もう一度お試しください。");
+        return;
+      }
+      // デモでは API に保存先が無いので、画面用にブラウザへ控える。
+      if (json.mode === "demo") {
+        addStoredLabImport({
+          customerId,
+          collectedOn,
+          values,
+          sourceFileName: fileName,
+          unparsedCount: parsed.unparsed.length,
+          importedBy: staffName,
+        });
+      }
+      const count = parsed.values.length;
+      setParsed(null);
+      setFileName("");
+      toast.success(
+        `${count} 項目を取り込みました。まだ ${customerName} 様には表示されていません。`,
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
   /**
@@ -262,7 +295,7 @@ export function LabImportFlow({
             </label>
             <button
               type="button"
-              onClick={save}
+              onClick={() => void save()}
               disabled={parsed.values.length === 0}
               className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-brand-700 px-5 text-[13px] font-bold text-white transition hover:bg-brand-500 disabled:opacity-40"
             >
@@ -342,8 +375,18 @@ export function LabImportFlow({
                   <button
                     type="button"
                     onClick={() => {
-                      removeStoredLabImport(r.id);
-                      toast("取り込みを削除しました");
+                      void (async () => {
+                        const res = await fetch(
+                          `/api/labtest/imports?importId=${encodeURIComponent(r.id)}`,
+                          { method: "DELETE" },
+                        );
+                        if (!res.ok) {
+                          toast.error("削除できませんでした。");
+                          return;
+                        }
+                        removeStoredLabImport(r.id);
+                        toast("取り込みを削除しました");
+                      })();
                     }}
                     aria-label="この取り込みを削除"
                     className="tap-44 rounded-full p-1 text-stone-400 hover:text-stone-700"
@@ -437,8 +480,22 @@ function ConsentPanel({
               <button
                 type="button"
                 onClick={() => {
-                  revokeConsent(active.id);
-                  toast("同意を取り消しました。表示中の検査結果も見えなくなります。");
+                  void (async () => {
+                    const res = await fetch("/api/consents", {
+                      method: "POST",
+                      headers: { "content-type": "application/json" },
+                      body: JSON.stringify({
+                        consentId: active.id,
+                        customerId,
+                      }),
+                    });
+                    if (!res.ok) {
+                      toast.error("同意を取り消せませんでした。");
+                      return;
+                    }
+                    revokeConsent(active.id);
+                    toast("同意を取り消しました。表示中の検査結果も見えなくなります。");
+                  })();
                 }}
                 className="mt-2 inline-flex min-h-11 items-center px-1 text-[12.5px] font-bold text-stone-500 underline hover:text-stone-700"
               >
@@ -456,13 +513,35 @@ function ConsentPanel({
               <button
                 type="button"
                 onClick={() => {
-                  grantConsent({
-                    customerId,
-                    scope,
-                    grantedBy: staffName,
-                    method: "店頭で口頭確認",
-                  });
-                  toast.success("同意を記録しました");
+                  void (async () => {
+                    const res = await fetch("/api/consents", {
+                      method: "POST",
+                      headers: { "content-type": "application/json" },
+                      body: JSON.stringify({
+                        customerId,
+                        scope,
+                        method: "店頭で口頭確認",
+                        grantedByName: staffName,
+                      }),
+                    });
+                    const json = (await res.json()) as {
+                      ok?: boolean;
+                      mode?: string;
+                    };
+                    if (!res.ok || !json.ok) {
+                      toast.error("同意を記録できませんでした。");
+                      return;
+                    }
+                    if (json.mode === "demo") {
+                      grantConsent({
+                        customerId,
+                        scope,
+                        grantedBy: staffName,
+                        method: "店頭で口頭確認",
+                      });
+                    }
+                    toast.success("同意を記録しました");
+                  })();
                 }}
                 className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-brand-700 px-5 text-[13px] font-bold text-white transition hover:bg-brand-500"
               >

@@ -3,6 +3,8 @@ import { z } from "zod";
 import { isDemoMode } from "@/lib/demo";
 import { getAdminSupabase } from "@/lib/supabase/admin";
 import { getServerSupabase } from "@/lib/supabase/server";
+import { assertCustomerInOrg, requireStaff } from "@/lib/auth/caller";
+import { listConsents } from "@/lib/labtest/repository";
 import { logAudit } from "@/lib/audit/log";
 import {
   canPublishLabtest,
@@ -60,41 +62,12 @@ export async function POST(req: Request) {
   let callerOrgId: string | null = null;
   let callerId: string | null = null;
   if (!isDemoMode()) {
-    const session = await getServerSupabase();
-    const { data: auth } = await session.auth.getUser();
-    if (!auth.user) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
-    const { data: me } = await session
-      .from("users")
-      .select("role, organization_id")
-      .eq("id", auth.user.id)
-      .maybeSingle();
-    const meRow =
-      (me as { role?: string; organization_id?: string | null } | null) ?? null;
-    if (
-      !meRow?.organization_id ||
-      (meRow.role !== "therapist" && meRow.role !== "salon_admin")
-    ) {
-      return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    }
-    callerOrgId = meRow.organization_id;
-    callerId = auth.user.id;
-
-    // 対象の患者が、その人の組織のものであること。
-    const { data: customer } = await session
-      .from("guide_customers")
-      .select("organization_id")
-      .eq("id", b.customerId)
-      .maybeSingle();
-    const orgOfCustomer = (customer as { organization_id?: string } | null)
-      ?.organization_id;
-    if (!orgOfCustomer) {
-      return NextResponse.json({ error: "customer_not_found" }, { status: 404 });
-    }
-    if (orgOfCustomer !== callerOrgId) {
-      return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    }
+    const caller = await requireStaff();
+    if ("response" in caller) return caller.response;
+    const denied = await assertCustomerInOrg(b.customerId, caller.organizationId);
+    if (denied) return denied;
+    callerOrgId = caller.organizationId;
+    callerId = caller.userId;
   }
 
   if (b.published) {
@@ -145,22 +118,8 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true });
 }
 
-/** 本番の同意記録を読む。TODO(phase-1) の consents テーブルに対応する。 */
+/** 本番の同意記録を読む。クエリはリポジトリ層に集約してある。 */
 async function loadConsents(customerId: string): Promise<ConsentRecord[]> {
-  const admin = getAdminSupabase();
-  const { data } = await admin
-    .from("consents")
-    .select("id, customer_id, scope, granted_at, granted_by, revoked_at, method")
-    .eq("customer_id", customerId);
-  return ((data ?? []) as unknown as Array<Record<string, string | null>>).map(
-    (r) => ({
-      id: String(r.id),
-      customerId: String(r.customer_id),
-      scope: r.scope as ConsentRecord["scope"],
-      grantedAt: String(r.granted_at),
-      grantedBy: String(r.granted_by),
-      revokedAt: r.revoked_at,
-      method: r.method as ConsentRecord["method"],
-    }),
-  );
+  const db = await getServerSupabase();
+  return listConsents(db, customerId);
 }

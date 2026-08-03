@@ -76,6 +76,15 @@ if [ "$fail" -eq 0 ]; then
     "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace
      where n.nspname='public' and c.relkind='r' and not c.relrowsecurity;")
   echo "  → テーブル ${n} / ポリシー ${pol} / RLS未設定 ${norls}"
+  echo "  --- テナント分離と同意ゲート ---"
+  if psql -h "$SOCK" -p "$PORT" -U postgres -d fieldcx_verify \
+      -v ON_ERROR_STOP=1 -f scripts/verify-rls.sql >/tmp/fieldcx-rls.log 2>&1; then
+    grep -oE "ok  .*" /tmp/fieldcx-rls.log | sed 's/^/  /'
+  else
+    echo "  FAIL RLS の検証に失敗"
+    grep -E "ERROR" /tmp/fieldcx-rls.log | head -3 | sed 's/^/       /'
+    fail=1
+  fi
   if [ "$norls" -gt 0 ]; then
     echo "  RLS が有効でないテーブル:"
     psql -h "$SOCK" -p "$PORT" -U postgres -d fieldcx_verify -tAc \

@@ -180,20 +180,33 @@ create policy case_tag_assignments_delete on case_tag_assignments for delete
     )
   );
 
--- ---------- Seed default tags ----------
--- The demo organization id is fixed in the app fixtures.
--- In production rollouts this seed runs per-org via a setup helper.
-insert into case_tags_master (organization_id, name, sort_order)
-values
-  ('org-carat-demo'::uuid, '炎症ニキビ',  10),
-  ('org-carat-demo'::uuid, '色素沈着',    20),
-  ('org-carat-demo'::uuid, '毛穴詰まり',  30),
-  ('org-carat-demo'::uuid, '乾燥',        40),
-  ('org-carat-demo'::uuid, '皮脂過多',    50),
-  ('org-carat-demo'::uuid, '赤み',        60),
-  ('org-carat-demo'::uuid, 'ニキビ跡',    70),
-  ('org-carat-demo'::uuid, 'かゆみ',      80),
-  ('org-carat-demo'::uuid, '重度',       100),
-  ('org-carat-demo'::uuid, '中度',       110),
-  ('org-carat-demo'::uuid, '軽度',       120)
-on conflict (organization_id, name) do nothing;
+-- ---------- 既定タグの投入 ----------
+--
+-- ここに insert を直書きしていたが、2つの理由で外した。
+--   1. 直書きしていた組織IDが**UUIDとして不正**で、
+--      マイグレーション自体が失敗していた（本番で流したことが無く気づけなかった）
+--   2. 仮に通っても、その組織は存在しないので外部キー違反になる
+--
+-- 既定タグは「スキーマ」ではなく「店舗を迎えるときの初期設定」。
+-- 導入時に組織を指定して呼ぶ関数にする。
+create or replace function public.seed_default_case_tags(p_org uuid)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  insert into case_tags_master (organization_id, name, sort_order)
+  values
+    (p_org, '炎症ニキビ',  10),
+    (p_org, '色素沈着',    20),
+    (p_org, '毛穴詰まり',  30),
+    (p_org, '乾燥',        40),
+    (p_org, '皮脂過多',    50),
+    (p_org, '赤み',        60),
+    (p_org, 'ニキビ跡',    70),
+    (p_org, 'かゆみ',      80),
+    (p_org, '重度',       100),
+    (p_org, '中度',       110),
+    (p_org, '軽度',       120)
+  on conflict (organization_id, name) do nothing;
+$$;

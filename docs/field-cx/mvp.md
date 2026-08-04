@@ -86,3 +86,63 @@
 1. **本番 Supabase への実接続**（1日）— スキーマとポリシーは実DBで検証済み
 2. **Next 16 への更新** — `sharp` の libvips CVE。**患者の写真を扱う前に**
 3. サイバー保険と、店舗との責任分界の契約書（`security-and-cost.md` 5章）
+
+---
+
+## 付録: システム名を変える手順
+
+名前は5つの形でコードに散らばります。表示名だけ直しても、
+識別子・ファイル名・URLスラッグに旧称が残り、あとから見つけにくくなります
+（`import` パスの中など）。
+
+```bash
+# 1. 下見（何が変わるかだけ見る。書き換えない）
+python3 scripts/rename-product.py "Field CX" "新しい名前" --check
+
+# 2. 実行
+python3 scripts/rename-product.py "Field CX" "新しい名前"
+
+# 3. 検証（この順番で。.next を先に消す）
+rm -rf .next
+npx tsc --noEmit && npx eslint src && npx vitest run
+./scripts/verify-migrations.sh
+npx next build
+grep -ri "field-cx" src docs supabase   # 0件になること
+```
+
+置き換わるもの:
+
+| 形 | 例 |
+|---|---|
+| 表示名 | `Field CX` → 画面・ドキュメント |
+| PascalCase | `FieldCxModuleId` → 型・コンポーネント |
+| SCREAMING_SNAKE | `FIELD_CX_MODULES` → 定数 |
+| kebab | `/field-cx/*`・`--field-cx-nav-h`・`field-cx-demo-v1` |
+| ディレクトリ | `src/app/field-cx`・`docs/field-cx`（`git mv` で履歴を残す） |
+
+### 手でやるとハマるところ（スクリプトが吸収済み）
+
+- **置換の順番** — 短い kebab を先に当てると `FieldCxModuleId` が壊れる
+- **日本語に接する表示名** — 「Field CXは」「Field CX内」は `\b` が立たない。
+  単語境界に頼ると取りこぼす
+- **ハイフン入りのオブジェクトキー** — `field-cx:` は引用符が無いと構文エラー。
+  実行後に検出して報告する
+- **`.next` の古い生成型** — 消さずに `tsc` を回すと旧パスを参照して落ちる。
+  改名が失敗したように見えるが、原因はキャッシュ
+
+### やり直したくなったら
+
+`git mv` はステージに残るので、**`git checkout .` だけでは戻りません**
+（内容は戻るがディレクトリ名は新しいまま、という不整合になります）。
+確実に戻すには、コミット前なら:
+
+```bash
+git reset --hard HEAD && git clean -fd
+```
+
+### 注意
+
+- **localStorage の名前空間が変わります。** デモで入力したデータは引き継がれません
+- `package.json` の `"name"` は触りません（画面にも URL にも出ないビルド識別子）。
+  変えるならリポジトリ名ごと揃えるほうが自然です
+- 本番の Vercel ドメインは別途変更が必要です（コードの外）

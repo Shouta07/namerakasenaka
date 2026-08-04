@@ -10,7 +10,7 @@ import {
   gaugePercent,
   radarLevelFromRows,
   type LabRow,
-} from "@/lib/field-cx/labtest-fixtures";
+} from "@/lib/vitality-design/labtest-fixtures";
 import {
   usePublishedLabSeries,
   type PublishedLabSeries,
@@ -20,7 +20,7 @@ import { isDemoMode } from "@/lib/demo";
 /**
  * お客様のスマホで見る、血液検査の可視化。
  *
- * サロン側（/field-cx/labtest）と同じレーダーを、お客様の言葉で。
+ * サロン側（/vitality-design/labtest）と同じレーダーを、お客様の言葉で。
  * 数値の判定表ではなく「6つの力が、どこまでそろったか」。
  * 前回の形を破線で残すので、続けたぶんが図の広がりとして見える。
  */

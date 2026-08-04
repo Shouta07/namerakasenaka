@@ -521,9 +521,9 @@ partial   → 検査はあるが写真が無い等。欠けている側を静か
 | この設計 | 既存実装 | 状態 |
 |---|---|---|
 | 血液検査レポート・レーダー | `components/charts/lab-radar.tsx` | **そのまま流用可** |
-| 検査の翻訳（解説・関連・アドバイス） | `lib/field-cx/labtest-fixtures.ts` の翻訳データ | 流用可 |
+| 検査の翻訳（解説・関連・アドバイス） | `lib/vitality-design/labtest-fixtures.ts` の翻訳データ | 流用可 |
 | Before/After 比較 | `components/progress/before-after.tsx` | 日付選択の追加が必要 |
-| 週次AIレポート | `components/field-cx/copilot-brief.tsx`（店舗向け） | **顧客向けに書き直し** |
+| 週次AIレポート | `components/vitality-design/copilot-brief.tsx`（店舗向け） | **顧客向けに書き直し** |
 | 学習ライブラリ | `components/lessons/*`（7章の図解） | 動画の追加が必要 |
 | 改善履歴 | 顧客詳細のタイムライン | 顧客向けに再構成 |
 | 空・読込・失敗の状態 | `components/ui/empty-state.tsx` `skeleton.tsx` `app/error.tsx` | そのまま |

@@ -11,7 +11,7 @@ const PUBLIC_PATHS = [
   "/lessons-preview",
   "/story",
   "/plans",
-  "/field-cx",
+  "/vitality-design",
   "/hub",
   "/api/stripe/webhook",
   "/api/daily-checks",
@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
   if (mode.mode === "demo") {
     const res = NextResponse.next({ request });
     // 見本のデータであることを、機械にも分かる形で明示する。
-    res.headers.set("x-field-cx-mode", "demo");
+    res.headers.set("x-vitality-design-mode", "demo");
     // デモが検索に載ると、見本の数値が実在の情報として拡散しうる。
     res.headers.set("x-robots-tag", "noindex, nofollow");
     return res;

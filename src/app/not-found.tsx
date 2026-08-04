@@ -14,10 +14,10 @@ export default function NotFound() {
       </p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
         <Link
-          href="/field-cx"
+          href="/vitality-design"
           className="inline-flex min-h-11 items-center rounded-full bg-brand-700 px-5 text-[13px] font-bold text-white transition hover:bg-brand-500"
         >
-          Field CX のトップへ
+          Vitality Design のトップへ
         </Link>
         <Link
           href="/hub"

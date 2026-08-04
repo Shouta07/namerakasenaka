@@ -9,7 +9,7 @@
  * - ここは純関数。ファイル読み込みも保存もしない（テストできる形に保つ）。
  */
 
-import { LAB_ROWS, type LabRow } from "@/lib/field-cx/labtest-fixtures";
+import { LAB_ROWS, type LabRow } from "@/lib/vitality-design/labtest-fixtures";
 
 /** 検査票での表記ゆれ。左が検査票側、右が LAB_ROWS の id。 */
 const ALIASES: Record<string, string> = {

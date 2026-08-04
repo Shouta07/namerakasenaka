@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { MobileBottomNav, RoleNav, type NavItem } from "@/components/ui/nav";
 import { DemoBanner } from "@/components/demo-banner";
+import { TrialBanner } from "@/components/trial/trial-banner";
 import { RoleTopBar } from "@/components/ui/role-top-bar";
 import { PresentationModeToggle } from "@/components/presentation-mode";
 import { demoOrganization } from "@/lib/demo/fixtures";
@@ -11,7 +12,7 @@ import { demoOrganization } from "@/lib/demo/fixtures";
  *
  * 画面は残してあるが、ナビからは外している。
  * 見えない画面は使われず、使われない画面はサポート原価を生まない。
- * 何を外し、なぜ外し、いつ戻すかは lib/field-cx/mvp.ts。
+ * 何を外し、なぜ外し、いつ戻すかは lib/vitality-design/mvp.ts。
  */
 const sidebarItems: NavItem[] = [
   { href: "/admin/customers", label: "検査と伴走", icon: "sparkles" },
@@ -32,6 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-dvh flex-col md:flex-row">
       <RoleNav title="SalonAdmin" items={sidebarItems} />
       <div className="flex min-w-0 flex-1 flex-col">
+        <TrialBanner />
         <RoleTopBar
           role="経営者"
           persona="salon"

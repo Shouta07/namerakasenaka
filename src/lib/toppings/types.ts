@@ -1,8 +1,8 @@
 /**
- * Field CX トッピング機構 — 型定義。
+ * Vitality Design トッピング機構 — 型定義。
  *
  * 「機能をトッピングできる SaaS」の唯一の情報源。
- * 詳細設計: docs/field-cx/topping-architecture.md §3。
+ * 詳細設計: docs/vitality-design/topping-architecture.md §3。
  *
  * ここには課金情報（誰が使えるか）は入れない。それは entitlement（DB）の
  * 役割。ここはトッピングの「定義」— 型安全・レビュー可能なコードとして持つ。

@@ -1,7 +1,7 @@
 /**
- * Field CX トッピング・レジストリ — 唯一の情報源。
+ * Vitality Design トッピング・レジストリ — 唯一の情報源。
  *
- * docs/field-cx/topping-architecture.md §2 のカタログをコード化したもの。
+ * docs/vitality-design/topping-architecture.md §2 のカタログをコード化したもの。
  * ナビ・ゲート・料金表・エンタイトルメント写像はすべてここを読む。
  *
  * 【スコープ方針（v2.3 vertical focus）】市場は1ニッチに固定:
@@ -28,12 +28,12 @@ export const TOPPINGS = {
     name: "顧客台帳・カウンセリング記録",
     short: "コア",
     description:
-      "顧客台帳、初回カウンセリング記録、関わりのタイムライン、メンバー・権限。Field CX の生地。",
+      "顧客台帳、初回カウンセリング記録、関わりのタイムライン、メンバー・権限。Vitality Design の生地。",
     emoji: "📋",
     tier: "base",
     dependsOn: [],
     status: "launch",
-    nav: { href: "/field-cx/customers", label: "顧客", order: 10 },
+    nav: { href: "/vitality-design/customers", label: "顧客", order: 10 },
     plans: { starter: INC, standard: INC, pro: INC },
   },
 
@@ -42,12 +42,12 @@ export const TOPPINGS = {
     name: "接客と継続のコパイロット",
     short: "コパイロット",
     description:
-      "成約・継続・練習のデータから「再診率が低下・フォロー対象42名」のような気づきと次の一手を提案し、その場で実行できる。在庫・会計などの経営分析はお使いの業務システムの領域（Field CXは上に乗る）。",
+      "成約・継続・練習のデータから「再診率が低下・フォロー対象42名」のような気づきと次の一手を提案し、その場で実行できる。在庫・会計などの経営分析はお使いの業務システムの領域（Vitality Designは上に乗る）。",
     emoji: "🧠",
     tier: "copilot",
     dependsOn: ["core", "dashboard"],
     status: "launch",
-    nav: { href: "/field-cx/copilot", label: "コパイロット", order: 15 },
+    nav: { href: "/vitality-design/copilot", label: "コパイロット", order: 15 },
     plans: {
       starter: OUT,
       standard: inc("unlimited", "週次ブリーフ"),
@@ -65,7 +65,7 @@ export const TOPPINGS = {
     tier: "cheese",
     dependsOn: ["core"],
     status: "launch",
-    nav: { href: "/field-cx/dashboard", label: "ダッシュボード", order: 30 },
+    nav: { href: "/vitality-design/dashboard", label: "ダッシュボード", order: 30 },
     plans: {
       starter: inc("unlimited", "基本"),
       standard: INC,
@@ -110,7 +110,7 @@ export const TOPPINGS = {
     tier: "topping",
     dependsOn: ["core"],
     status: "launch",
-    nav: { href: "/field-cx/roleplay", label: "接客練習", order: 20 },
+    nav: { href: "/vitality-design/roleplay", label: "接客練習", order: 20 },
     meter: { metric: "sessions", unit: "回/月" },
     plans: {
       starter: inc(20),

@@ -1,4 +1,4 @@
-import type { LabRow } from "@/lib/field-cx/labtest-fixtures";
+import type { LabRow } from "@/lib/vitality-design/labtest-fixtures";
 
 /**
  * 検査値そのものの位置を見せる帯。

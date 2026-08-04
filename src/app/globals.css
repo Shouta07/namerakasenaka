@@ -10,8 +10,8 @@
 }
 
 :root {
-  /* Field CX ヘッダの高さ。スティッキーな要素はこれを基準に貼りつく。 */
-  --field-cx-nav-h: 68px;
+  /* Vitality Design ヘッダの高さ。スティッキーな要素はこれを基準に貼りつく。 */
+  --vitality-design-nav-h: 68px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """プロダクト名を変える。
 
-    python3 scripts/rename-product.py "Field CX" "New Name"
-    python3 scripts/rename-product.py "Field CX" "New Name" --check   # 下見だけ
+    python3 scripts/rename-product.py "Vitality Design" "New Name"
+    python3 scripts/rename-product.py "Vitality Design" "New Name" --check   # 下見だけ
 
 名前は5つの形で散らばっている。表示名だけ直しても、
 識別子・ファイル名・URLスラッグに旧称が残る。
@@ -11,7 +11,7 @@
 以前この作業を手でやったときに踏んだ落とし穴を、全部ここに閉じ込めてある:
 
   1. **置換の順番**
-     短い kebab を先に当てると FieldCxModuleId のような識別子が壊れる。
+     短い kebab を先に当てると VitalityDesignModuleId のような識別子が壊れる。
      PascalCase → SCREAMING_SNAKE → snake → kebab → 表示名 の順に当てる。
 
   2. **日本語に接する表示名**
@@ -20,11 +20,11 @@
      （according / accordion のような巻き込みが無いことを先に確認する）。
 
   3. **ハイフンを含むオブジェクトキー**
-     `accord:` が `field-cx:` になると、そのままでは構文エラー。
+     `accord:` が `vitality-design:` になると、そのままでは構文エラー。
      引用符が要るので、置換後に検出して報告する。
 
   4. **localStorage の名前空間**
-     `accord-demo-v1` → `field-cx-demo-v1` に変わり、
+     `accord-demo-v1` → `vitality-design-demo-v1` に変わり、
      既存のデモデータは引き継がれない。改名なので意図どおりだが、黙って消さない。
 """
 
@@ -97,7 +97,7 @@ def preflight(old: Name) -> list[str]:
     if len(stem) < 4:
         return warnings
 
-    # 旧称そのものの派生（FieldCxModuleId など）は規則が正しく扱うので除く。
+    # 旧称そのものの派生（VitalityDesignModuleId など）は規則が正しく扱うので除く。
     # 残るのは「たまたま同じ語で始まる無関係な語」だけ。そこだけ人に見せる。
     known = {old.kebab, old.snake, old.pascal.lower(), old.display.lower().replace(" ", "")}
     pat = re.compile(rf"\b{re.escape(stem)}[a-z]{{2,}}", re.I)

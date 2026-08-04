@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { LAB_ROWS, type LabRow } from "@/lib/field-cx/labtest-fixtures";
+import { LAB_ROWS, type LabRow } from "@/lib/vitality-design/labtest-fixtures";
 import {
   useStoredConsents,
   useStoredLabImports,

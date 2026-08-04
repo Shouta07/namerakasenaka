@@ -32,8 +32,9 @@ import {
   useStoredConsents,
   useStoredLabImports,
 } from "@/lib/demo/store";
-import { LAB_ROWS, judgeLab } from "@/lib/field-cx/labtest-fixtures";
+import { LAB_ROWS, judgeLab } from "@/lib/vitality-design/labtest-fixtures";
 import { labPublishedText } from "@/lib/line/send";
+import { isDemoMode } from "@/lib/demo";
 import { cn } from "@/lib/utils/cn";
 
 const ROW_BY_ID = new Map(LAB_ROWS.map((r) => [r.id, r]));
@@ -99,25 +100,16 @@ export function LabImportFlow({
     }));
     setBusy(true);
     try {
-      const res = await fetch("/api/labtest/imports", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          customerId,
-          collectedOn,
-          values,
-          sourceFileName: fileName,
-          unparsedCount: parsed.unparsed.length,
-          importedByName: staffName,
-        }),
-      });
-      const json = (await res.json()) as { ok?: boolean; mode?: string };
-      if (!res.ok || !json.ok) {
-        toast.error("取り込みを保存できませんでした。もう一度お試しください。");
-        return;
-      }
-      // デモでは API に保存先が無いので、画面用にブラウザへ控える。
-      if (json.mode === "demo") {
+      // お試し中は、検査値をサーバへ送らない。
+      //
+      // 試用のお客様が、実際の患者さんの検査票を落とすことが十分にあり得る。
+      // 契約前に要配慮個人情報が当社のサーバを通ると、
+      // リクエストのログに残る可能性まで含めて、こちらの責任になる。
+      // 取り込みの API には同意ゲートが無く、通しても得るものが無いので、
+      // お試しではブラウザの中だけで完結させる。
+      // （同意ゲートのある公開の API は、お試しでも通す。効いていることを
+      //   確かめられなくなるため。あちらは検査値を運ばない。）
+      if (isDemoMode()) {
         addStoredLabImport({
           customerId,
           collectedOn,
@@ -126,6 +118,24 @@ export function LabImportFlow({
           unparsedCount: parsed.unparsed.length,
           importedBy: staffName,
         });
+      } else {
+        const res = await fetch("/api/labtest/imports", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            customerId,
+            collectedOn,
+            values,
+            sourceFileName: fileName,
+            unparsedCount: parsed.unparsed.length,
+            importedByName: staffName,
+          }),
+        });
+        const json = (await res.json()) as { ok?: boolean };
+        if (!res.ok || !json.ok) {
+          toast.error("取り込みを保存できませんでした。もう一度お試しください。");
+          return;
+        }
       }
       const count = parsed.values.length;
       setParsed(null);
@@ -378,13 +388,15 @@ export function LabImportFlow({
                     type="button"
                     onClick={() => {
                       void (async () => {
-                        const res = await fetch(
-                          `/api/labtest/imports?importId=${encodeURIComponent(r.id)}`,
-                          { method: "DELETE" },
-                        );
-                        if (!res.ok) {
-                          toast.error("削除できませんでした。");
-                          return;
+                        if (!isDemoMode()) {
+                          const res = await fetch(
+                            `/api/labtest/imports?importId=${encodeURIComponent(r.id)}`,
+                            { method: "DELETE" },
+                          );
+                          if (!res.ok) {
+                            toast.error("削除できませんでした。");
+                            return;
+                          }
                         }
                         removeStoredLabImport(r.id);
                         toast("取り込みを削除しました");

@@ -463,10 +463,10 @@ export default function PlansPage() {
               ▶ システム実装・体験設計費の内訳は、お見積り資料（PowerPoint）でご説明します。
             </p>
             <Link
-              href="/field-cx"
+              href="/vitality-design"
               className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#8c5a3c] px-5 text-sm font-bold text-white transition hover:bg-[#754827]"
             >
-              実装イメージを触ってみる — Field CX デモ →
+              実装イメージを触ってみる — Vitality Design デモ →
             </Link>
           </div>
         </div>

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { MobileBottomNav, type NavItem } from "@/components/ui/nav";
 import { DemoBanner } from "@/components/demo-banner";
+import { TrialBanner } from "@/components/trial/trial-banner";
 import { RoleTopBar } from "@/components/ui/role-top-bar";
 import { demoOrganization } from "@/lib/demo/fixtures";
 
@@ -28,6 +29,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <div className="min-h-dvh bg-stone-100">
       <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col bg-[#fafaf7] shadow-sm">
+        <TrialBanner />
         <RoleTopBar role="顧客" persona="client" eyebrow={demoOrganization.name} />
         <main className="flex-1 px-4 pt-4 pb-[calc(76px+max(var(--safe-bottom),12px))]">
           {children}
